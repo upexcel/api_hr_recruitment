@@ -42,18 +42,3 @@ export class UserController extends BaseAPIController {
 
 const controller = new UserController();
 export default controller;
-
-
-// if (!user) {
-//                     throw new Error("Invalid Login Details");
-//                 } else {
-//                     let token = jwt.sign({
-//                         token: user.id
-//                     }, "secret_key", {
-//                         expiresIn: 60 * 60
-//                     });
-//                     res.json({
-//                         status: 1,
-//                         token: token
-//                     })
-//                 }
