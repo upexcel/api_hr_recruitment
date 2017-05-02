@@ -1,6 +1,8 @@
 /dist
 /logs
-/npm-debug.log
+/Dockerfile
 /node_modules
 .DS_Store
 .eslintrc.js
+/package.json
+/Procfile
