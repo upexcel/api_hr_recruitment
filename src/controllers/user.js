@@ -34,30 +34,26 @@ export class UserController extends BaseAPIController {
     /* Controller for User Login  */
     userLogin = (req, res) => {
         let login = LoginProvider.login(this._db.User, req.body);
-        this._db.User.find({
-                where: {
-                    email: login.email,
-                    password: login.password
-                }
-            })
-            .then((user) => {
-                if (!user) {
-                    throw new Error("Invalid Login Details");
-                } else {
-                    let token = jwt.sign({
-                        token: user.id
-                    }, "secret_key", {
-                        expiresIn: 60 * 60
-                    });
-                    res.json({
-                        status: 1,
-                        token: token
-                    })
-                }
-            })
+        this._db.User.login(login)
+            .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 }
 
 const controller = new UserController();
 export default controller;
+
+
+// if (!user) {
+//                     throw new Error("Invalid Login Details");
+//                 } else {
+//                     let token = jwt.sign({
+//                         token: user.id
+//                     }, "secret_key", {
+//                         expiresIn: 60 * 60
+//                     });
+//                     res.json({
+//                         status: 1,
+//                         token: token
+//                     })
+//                 }
