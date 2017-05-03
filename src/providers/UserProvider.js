@@ -1,30 +1,28 @@
 import crypto from 'crypto';
 import * as BaseProvider from './BaseProvider';
+import util from 'util';
 
 /* Provider for User Registration */
-const create = (model, body) => {
+const create = (model, validate, body, validationResult) => {
     return new Promise((resolve, reject) => {
-        if (body.email == '' && body.password == '' && body.confirm_password == '') {
-            reject("All fields are required")
-        } else if (body.user_type == '') {
-            reject("User_type is Required");
-        } else if (body.email == '') {
-            reject("Email is Required")
-        } else if (body.confirm_password == '') {
-            reject("Confirm Password is Required")
-        } else if (body.password == '') {
-            reject(" Password is Required")
-        } else {
-            if (body.password == body.confirm_password) {
-                var date = new Date();
-                delete body.confirm_password;
-                body.password = crypto.createHash('sha256').update(body.password).digest('base64');
-                resolve(body)
+        validate('email', 'email cannot be empty').notEmpty();
+        validate('user_type', 'user_type cannot be empty').notEmpty();
+        validate('password', 'password cannot be empty').notEmpty();
+        validate('confirm_password', 'confirm_password cannot be empty').notEmpty();
+        validationResult.then(function(result) {
+            if (!result.isEmpty()) {
+                reject(util.inspect(result.array()));
+                return;
             } else {
-                reject("Password Not Matched")
-
+                if (body.password == body.confirm_password) {
+                    delete body.confirm_password;
+                    body.password = crypto.createHash('sha256').update(body.password).digest('base64');
+                    resolve(body)
+                } else {
+                    reject("Password Not Matched")
+                }
             }
-        }
+        })
     })
 };
 

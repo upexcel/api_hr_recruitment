@@ -12,34 +12,35 @@ export default function(sequelize, DataTypes) {
         type: {
             type: DataTypes.ENUM,
             values: ['SSL', 'TLS']
+        },
+        status: {
+            type: DataTypes.ENUM,
+            values: ['TRUE', 'FALSE'],
+            defaultValue: 'FALSE'
+        },
+        active: {
+            type: DataTypes.ENUM,
+            values: ['TRUE', 'FALSE'],
+            defaultValue: 'FALSE'
         }
     }, {
         timestamps: true,
         freezeTableName: true,
         allowNull: true,
-        classMethods: {
-
-            // login.....
-            save(imap) {
+        hooks: {
+            beforeCreate: function(IMAP, options) {
                 return new Promise((resolve, reject) => {
-                    this.find({ where: { email: imap.email } })
-                        .then((details) => {
-                            if (details) {
-                                reject("Email Already Exists")
+                    this.findOne({ where: { email: IMAP.email } })
+                        .then((email) => {
+                            if (email) {
+                                reject('Email Already In Use')
                             } else {
-                                this.create(imap)
-                                    .then((result) => {
-                                        resolve(result)
-                                    })
-                                    .catch((error) => {
-                                        reject(error)
-                                    })
+                                resolve()
                             }
                         })
-                });
-            },
-
-        }
+                })
+            }
+        },
     });
     return imap;
 }

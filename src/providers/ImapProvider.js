@@ -1,42 +1,26 @@
 import crypto from 'crypto';
 import * as BaseProvider from './BaseProvider';
+import util from 'util';
 
 /* Provider for User Registration */
-const save = (model, body, access) => {
+const save = (model, validate, body, validationResult) => {
     return new Promise((resolve, reject) => {
-        if (body.email == '' && body.password == '' && body.smtp_server == '' && body.port == '') {
-            reject("All fields are required")
-        } else if (body.email == '') {
-            reject("Email is Required");
-        } else if (body.smtp_server == '') {
-            reject("smtp_server is Required")
-        } else if (!body.type) {
-            reject("Type is Required")
-        } else if (body.password == '') {
-            reject(" Password is Required")
-        } else if (body.server_port == '') {
-            reject(" Port is Required")
-        } else {
-            if (access) {
-                resolve(body)
+        validate('email', 'email cannot be empty').notEmpty();
+        validate('smtp_server', 'smtp_server cannot be empty').notEmpty();
+        validate('type', 'type cannot be empty').notEmpty();
+        validate('password', 'password cannot be empty').notEmpty();
+        validate('server_port', 'port cannot be empty and must be integer').notEmpty().isInt();
+        validationResult.then(function(result) {
+            if (!result.isEmpty()) {
+                reject(util.inspect(result.array()));
+                return;
             } else {
-                reject("You are Not authorized")
+                resolve(body)
             }
-        }
-    })
-};
-
-const Imap = (access) => {
-    return new Promise((resolve, reject) => {
-        if (access) {
-            resolve()
-        } else {
-            reject("You are Not authorized")
-        }
+        })
     })
 };
 export default {
     ...BaseProvider,
-    save,
-    Imap
+    save
 };
