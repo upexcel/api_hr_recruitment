@@ -23,7 +23,7 @@ export class ImapController extends BaseAPIController {
 
     /*Imap data Update*/
     update = (req, res, next) => {
-        ImapProvider.save(this._db.Imap, req.body, req.imapAccess)
+        ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.update(data, { where: { id: req.params.id } })
                     .then(res.json.bind(res))
