@@ -20,7 +20,7 @@ export class UserController extends BaseAPIController {
     }
 
     /* Controller for User Login  */
-    userLogin = (req, res) => {
+    login = (req, res) => {
         let login = LoginProvider.login(this._db.User, req.body);
         this._db.User.login(login)
             .then(res.json.bind(res))

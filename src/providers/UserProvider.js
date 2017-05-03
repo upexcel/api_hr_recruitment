@@ -4,10 +4,10 @@ import * as BaseProvider from './BaseProvider';
 /* Provider for User Registration */
 const create = (model, body) => {
     return new Promise((resolve, reject) => {
-        if (body.user_name == '' && body.email == '' && body.password == '' && body.confirm_password == '') {
+        if (body.email == '' && body.password == '' && body.confirm_password == '') {
             reject("All fields are required")
-        } else if (body.user_name == '') {
-            reject("User_name is Required");
+        } else if (body.user_type == '') {
+            reject("User_type is Required");
         } else if (body.email == '') {
             reject("Email is Required")
         } else if (body.confirm_password == '') {
@@ -17,6 +17,7 @@ const create = (model, body) => {
         } else {
             if (body.password == body.confirm_password) {
                 var date = new Date();
+                delete body.confirm_password;
                 body.password = crypto.createHash('sha256').update(body.password).digest('base64');
                 resolve(body)
             } else {
@@ -31,8 +32,8 @@ const create = (model, body) => {
 const login = (model, body, salt) => {
     let password = crypto.createHash('sha256').update(body.password).digest('base64');
     delete body.confirm_password;
-    return { ...body,
-        ...{
+    return {...body,
+        ... {
             password
         }
     };

@@ -1,12 +1,13 @@
 import user from '../controllers/user';
-import login from '../controllers/user';
 
 export default (app) => {
     /* Route for User Registration  */
-  app.route('/user/register').post(user.create);
+    app.route('/user/register').post(user.create);
 
     /* Route for User Login  */
-  app.route('/user/login').post(login.userLogin);
+    app.route('/user/login').post(user.login);
 
-  return app;
+    /*Get list of user*/
+
+    return app;
 };
