@@ -21,14 +21,12 @@ export class ImapController extends BaseAPIController {
         this._db.Imap.findById(id)
             .then((data) => {
                 if (data) {
-                    req.imapData = data
-                    next()
+                    this.getIdResult(req, data, next)
                 } else {
                     throw new Error("Invalid Id")
                 }
             })
             .catch(this.handleErrorResponse.bind(null, res));
-
     }
 
     /*Imap data Update*/
