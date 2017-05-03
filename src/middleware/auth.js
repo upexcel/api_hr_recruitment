@@ -14,7 +14,7 @@ export class AuthController {
         if (token) {
             jwt.verify(token, "secret_key", function(err, docs) {
                 if (err) {
-                    res.json(err);
+                    next(new Error(err));
                 } else {
                     var endTime = moment().unix();
                     var loginTime = docs.exp;
