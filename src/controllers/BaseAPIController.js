@@ -15,8 +15,15 @@ export default class BaseAPIController {
         });
     }
 
-    getIdResult(req, res, next) {
-        req.result = res;
-        next()
+    getById(req, model, id, next) {
+        model.findById(id)
+            .then((data) => {
+                if (data) {
+                    req.result = data
+                    next()
+                } else {
+                    next(new Error("Invalid Id"))
+                }
+            })
     }
 }

@@ -17,16 +17,8 @@ export class ImapController extends BaseAPIController {
     }
 
     /*Get Imapp data using id*/
-    getByID = (req, res, next, id) => {
-        this._db.Imap.findById(id)
-            .then((data) => {
-                if (data) {
-                    this.getIdResult(req, data, next)
-                } else {
-                    throw new Error("Invalid Id")
-                }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+    idResult = (req, res, next, id) => {
+        this.getById(req, this._db.Imap, id, next)
     }
 
     /*Imap data Update*/
