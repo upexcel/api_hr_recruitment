@@ -1,0 +1,12 @@
+{
+    "port": 8080,
+    "bodyLimit": "100kb",
+    "corsHeaders": ["Link"],
+    "db": {
+        "host": "localhost",
+        "name": "hr_system",
+        "password": "java@123",
+        "username": "root"
+    }
+
+}
