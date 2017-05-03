@@ -8,6 +8,7 @@ import chalk from 'chalk';
 import bodyParser from 'body-parser';
 import initializeDb from './db';
 import config from './config.json';
+import expressValidator from 'express-validator';
 
 const app = express();
 app.server = http.createServer(app);
@@ -20,18 +21,19 @@ app.use(morgan('dev'));
 app.use(cors({ exposedHeaders: config.corsHeaders }));
 app.use(bodyParser.json({ limit: config.bodyLimit }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressValidator());
 const initRoutes = (app) => {
     // including all routes
-  glob('./routes/*.js', { cwd: path.resolve('./src') }, (err, routes) => {
-    if (err) {
-      console.log(chalk.red('Error occured including routes'));
-      return;
-    }
-    routes.forEach((routePath) => {
+    glob('./routes/*.js', { cwd: path.resolve('./src') }, (err, routes) => {
+        if (err) {
+            console.log(chalk.red('Error occured including routes'));
+            return;
+        }
+        routes.forEach((routePath) => {
             require(routePath).default(app); // eslint-disable-line
+        });
+        console.log(chalk.green(`included ${routes.length} route files`));
     });
-    console.log(chalk.green(`included ${routes.length} route files`));
-  });
 };
 
 initRoutes(app);

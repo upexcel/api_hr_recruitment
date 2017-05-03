@@ -10,7 +10,7 @@ export class UserController extends BaseAPIController {
 
     /* Controller for User Register  */
     create = (req, res, next) => {
-        const user = UserProvider.create(this._db.User, req.body)
+        const user = UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
                 this._db.User.create(user)
                     .then(res.json.bind(res))
