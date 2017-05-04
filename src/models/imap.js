@@ -29,7 +29,7 @@ export default function(sequelize, DataTypes) {
 			beforeCreate: function(IMAP, options) {
 				return new Promise((resolve, reject) => {
 					this.findOne({ where: { email: IMAP.email } })
-                        .then((email) => {
+              .then((email) => {
 	if (email) {
 		reject("Email Already In Use");
 	} else {
