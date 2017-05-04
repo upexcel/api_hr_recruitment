@@ -7,7 +7,7 @@ export default function(sequelize, DataTypes) {
             unique: true
         },
         password: DataTypes.STRING,
-        smtp_server: DataTypes.STRING,
+        imap_server: DataTypes.STRING,
         server_port: DataTypes.INTEGER,
         type: {
             type: DataTypes.ENUM,

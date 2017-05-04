@@ -28,7 +28,7 @@ export default function(sequelize, DataTypes) {
                                 }, "secret_key", {
                                     expiresIn: 60 * 60 * 24
                                 });
-                                resolve({ stauts: 1, token: token })
+                                resolve({ status: 1, token: token })
                             } else {
                                 reject("Invalid Login Details");
                             }

@@ -6,7 +6,7 @@ import util from 'util';
 const save = (model, validate, body, validationResult) => {
     return new Promise((resolve, reject) => {
         validate('email', 'email cannot be empty').notEmpty();
-        validate('smtp_server', 'smtp_server cannot be empty').notEmpty();
+        validate('imap_server', 'imap_server cannot be empty').notEmpty();
         validate('type', 'type cannot be empty').notEmpty();
         validate('password', 'password cannot be empty').notEmpty();
         validate('server_port', 'port cannot be empty and must be integer').notEmpty().isInt();
