@@ -1,0 +1,343 @@
+{
+	"variables": [],
+	"info": {
+		"name": "hr_system",
+		"_postman_id": "ae1e2c9c-2929-37f2-517f-7db42e6ac205",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1.user",
+			"description": "",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.id){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"email\", \"test\" + Math.floor((Math.random() * 1000) + 1) + \"@gmail.com\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/user/register",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "user_type",
+									"value": "Admin",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "confirm_password",
+									"value": "123",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.stauts == 1){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}if(jsonData.token){",
+									"    tests[\"having token\"] = true;",
+									"}else{",
+									"    tests[\"having token\"] = false;",
+									"}",
+									"postman.setEnvironmentVariable(\"token\", jsonData.token);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/user/login",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2.IMAP",
+			"description": "",
+			"item": [
+				{
+					"name": "Imap Data Save",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"postman.setEnvironmentVariable(\"id\", jsonData.id);"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/imap/save?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "imap_server",
+									"value": "123",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "type",
+									"value": "TLS",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "server_port",
+									"value": "8091",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Imap Data Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"update_email\", \"test\"+ Math.floor((Math.random() * 10) + 20) + \"@gmail.com\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/imap/update/{{id}}?accessToken={{token}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{update_email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "imap_server",
+									"value": "sqsq",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "type",
+									"value": "TLS",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "12",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "server_port",
+									"value": "123",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Imap Data Get",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/imap/get/1?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Imap Data Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/imap/delete/{{id}}?accessToken={{token}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
