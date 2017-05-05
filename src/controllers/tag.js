@@ -2,6 +2,7 @@ import express from 'express';
 import BaseAPIController from './BaseAPIController';
 import TagProvider from '../providers/TagProvider';
 import db from '../db';
+import tag from '../models/constant';
 
 export class ImapController extends BaseAPIController {
 
@@ -18,7 +19,6 @@ export class ImapController extends BaseAPIController {
 
     /*Get Imapp data using id*/
     idTagResult = (req, res, next, tagId) => {
-      console.log(tagId)
         this.getById(req, this._db.Tag, tagId, next)
     }
 
@@ -35,7 +35,7 @@ export class ImapController extends BaseAPIController {
     /*Imap data delete */
 
     deleteTag = (req, res, next) => {
-      if(req.params.type == "Automatic" || req.params.type == "Manual"){
+      if(req.params.type == tag().tagType.automatic || req.params.type == Tag.tagType.Manual){
         this._db.Tag.destroy({ where: { id: req.params.tagId } })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
@@ -46,7 +46,7 @@ export class ImapController extends BaseAPIController {
 
     /*Get Imap data*/
     getTag = (req, res, next) => {
-      if(req.params.type == "Automatic" || req.params.type == "Manual" || req.params.type == "Default"){
+      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.Manual || req.params.type == tag().tagType.default){
         this._db.Tag.findAll({ offset: (req.params.page - 1) * 10, limit: 10, where : { type: req.params.type } })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
@@ -57,7 +57,7 @@ export class ImapController extends BaseAPIController {
 
     /*Get tag by id*/
     getTagById = (req, res, next) => {
-      if(req.params.type == "Automatic" || req.params.type == "Manual" || req.params.type == "Default"){
+      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.Manual || req.params.type == tag().tagType.default){
         this._db.Tag.findOne({ where : { id: req.result.id, type: req.params.type } })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
