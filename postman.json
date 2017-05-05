@@ -33,12 +33,7 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"postman.setGlobalVariable(\"url\", \"http://144.76.34.244:8090\");",
-									"",
-									"postman.setEnvironmentVariable(\"email\", \"test\" + Math.floor((Math.random() * 1000) + 1) + \"@gmail.com\");",
-									"",
-									"",
-									""
+									"postman.setEnvironmentVariable(\"email\", \"test\" + Math.floor((Math.random() * 1000) + 1) + \"@gmail.com\");"
 								]
 							}
 						}
