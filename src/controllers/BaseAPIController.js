@@ -6,6 +6,7 @@ export default class BaseAPIController {
 	}
 
 	handleErrorResponse(res, err) {
+
 		res.status(400).send(errorHandler(err));
 	}
 
@@ -15,14 +16,14 @@ export default class BaseAPIController {
 		});
 	}
 
-	getById(req, model, id, next) {
+	getById(req, res, model, id, next) {
 		model.findById(id)
             .then((data) => {
 	if (data) {
 		req.result = data;
 		next();
 	} else {
-		next(new Error("Invalid Id"));
+		res.status(400).send(errorHandler("Invalid Id"));
 	}
 });
 	}

@@ -2,7 +2,7 @@ import moment from "moment";
 import jwt from "jsonwebtoken";
 import db from "../db";
 import tag from "../models/constant";
-
+// import BaseAPIController from "../controllers/BaseAPIController";
 
 export class AuthController {
     // middleware for logged in users
@@ -23,14 +23,16 @@ export class AuthController {
 		req.user = user;
 		next();
 	} else {
-		next(new Error("Invalid User Token"));
+		res.status(400).send({error:"Invalid User Token"});
+		next();
 	}
 });
 					}
 				}
 			});
 		} else {
-			next(new Error("User is not logged in"));
+			res.status(400).send({error:"User is not logged in"});
+			next();
 		}
 	}
 
@@ -52,14 +54,15 @@ export class AuthController {
 		req.user = admin;
 		next();
 	} else {
-		next(new Error("You Are Not Authorized"));
+		res.status(400).send({error:"You Are Not Authorized"});
+		next();
 	}
 });
 					}
 				}
 			});
 		} else {
-			next(new Error("User is not logged in"));
+			next(res.status(400).send({error:"User is not logged in"}));
 		}
 	}
 
@@ -68,7 +71,7 @@ export class AuthController {
 		if (token) {
 			jwt.verify(token, "secret_key", function(err, docs) {
 				if (err) {
-					next(new Error(err));
+					next(res.status(400).send({error:"Invalid Token"}));
 				} else {
 					var endTime = moment().unix();
 					var loginTime = docs.exp;
@@ -80,14 +83,14 @@ export class AuthController {
 								req.user = user;
 								next();
 							} else {
-								next(new Error("You Are Not Authorized"));
+								next(res.status(400).send({error:"You Are Not Authorized"}));
 							}
 						});
 					}
 				}
 			});
 		} else {
-			next(new Error("User is not logged in"));
+			next(res.status(400).send({error:"User is not logged in"}));
 		}
 	}
 }

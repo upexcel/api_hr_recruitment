@@ -90,7 +90,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.stauts == 1){",
+									"if(jsonData.status == 1){",
 									"    tests[\"status true\"] = true;",
 									"}else{",
 									"    tests[\"status true\"] = false;",
@@ -138,7 +138,7 @@
 			]
 		},
 		{
-			"name": "2.IMAP",
+			"name": "2.imap_server_setting",
 			"description": "",
 			"item": [
 				{
@@ -179,7 +179,7 @@
 								},
 								{
 									"key": "imap_server",
-									"value": "123",
+									"value": "sass",
 									"type": "text",
 									"enabled": true
 								},

@@ -11,7 +11,7 @@ export class ImapController extends BaseAPIController {
         TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Tag.create(data)
-                    .then(res.json.bind(res))
+                    .then(this.handleSuccessResponse.bind(null,res))
                     .catch(this.handleErrorResponse.bind(null, res))
             })
             .catch(this.handleErrorResponse.bind(null, res))
@@ -19,15 +19,22 @@ export class ImapController extends BaseAPIController {
 
     /*Get Imapp data using id*/
     idTagResult = (req, res, next, tagId) => {
-        this.getById(req, this._db.Tag, tagId, next)
+        this.getById(req,res, this._db.Tag, tagId, next)
     }
 
     /*Imap data Update*/
     update = (req, res, next) => {
         TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                this._db.Tag.update(data, { where: { id: req.params.tagId } })
-                    .then(res.json.bind(res))
+                this._db.Tag.update(data, { where: { id: req.params.tagId , type: req.params.type} })
+                .then((data)=>{
+                  if(data[0]){
+                    this.handleSuccessResponse(res,null)
+                  }else{
+                    this.handleErrorResponse(res, "data not deleted")
+                  }
+                })
+                  .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -35,10 +42,16 @@ export class ImapController extends BaseAPIController {
     /*Imap data delete */
 
     deleteTag = (req, res, next) => {
-      if(req.params.type == tag().tagType.automatic || req.params.type == Tag.tagType.Manual){
-        this._db.Tag.destroy({ where: { id: req.params.tagId } })
-            .then(res.json.bind(res))
-            .catch(this.handleErrorResponse.bind(null, res));
+      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual){
+        this._db.Tag.destroy({ where: { id: req.params.tagId, type:req.params.type } })
+        .then((data)=>{
+          if(data){
+            this.handleSuccessResponse(res,null)
+          }else{
+            this.handleErrorResponse(res, "data not deleted")
+          }
+        })
+          .catch(this.handleErrorResponse.bind(null, res));
       }else{
         next(new Error("Invalid Type"))
       }
@@ -62,7 +75,7 @@ export class ImapController extends BaseAPIController {
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
       }else{
-        next(new Error("Invalid Type"))
+        next(this.handleErrorResponse.bind(null, res))
       }
     }
 }
