@@ -10,7 +10,7 @@ export class ImapController extends BaseAPIController {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.create(data)
-                    .then(res.json.bind(res))
+                    .then(this.handleSuccessResponse.bind(null,res))
                     .catch(this.handleErrorResponse.bind(null, res))
             })
             .catch(this.handleErrorResponse.bind(null, res))
@@ -18,7 +18,7 @@ export class ImapController extends BaseAPIController {
 
     /*Get Imapp data using id*/
     idResult = (req, res, next, id) => {
-        this.getById(req, this._db.Imap, id, next)
+        this.getById(req, res, this._db.Imap, id, next)
     }
 
     /*Imap data Update*/
@@ -26,7 +26,14 @@ export class ImapController extends BaseAPIController {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.update(data, { where: { id: req.params.id } })
-                    .then(res.json.bind(res))
+                .then((data)=>{
+                  if(data[0]){
+                    this.handleSuccessResponse(res,null)
+                  }else{
+                    this.handleErrorResponse(res, "data not deleted")
+                  }
+                })
+                .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -35,8 +42,14 @@ export class ImapController extends BaseAPIController {
 
     deleteImap = (req, res, next) => {
         this._db.Imap.destroy({ where: { id: req.params.id } })
-            .then(res.json.bind(res))
-            .catch(this.handleErrorResponse.bind(null, res));
+        .then((data)=>{
+          if(data){
+            this.handleSuccessResponse(res,null)
+          }else{
+            this.handleErrorResponse(res, "data not deleted")
+          }
+        })
+        .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /*Get Imap data*/
