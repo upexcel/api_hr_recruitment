@@ -10,7 +10,7 @@ export class ImapController extends BaseAPIController {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.create(data)
-                    .then(this.handleSuccessResponse.bind(null,res))
+                    .then(res.json.bind(res))
                     .catch(this.handleErrorResponse.bind(null, res))
             })
             .catch(this.handleErrorResponse.bind(null, res))

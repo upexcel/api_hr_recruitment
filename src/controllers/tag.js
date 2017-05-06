@@ -11,7 +11,7 @@ export class ImapController extends BaseAPIController {
         TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Tag.create(data)
-                    .then(this.handleSuccessResponse.bind(null,res))
+                    .then(res.json.bind(res))
                     .catch(this.handleErrorResponse.bind(null, res))
             })
             .catch(this.handleErrorResponse.bind(null, res))
