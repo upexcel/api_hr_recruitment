@@ -1,7 +1,6 @@
 import Sequelize from "sequelize";
 import models from "./models";
 import config from "./config";
-import chalk from "chalk";
 const db = {};
 
 // create your instance of sequelize
@@ -24,7 +23,26 @@ Object.keys(db).forEach((modelName) => {
 
 
 sequelize.sync().then(() => {
+	db.Tag.findOne({ where: { type: "Default" ,title: "Reject"} })
+    .then((id) => {
+	if (!id) {
+		db.Tag.create({ title: "Reject", type: "Default" , color:"CB891B"});
+	}
+});
 
+	db.Tag.findOne({ where: { type: "Default", title: "Ignore" } })
+    .then((id) => {
+	if (!id) {
+		db.Tag.create({ title: "Ignore", type: "Default" , color:"EF2E46"});
+	}
+});
+
+	db.Tag.findOne({ where: { type: "Default", title: "Schedule"} })
+    .then((id) => {
+	if (!id) {
+		db.Tag.create({ title: "Schedule", type: "Default" , color:"BA21D3"});
+	}
+});
 });
 
 export default Object.assign({}, db, {
