@@ -6,10 +6,10 @@ export default (app) => {
 	app.route("/tag/add/:type").post(auth.requiresAdminOrHr, tag.save);
 
     /* Route for tag update  */
-	app.route("/tag/update/:type/:tagId").post(auth.requiresAdminOrHr, tag.update);
+	app.route("/tag/update/:type/:tagId").put(auth.requiresAdminOrHr, tag.update);
 
     /*Route for tag Delete */
-	app.route("/tag/delete/:type/:tagId").get(auth.requiresAdminOrHr, tag.deleteTag);
+	app.route("/tag/delete/:type/:tagId").delete(auth.requiresAdminOrHr, tag.deleteTag);
 
     /*Route for fetch tag Data*/
 	app.route("/tag/get/:type/:page").get(auth.requiresAdminOrHr, tag.getTag);
