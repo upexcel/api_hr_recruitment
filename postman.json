@@ -338,6 +338,241 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "3.tag_system",
+			"description": "",
+			"item": [
+				{
+					"name": "save_tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.id){",
+									"    postman.setEnvironmentVariable(\"tagid\", jsonData.id);",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tag/add/Manual?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "title",
+									"value": "abcdefg",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "update_tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tag/update/Manual/{{tagid}}?accessToken={{token}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "title",
+									"value": "fvshfsvdhf",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "color",
+									"value": "changed",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "subject",
+									"value": "changed",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "tag_get_by_type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tag/get/Default/1?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "tag_get_by_id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tag/getbyid/Manual/4?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "tag_delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tag/delete/Manual/{{tagid}}?accessToken={{token}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

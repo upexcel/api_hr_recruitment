@@ -59,7 +59,7 @@ export class ImapController extends BaseAPIController {
 
     /*Get Imap data*/
     getTag = (req, res, next) => {
-      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.Manual || req.params.type == tag().tagType.default){
+      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default){
         this._db.Tag.findAll({ offset: (req.params.page - 1) * 10, limit: 10, where : { type: req.params.type } })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
@@ -70,12 +70,12 @@ export class ImapController extends BaseAPIController {
 
     /*Get tag by id*/
     getTagById = (req, res, next) => {
-      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.Manual || req.params.type == tag().tagType.default){
+      if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default){
         this._db.Tag.findOne({ where : { id: req.result.id, type: req.params.type } })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
       }else{
-        next(this.handleErrorResponse.bind(null, res))
+        next(new Error("Invalid Type"))
       }
     }
 }

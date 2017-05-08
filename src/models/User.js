@@ -26,7 +26,7 @@ export default function(sequelize, DataTypes) {
 		let token = jwt.sign({
 			token: details.id
 		}, "secret_key", {
-			expiresIn: 60 * 60 * 24
+			expiresIn: 60 * 60
 		});
 		resolve({ status: 1, token: token });
 	} else {
