@@ -14,6 +14,9 @@ export default (app) => {
     /*Route for fetch tag Data*/
 	app.route("/tag/get/:type/:page").get(auth.requiresAdminOrHr, tag.getTag);
 
+		/*Route for fetch all tag data*/
+	app.route("/tag/get").get(auth.requiresAdminOrHr, tag.getAllTag);
+
     /*Route for fetch tag by id*/
 	app.route("/tag/getbyid/:type/:tagId").get(auth.requiresAdminOrHr, tag.getTagById);
 

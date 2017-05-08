@@ -68,6 +68,13 @@ export class ImapController extends BaseAPIController {
       }
     }
 
+    /*Get all tag*/
+    getAllTag = (req, res, next) => {
+      this._db.Tag.findAll()
+          .then(res.json.bind(res))
+          .catch(this.handleErrorResponse.bind(null, res));
+    }
+
     /*Get tag by id*/
     getTagById = (req, res, next) => {
       if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default){
