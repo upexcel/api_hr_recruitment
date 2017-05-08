@@ -136,9 +136,6 @@ function buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno) {
             if (!err) {
                 attachment_file = [{ "name": attachment.params.name, "link": "https://drive.google.com/file/d/" + file.id + "/view" }];
                 database_save(attachment_file, uid, flag, bodyMsg, seqno);
-                console.log("=======================================")
-                console.log("file is saved");
-                console.log("========================================")
             } else {
                 console.log(err)
             }
