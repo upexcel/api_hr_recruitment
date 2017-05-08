@@ -75,7 +75,7 @@ export class ImapController extends BaseAPIController {
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
       }else{
-        next(this.handleErrorResponse.bind(null, res))
+        next(new Error("Invalid Type"))
       }
     }
 }
