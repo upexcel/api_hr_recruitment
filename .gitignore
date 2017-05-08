@@ -1,2 +1,6 @@
-/node_modules
+
 /README.md
+/dist
+/node_modules
+/package.json
+/.eslintrc.js
