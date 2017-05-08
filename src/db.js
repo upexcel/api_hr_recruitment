@@ -26,21 +26,21 @@ sequelize.sync().then(() => {
 	db.Tag.findOne({ where: { type: "Default" ,title: "Reject"} })
     .then((id) => {
 	if (!id) {
-		db.Tag.create({ title: "Reject", type: "Default" , color:"CB891B"});
+		db.Tag.create({ title: "Reject", type: "Default" , color:"#cb891b"});
 	}
 });
 
 	db.Tag.findOne({ where: { type: "Default", title: "Ignore" } })
     .then((id) => {
 	if (!id) {
-		db.Tag.create({ title: "Ignore", type: "Default" , color:"EF2E46"});
+		db.Tag.create({ title: "Ignore", type: "Default" , color:"#ef2e46"});
 	}
 });
 
 	db.Tag.findOne({ where: { type: "Default", title: "Schedule"} })
     .then((id) => {
 	if (!id) {
-		db.Tag.create({ title: "Schedule", type: "Default" , color:"BA21D3"});
+		db.Tag.create({ title: "Schedule", type: "Default" , color:"#ba21d3"});
 	}
 });
 });
