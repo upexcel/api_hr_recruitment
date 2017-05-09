@@ -1,4 +1,5 @@
-var mongoose = require('mongoose'),
+var cron = require('node-cron'),
+    mongoose = require('mongoose'),
     url = 'mongodb://localhost/EMAILPANEL',
     conn = mongoose.connect(url),
     in_array = require('in_array'),
@@ -31,166 +32,183 @@ var imap = new Imap({
     port: 993,
     tls: true
 });
-var emailSchema = mongoose.Schema({}, {
+var emailSchema = mongoose.Schema({
+    email_id: { type: String, required: true, unique: true },
+    to: { type: String },
+    from: { type: String },
+    sender_mail: { type: String },
+    date: { type: String },
+    email_date: { type: String },
+    email_timestamp: { type: String },
+    subject: { type: String },
+    uid: { type: Number, required: true, unique: true },
+    unread: { type: String },
+    answered: { type: String },
+    body: { type: String },
+    attachment: { type: Array },
+}, {
     collection: 'emailStored',
-    strict: false,
+    strict: true,
 });
 var email = conn.model('EMAIL', emailSchema);
 var headers = {};
 var bodyMsg = "";
 
-function openInbox(cb) {
-    imap.openBox('INBOX', true, cb);
-}
-imap.once('ready', function() {
-    openInbox(function(err, box) {
-        // this will fetch all the Emails data from Gmail
-        var totalmsgs = box.messages.total;
-        var f = imap.seq.fetch("1:1000000", {
-            bodies: ['HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)', 'TEXT'],
-            struct: true,
-        });
-        f.on('message', function(msg, seqno) {
-            var textmsg = "";
-            var prefix = '(#' + seqno + ') ';
-            msg.on('body', function(stream, info) {
-                var buffer = '';
-                stream.on('data', function(chunk) {
-                    buffer += chunk.toString('utf8');
-                });
 
-                stream.on('end', function() {
-                    headers = Imap.parseHeader(buffer)
-                    var hash = buffer.substring(buffer.indexOf('<div')),
-                        textmsg = hash.substring(0, hash.lastIndexOf("</div>"));
-                    if (textmsg !== '') {
-                        bodyMsg = textmsg + "</div>";
+cron.schedule('10 * * * * *', function() {
+    function openInbox(cb) {
+        imap.openBox('INBOX', true, cb);
+    }
+    imap.once('ready', function() {
+        openInbox(function(err, box) {
+            // this will fetch all the Emails data from Gmail
+            var totalmsgs = box.messages.total;
+            var f = imap.seq.fetch("1:10000000", {
+                bodies: ['HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)', 'TEXT'],
+                struct: true,
+            });
+            f.on('message', function(msg, seqno) {
+                var textmsg = "";
+                var prefix = '(#' + seqno + ') ';
+                msg.on('body', function(stream, info) {
+                    var buffer = '';
+                    stream.on('data', function(chunk) {
+                        buffer += chunk.toString('utf8');
+                    });
+
+                    stream.on('end', function() {
+                        headers = Imap.parseHeader(buffer)
+                        var hash = buffer.substring(buffer.indexOf('<div')),
+                            textmsg = hash.substring(0, hash.lastIndexOf("</div>"));
+                        if (textmsg !== '') {
+                            bodyMsg = textmsg + "</div>";
+                        }
+                    });
+                });
+                msg.on('attributes', function(attrs) {
+                    var attachments = findAttachmentParts(attrs.struct);
+                    var len = attachments.length,
+                        uid = attrs.uid,
+                        flag = attrs.flags;
+                    for (var i = 0; i < len; ++i) {
+                        var attachment = attachments[i];
+                        var f = imap.fetch(attrs.uid, {
+                            bodies: [attachment.partID],
+                            struct: true
+                        });
+                    }
+                    if (attachments[0] == null) {
+                        database_save(attachments, uid, flag, bodyMsg, seqno)
+                    } else {
+                        buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno)
                     }
                 });
+                msg.once('end', function() {
+                    console.log(prefix + 'Finished');
+                });
             });
-            msg.on('attributes', function(attrs) {
-                var attachments = findAttachmentParts(attrs.struct);
-                var len = attachments.length,
-                    uid = attrs.uid,
-                    flag = attrs.flags;
-                for (var i = 0; i < len; ++i) {
-                    var attachment = attachments[i];
-                    var f = imap.fetch(attrs.uid, {
-                        bodies: [attachment.partID],
-                        struct: true
-                    });
-                }
-                if (attachments[0] == null) {
-                    database_save(attachments, uid, flag, bodyMsg, seqno)
-                } else {
-                    buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno)
-                }
+            f.once('error', function(err) {
+                console.log('Fetch error: ' + err);
             });
-
-            msg.once('end', function() {
-                console.log(prefix + 'Finished');
+            f.once('end', function() {
+                console.log('Done fetching all messages!');
+                imap.end();
             });
-        });
-        f.once('error', function(err) {
-            console.log('Fetch error: ' + err);
-        });
-        f.once('end', function() {
-            console.log('Done fetching all messages!');
-            imap.end();
         });
     });
-});
 
-function findAttachmentParts(struct, attachments) {
-    attachments = attachments || [];
-    var len = struct.length;
-    for (var i = 0; i < len; ++i) {
-        if (Array.isArray(struct[i])) {
-            findAttachmentParts(struct[i], attachments);
-        } else {
-            if (struct[i].disposition && ['INLINE', 'ATTACHMENT'].indexOf(struct[i].disposition.type) > 0) {
-                attachments.push(struct[i]);
-            }
-        }
-    }
-    return attachments;
-}
-
-function buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno) {
-    var filename = attachment.params.name,
-        encoding = attachment.encoding;
-    fs.readFile(filename, { encoding: "utf8" }, function(error, data) {
-        var fileMetadata = {
-            'title': filename,
-            mimeType: 'text/javascript/html/csv'
-        };
-        var media = {
-            mimeType: 'text/javascript/html/csv',
-            body: data
-        };
-        drive.files.insert({
-            resource: fileMetadata,
-            media: media,
-            fields: 'id'
-        }, function(err, file) {
-            if (!err) {
-                attachment_file = [{ "name": attachment.params.name, "link": "https://drive.google.com/file/d/" + file.id + "/view" }];
-                database_save(attachment_file, uid, flag, bodyMsg, seqno);
+    function findAttachmentParts(struct, attachments) {
+        attachments = attachments || [];
+        var len = struct.length;
+        for (var i = 0; i < len; ++i) {
+            if (Array.isArray(struct[i])) {
+                findAttachmentParts(struct[i], attachments);
             } else {
-                console.log(err)
+                if (struct[i].disposition && ['INLINE', 'ATTACHMENT'].indexOf(struct[i].disposition.type) > 0) {
+                    attachments.push(struct[i]);
+                }
+            }
+        }
+        return attachments;
+    }
+
+    function buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno) {
+        var filename = attachment.params.name,
+            encoding = attachment.encoding;
+        fs.readFile(filename, { encoding: "utf8" }, function(error, data) {
+            var fileMetadata = {
+                'title': filename,
+                mimeType: 'text/javascript/html/csv'
+            };
+            var media = {
+                mimeType: 'text/javascript/html/csv',
+                body: data
+            };
+            drive.files.insert({
+                resource: fileMetadata,
+                media: media,
+                fields: 'id'
+            }, function(err, file) {
+                if (!err) {
+                    attachment_file = [{ "name": attachment.params.name, "link": "https://drive.google.com/file/d/" + file.id + "/view" }];
+                    database_save(attachment_file, uid, flag, bodyMsg, seqno);
+                    console.log("=======================================")
+                    console.log("file is saved");
+                    console.log("========================================")
+                } else {
+                    console.log(err)
+                }
+            });
+        });
+    }
+
+    function database_save(attachments, uid, flag, bodyMsg, seqno) {
+        var emailid = seqno,
+            to = headers.to.toString();
+        var hash1 = headers.from.toString().substring(headers.from.toString().indexOf('"')),
+            from = hash1.substring(0, hash1.lastIndexOf("<"));
+        var hash = headers.from.toString().substring(headers.from.toString().indexOf('<') + 1),
+            sender_mail = hash.substring(0, hash.lastIndexOf(">"));
+        var date = headers.date.toString(),
+            email_date = new Date(date).getFullYear() + '-' + (new Date(date).getMonth() + 1) + '-' + new Date(date).getDate(),
+            email_timestamp = new Date(date).getTime(),
+            subject = headers.subject.toString(),
+            uid = uid,
+            unread = in_array('[]', flag),
+            answered = in_array('\\Answered', flag),
+            message = bodyMsg,
+            attachment = attachments;
+
+        var detail = new email({
+            "email_id": emailid,
+            "to": to,
+            "from": from,
+            "sender_mail": sender_mail,
+            "date": date,
+            "email_date": email_date,
+            "email_timestamp": email_timestamp,
+            "subject": subject,
+            "uid": uid,
+            "unread": unread,
+            "answered": answered,
+            "body": message,
+            "attachment": attachment,
+        });
+        detail.save(function(err, detail) {
+            if (err) {
+                console.log("Duplicate Data")
+            } else {
+                console.log("++++++++++++++++++++++++++++++++++++")
+                console.log("data saved successfully");
+                console.log("++++++++++++++++++++++++++++++++++++")
             }
         });
+    }
+    imap.once('error', function(err) {
+        console.log(err);
     });
-
-}
-
-function database_save(attachments, uid, flag, bodyMsg, seqno) {
-    var emailid = seqno,
-        to = headers.to.toString();
-    var hash1 = headers.from.toString().substring(headers.from.toString().indexOf('"')),
-        from = hash1.substring(0, hash1.lastIndexOf("<"));
-    var hash = headers.from.toString().substring(headers.from.toString().indexOf('<') + 1),
-        sender_mail = hash.substring(0, hash.lastIndexOf(">"));
-    var date = headers.date.toString(),
-        email_date = new Date(date).getFullYear() + '-' + (new Date(date).getMonth() + 1) + '-' + new Date(date).getDate(),
-        email_timestamp = new Date(date).getTime(),
-        subject = headers.subject.toString(),
-        uid = uid,
-        unread = in_array('[]', flag),
-        answered = in_array('\\Answered', flag),
-        message = bodyMsg,
-        attachment = attachments;
-
-    var detail = new email({
-        "email_id": emailid,
-        "to": to,
-        "from": from,
-        "sender_mail": sender_mail,
-        "date": date,
-        "email_date": email_date,
-        "email_timestamp": email_timestamp,
-        "subject": subject,
-        "uid": uid,
-        "unread": unread,
-        "answered": answered,
-        "body": message,
-        "attachment": attachment,
+    imap.once('end', function() {
+        console.log('Connection ended');
     });
-    detail.save(function(err, detail) {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log("++++++++++++++++++++++++++++++++++++")
-            console.log("data saved successfully");
-            console.log("++++++++++++++++++++++++++++++++++++")
-        }
-    });
-}
-
-imap.once('error', function(err) {
-    console.log(err);
+    imap.connect();
 });
-imap.once('end', function() {
-    console.log('Connection ended');
-});
-imap.connect();
