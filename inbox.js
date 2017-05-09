@@ -55,7 +55,7 @@ var headers = {};
 var bodyMsg = "";
 
 
-cron.schedule('10 * * * * *', function() {
+// cron.schedule('10 * * * * *', function() {
     function openInbox(cb) {
         imap.openBox('INBOX', true, cb);
     }
@@ -211,4 +211,4 @@ cron.schedule('10 * * * * *', function() {
         console.log('Connection ended');
     });
     imap.connect();
-});
+// });
