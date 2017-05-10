@@ -10,7 +10,6 @@ const sequelize = new Sequelize(config.db.name, config.db.username, config.db.pa
 Object.keys(models).forEach((modelName) => {
 	const model = models[modelName](sequelize, Sequelize.DataTypes);
 	db[modelName] = model;
-	console.log(`Loading model - ${modelName}`);
 });
 
 

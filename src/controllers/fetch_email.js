@@ -43,7 +43,9 @@ export class FetchController extends BaseAPIController {
                             next(new Error('invalid tag id'));
                         }
                     })
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
+            .catch(this.handleErrorResponse.bind(null, res));
     }
 
 }
