@@ -25,9 +25,7 @@ export class AuthController {
                                     req.user = user;
                                     next();
                                 } else {
-                                    res.status(400).send({
-                                        error: "Invalid User Token"
-                                    });
+                                    res.status(400).send({ error: "Invalid User Token" });
                                     next();
                                 }
                             });
