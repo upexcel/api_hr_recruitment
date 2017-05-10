@@ -6,14 +6,10 @@ import db from '../db';
 export class FetchController extends BaseAPIController {
 
     /*Get INBOX data*/
-    fetch = (req, res, next) => {
-        req.email.find({
-            tag_id: {
-                $in: [req.body.tag_id]
-            }
-        }).skip((req.body.page - 1) * 21).exec(function(err, data) {
+       fetch = (req, res, next) => {
+        req.email.find({tag_id: { $in: [req.body.tag_id] }}).skip((req.body.page - 1) * 21).limit(21).exec(function(err, data) {
             if (err) {
-                next(new Error(err));
+                next(err);
             } else {
                 res.json({ data: data });
             }
