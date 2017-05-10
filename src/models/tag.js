@@ -1,4 +1,4 @@
-export default function(sequelize, DataTypes) {
+export default function (sequelize, DataTypes) {
 	const Tag = sequelize.define("TAG", {
 		email: {
 			type: DataTypes.STRING,
@@ -20,7 +20,7 @@ export default function(sequelize, DataTypes) {
 		classMethods: {
 
 			// login.....
-			tag(tag_id) {
+			tag (tag_id) {
 				return new Promise((resolve, reject) => {
 					this.find({
 						where: {
@@ -37,7 +37,7 @@ export default function(sequelize, DataTypes) {
 							}
 						});
 				});
-			},
+			}
 		}
 	});
 

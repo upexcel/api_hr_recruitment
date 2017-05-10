@@ -1,4 +1,4 @@
-export default function() {
+export default function () {
 	const constant = {
 		tagType:{
 			default: "Default",

@@ -1,4 +1,4 @@
-export default function(sequelize, DataTypes) {
+export default function (sequelize, DataTypes) {
 	const smtp = sequelize.define("SMTP", {
 		email: {
 			type: DataTypes.STRING,
@@ -21,7 +21,7 @@ export default function(sequelize, DataTypes) {
 		freezeTableName: true,
 		allowNull: true,
 		hooks: {
-			beforeCreate: function(SMTP) {
+			beforeCreate: function (SMTP) {
 				return new Promise((resolve, reject) => {
 					this.findOne({ where: { email: SMTP.email } })
           .then((email) => {
@@ -33,7 +33,7 @@ export default function(sequelize, DataTypes) {
 });
 				});
 			}
-		},
+		}
 	});
 	return smtp;
 }
