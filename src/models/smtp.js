@@ -21,7 +21,7 @@ export default function(sequelize, DataTypes) {
 		freezeTableName: true,
 		allowNull: true,
 		hooks: {
-			beforeCreate: function(SMTP, options) {
+			beforeCreate: function(SMTP) {
 				return new Promise((resolve, reject) => {
 					this.findOne({ where: { email: SMTP.email } })
           .then((email) => {
