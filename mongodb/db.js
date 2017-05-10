@@ -1,16 +1,15 @@
-// the middleware function
+var mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
 module.exports = function() {
-    var mongoose = require('mongoose'); //require mongoose module
     var conn = mongoose.connect('mongodb://localhost/EMAILPANEL'); //connection to mongodb
-
     // create schema 
-    var emailSchema = mongoose.Schema({}, {
+    var schema = mongoose.Schema({}, {
         collection: 'emailStored',
-        strict: false,
+        strict: true,
     });
-    var email = conn.model('EMAIL', emailSchema);
+    var email_fetch = conn.model('emailStored', schema);
     return function(req, res, next) {
-        req.email = email;
+        req.email = email_fetch;
         next();
     }
 }

@@ -7,7 +7,6 @@ import glob from "glob";
 import chalk from "chalk";
 import mongoose from 'mongoose';
 import db from '../mongodb/db.js';
-// import routes from '../routes/inbox.js';
 import bodyParser from "body-parser";
 import config from "./config.json";
 import expressValidator from "express-validator";
