@@ -47,7 +47,6 @@ export class AuthController {
 					var loginTime = docs.exp;
 					if (loginTime > endTime) {
 						req.token = docs.token;
-						console.log(tag().userType.admin);
 						db.User.find({ where: { id: req.token, user_type: tag().userType.admin } })
                             .then((admin) => {
 	if (admin) {

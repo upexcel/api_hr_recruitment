@@ -6,10 +6,14 @@ module.exports = {
         "node": true
     },
     "extends": "eslint:recommended",
+    "parser": "babel-eslint",
     "parserOptions": {
-        "ecmaFeatures": {
-            "jsx": true
-        },
+    "sourceType": "module",
+    "ecmaVersion": 7,
+    "ecmaFeatures": {
+        "jsx": true,
+        "experimentalObjectRestSpread": true
+    },
         "sourceType": "module"
     },
     "rules": {
@@ -29,5 +33,5 @@ module.exports = {
             "error",
             "always"
         ]
-    }
+    },
 };
