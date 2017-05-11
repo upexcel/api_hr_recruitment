@@ -58,14 +58,12 @@ export class FetchController extends BaseAPIController {
                 $unwind: "$tag_id"
             }, {
                 $group: {
-                    _id: '$tag_id',
+                    _id: {tag_id:'$tag_id'},
                     count_email: {
                         $sum: 1
                     },
-
                 },
             },
-
         ], function(err, result) {
             if (err) {
                 next(new Error(err));
