@@ -8,5 +8,8 @@ export default (app) => {
 	/* Route for add tag  */
 	app.route("/email/assignTag").post(auth.requiresLogin, fetch_email.assignTag);
 
+	/* Route for count emails on the basis of tag */
+	app.route("/email/countEmail").post( fetch_email.countEmail);
+
 	return app;
 };
