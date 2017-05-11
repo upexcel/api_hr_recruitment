@@ -1,5 +1,5 @@
-var cron = require("node-cron"),
-	mongoose = require("mongoose"),
+/*eslint-disable*/
+var	mongoose = require("mongoose"),
 	conn = mongoose.connect("mongodb://localhost/EMAILPANEL"),
 	in_array = require("in_array"),
 	fs = require("fs"),
@@ -8,13 +8,13 @@ var cron = require("node-cron"),
 	multer = require("multer"),
 	google = require("googleapis"),
 	OAuth2 = google.auth.OAuth2,
-	upload = multer({
-		dest: "uploads/"
-	}),
+	upload = multer({ dest: "uploads/" }),
 	Imap = require("imap");
-var db = require("./mongodb/fetch"),
-	email = conn.model("EMAIL", emailSchema);
-var config = require("./src/config.json");
+require("./mongodb/fetch");
+require("./service/imap");
+var email = conn.model("EMAIL", emailSchema);
+var config = require("./config.json");
+// var imap;
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
 oauth2Client.setCredentials({
 	access_token: config.access_token,
@@ -23,13 +23,6 @@ oauth2Client.setCredentials({
 	refresh_token: config.refresh_token,
 });
 var drive = google.drive({ version: "v2", auth: oauth2Client });
-var imap = new Imap({
-	user: "vaibhav_pathak@excellencetechnologies.in",
-	password: "VAibhav@1994",
-	host: "imap.gmail.com",
-	port: 993,
-	tls: true
-});
 
 function openInbox(cb) {
 	imap.openBox("INBOX", true, cb);
@@ -37,16 +30,16 @@ function openInbox(cb) {
 var headers = {},
 	bodyMsg = "";
 imap.once("ready", function() {
-	openInbox(function(err, box) {
+	openInbox(function() {
+		// var totalmsgs= box.messages.total;
         // this will fetch all the Emails data from Gmail
 		var f = imap.seq.fetch("1:10000000", {
 			bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
 			struct: true,
 		});
 		f.on("message", function(msg, seqno) {
-			var textmsg = "";
 			var prefix = "(#" + seqno + ") ";
-			msg.on("body", function(stream, info) {
+			msg.on("body", function(stream) {
 				var buffer = "";
 				stream.on("data", function(chunk) {
 					buffer += chunk.toString("utf8");
@@ -108,24 +101,28 @@ function findAttachmentParts(struct, attachments) {
 	return attachments;
 }
 
-function buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno) {
+function buildAttMessageFunction(attachment, uid, flag, bodyMsg) {
 	var filename = attachment.params.name;
 	var encoding = attachment.encoding;
 	var filepath = path.join(__dirname, "/./uploads/", filename);
     //This example uploads a plain text file to Google Drive with the title "filename" and contents "Hello World".
 	return function(msg, seqno) {
 		var prefix = "(#" + seqno + ") ";
-		msg.on("body", function(stream, info) {
+		msg.on("body", function(stream) {
 			var writeStream = fs.createWriteStream(filepath);
 			writeStream.on("finish", function() {
-				fs.readFile(filename, { encoding: "utf8" }, function(error, data) {});
+				fs.readFile(filename, {
+					encoding: "utf8"
+				}, function() {});
 			});
 			if (encoding === "BASE64") {
 				stream.pipe(base64.decode()).pipe(writeStream);
 			} else {
 				stream.pipe(writeStream);
 			}
-			fs.readFile(filepath, { encoding: "utf8" }, function(error, data) {
+			fs.readFile(filepath, {
+				encoding: "utf8"
+			}, function(error, data) {
 				var fileMetadata = {
 					"title": filename,
 					mimeType: "text/javascript/html/csv"
@@ -135,30 +132,31 @@ function buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno) {
 					body: data
 				};
 				drive.files.insert({
-					resource: fileMetadata,
-					media: media,
-					fields: "id"
+                	resource: fileMetadata,
+                	media: media,
+                	fields: "id"
 				}, function(err, file) {
-					if (!err) {
-						attachment_file = [{ "name": attachment.params.name, "link": "https://drive.google.com/file/d/" + file.id + "/view" }];
-						database_save(attachment_file, uid, flag, bodyMsg, seqno);
-						console.log("=======================================");
-						console.log("file is saved");
-						console.log("========================================");
-					} else {
-						console.log(err);
-					}
+                	if (!err) {
+                		attachment_file = [{
+                			"name": attachment.params.name,
+                			"link": "https://drive.google.com/file/d/" + file.id + "/view"
+                		}];
+                		database_save(attachment_file, uid, flag, bodyMsg, seqno);
+                		console.log("file is saved");
+                	} else {
+                		console.log(err);
+                	}
 				});
-
 			});
-			fs.unlink(filepath, function(err) { console.log("success"); });
+			fs.unlink(filepath, function() {
+				console.log("success");
+			});
 		});
 		msg.once("end", function() {
 			console.log(prefix + "Finished attachment %s", filename);
 		});
 	};
 }
-
 
 function database_save(attachments, uid, flag, bodyMsg, seqno) {
 	var emailid = seqno,
@@ -178,30 +176,29 @@ function database_save(attachments, uid, flag, bodyMsg, seqno) {
 		attachment = attachments;
 
 	var detail = new email({
-		"email_id": emailid,
-		"to": to,
-		"from": from,
-		"sender_mail": sender_mail,
-		"date": date,
-		"email_date": email_date,
-		"email_timestamp": email_timestamp,
-		"subject": subject,
-		"uid": uid,
-		"unread": unread,
-		"answered": answered,
-		"body": message,
-		"attachment": attachment,
+    	"email_id": emailid,
+    	"to": to,
+    	"from": from,
+    	"sender_mail": sender_mail,
+    	"date": date,
+    	"email_date": email_date,
+    	"email_timestamp": email_timestamp,
+    	"subject": subject,
+    	"uid": uid,
+    	"unread": unread,
+    	"answered": answered,
+    	"body": message,
+    	"attachment": attachment,
 	});
-	detail.save(function(err, detail) {
-		if (err) {
-			console.log("Duplicate Data");
-		} else {
-			console.log("++++++++++++++++++++++++++++++++++++");
-			console.log("data saved successfully");
-			console.log("++++++++++++++++++++++++++++++++++++");
-		}
+	detail.save(function(err) {
+    	if (err) {
+    		console.log("Duplicate Data");
+    	} else {
+    		console.log("data saved successfully");
+    	}
 	});
 }
+
 imap.once("error", function(err) {
 	console.log(err);
 });

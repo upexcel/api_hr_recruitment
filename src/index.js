@@ -6,7 +6,7 @@ import morgan from "morgan";
 import path from "path";
 import glob from "glob";
 import chalk from "chalk";
-import db from "../mongodb/db.js";
+import db from "./mongodb/db.js";
 import bodyParser from "body-parser";
 import config from "./config.json";
 import expressValidator from "express-validator";

@@ -1,4 +1,3 @@
-/* eslint-disable*/
 import BaseAPIController from "./BaseAPIController";
 import TagProvider from "../providers/TagProvider";
 import tag from "../models/constant";

@@ -1,7 +1,7 @@
+/*eslint-disable*/
 var mongoose = require("mongoose"),
-	Schema = mongoose.Schema;
 // create schema
-emailSchema = new Schema({
+emailSchema = new mongoose.Schema({
 	email_id: { type: String, required: true, unique: true },
 	to: { type: String },
 	from: { type: String },
