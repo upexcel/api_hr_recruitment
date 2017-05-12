@@ -17,7 +17,7 @@ export class UserController extends BaseAPIController {
 
     /* Controller for User Login  */
 	login = (req, res) => {
-		let login = LoginProvider.login(this._db.User, req.body);
+		const login = LoginProvider.login(this._db.User, req.body);
 		this._db.User.login(login)
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));

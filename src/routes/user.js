@@ -7,7 +7,7 @@ export default (app) => {
     /* Route for User Login  */
 	app.route("/user/login").post(user.login);
 
-    /*Get list of user*/
+    /* Get list of user*/
 
 	return app;
 };

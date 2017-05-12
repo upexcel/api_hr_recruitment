@@ -13,11 +13,15 @@ module.exports = {
         },
         "sourceType": "module"
     },
+    "ecmaFeatures": {
+        "arrowFunctions": true
+    },
     "rules": {
         "indent": [
             "error",
             "tab"
         ],
+        "no-console": 0,
         "linebreak-style": [
             "error",
             "unix"
@@ -29,6 +33,6 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
     }
 };

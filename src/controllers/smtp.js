@@ -14,20 +14,20 @@ export class SmtpController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /*Get Smtpp data using id*/
+    /* Get Smtpp data using id*/
 	idResult = (req, res, smtpId) => {
 		this.getById(req, res, this._db.Smtp, smtpId);
 	}
 
-    /*Smtp data Update*/
+    /* Smtp data Update*/
 	update = (req, res) => {
 		SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
 	this._db.Smtp.update(data, { where: { id: req.params.smtpId } })
-                .then((data)=>{
-	if(data[0]){
-		this.handleSuccessResponse(res,null);
-	}else{
+                .then((data) => {
+	if (data[0]) {
+		this.handleSuccessResponse(res, null);
+	} else {
 		this.handleErrorResponse(res, "data not Updated");
 	}
 })
@@ -36,21 +36,21 @@ export class SmtpController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /*Smtp data delete */
+    /* Smtp data delete */
 
 	deleteSmtp = (req, res) => {
 		this._db.Smtp.destroy({ where: { id: req.params.smtpId } })
-        .then((data)=>{
-	if(data){
-		this.handleSuccessResponse(res,null);
-	}else{
+        .then((data) => {
+	if (data) {
+		this.handleSuccessResponse(res, null);
+	} else {
 		this.handleErrorResponse(res, "data not deleted");
 	}
 })
         .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /*Get Smtp data*/
+    /* Get Smtp data*/
 	getSmtp = (req, res) => {
 		this._db.Smtp.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
             .then(res.json.bind(res))
@@ -58,7 +58,7 @@ export class SmtpController extends BaseAPIController {
 	}
 
     /* get smtp by id*/
-	getSmtpById = (req, res)=>{
+	getSmtpById = (req, res) => {
 		res.json(req.result);
 	}
 }
