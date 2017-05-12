@@ -6,11 +6,19 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
+        var page = req.body.page;
+        var tag_id = req.body.tag_id;
+        if (!page || !isNaN(page) == false || page <= 0) {
+            page = 1;
+        }
+        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+            tag_id = undefined;
+        }
         req.email.find({
             tag_id: {
                 $in: [req.body.tag_id]
             }
-        }).skip((req.body.page - 1) * 21).limit(21).exec(function(err, data) {
+        }).skip((page - 1) * 21).limit(21).exec(function(err, data) {
             if (err) {
                 next(err);
             } else {
@@ -20,7 +28,7 @@ export class FetchController extends BaseAPIController {
             }
         });
     }
-    
+
     assignTag = (req, res, next) => {
         MailProvider.assignTag(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
