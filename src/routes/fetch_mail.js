@@ -16,6 +16,6 @@ export default (app) => {
 
 	/* Route for delete Tag  */
 	app.route("/email/deleteTag").post(auth.requiresLogin, fetch_email.deleteTag);
-	
+
 	return app;
 };
