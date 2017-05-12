@@ -16,7 +16,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: {
-                $in: [req.body.tag_id]
+                $in: [tag_id]
             }
         }).skip((page - 1) * 21).limit(21).exec(function(err, data) {
             if (err) {
