@@ -66,10 +66,17 @@ export class ImapController extends BaseAPIController {
 		}
 	}
 
-    /* Get tag by id*/
+    /*Get all tag*/
+	getAllTag = (req, res, next) => {
+		this._db.Tag.findAll()
+          .then(res.json.bind(res))
+          .catch(this.handleErrorResponse.bind(null, res));
+	}
+
+    /*Get tag by id*/
 	getTagById = (req, res, next) => {
-		if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default) {
-			this._db.Tag.findOne({ where: { id: req.result.id, type: req.params.type } })
+		if(req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default){
+			this._db.Tag.findOne({ where : { id: req.result.id, type: req.params.type } })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
 		} else {
