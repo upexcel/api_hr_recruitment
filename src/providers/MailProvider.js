@@ -14,7 +14,22 @@ const assignTag = (validate, body, validationResult) => {
 		});
 	});
 };
+
+const changeUnreadStatus = (validate, body, validationResult) => {
+	return new Promise((resolve, reject) => {
+		validate("status", "status cannot be empty").notEmpty();
+		validate("mongo_id", "mongo_id cannot be empty").notEmpty();
+		validationResult.then(function (result) {
+			if (!result.isEmpty()) {
+				reject(util.inspect(result.array()));
+			} else {
+				resolve(body);
+			}
+		});
+	});
+};
 export default {
 	BaseProvider,
-	assignTag
+	assignTag,
+	changeUnreadStatus,
 };

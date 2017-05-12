@@ -59,8 +59,6 @@ export class FetchController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-
-
     countEmail = (req, res, next) => {
         req.email.aggregate([{
             $unwind: "$tag_id"
@@ -181,7 +179,44 @@ export class FetchController extends BaseAPIController {
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+    changeUnreadStatus = (req, res, next) => {
+        MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
+            .then(() => {
+                req.email.find({
+                    mongo_id: req.body.mongo_id
+                }, function(err, result) {
+                    if (err) {
+                        next(new Error(err));
+                    } else if (req.body.status == 'true' || req.body.status == 'false') {
+                        req.email.update({
+                            mongo_id: req.body.mongo_id
+                        }, {
+                            unread: req.body.status,
+                        }, function(error) {
+                            if (error) {
+                                next(new Error(err));
+                            } else {
+                                res.json({
+                                    status: 1,
+                                    message: 'the unread status is successfully changed to ' + req.body.status
+                                });
+                            }
+                        });
+                    } else {
+                        res.json({
+                            status: 0,
+                            message: 'the unread status is not changed successfully,  you have to set status true or false'
+                        });
+                    }
+                });
+
+            })
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
 }
+
+
 
 const controller = new FetchController();
 export default controller;
