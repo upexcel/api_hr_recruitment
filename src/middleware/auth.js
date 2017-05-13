@@ -6,10 +6,10 @@ import tag from "../models/constant";
 
 export class AuthController {
     // middleware for logged in users
-	requiresLogin (req, res, next) {
+	requiresLogin(req, res, next) {
 		var token = req.param("accessToken");
 		if (token) {
-			jwt.verify(token, "secret_key", function (err, docs) {
+			jwt.verify(token, "secret_key", function(err, docs) {
 				if (err) {
 					next(res.status(400).send({
 						error: "Invalid Token"
@@ -20,7 +20,7 @@ export class AuthController {
 					if (loginTime > endTime) {
 						req.token = docs.token;
 						db.User.findById(req.token)
-                            .then(function (user) {
+                            .then(function(user) {
 	if (user) {
 		req.user = user;
 		next();
@@ -40,10 +40,10 @@ export class AuthController {
 		}
 	}
 
-	requiresAdmin (req, res, next) {
+	requiresAdmin(req, res, next) {
 		var token = req.param("accessToken");
 		if (token) {
-			jwt.verify(token, "secret_key", function (err, docs) {
+			jwt.verify(token, "secret_key", function(err, docs) {
 				if (err) {
 					next(res.status(400).send({
 						error: "Invalid Token"
@@ -80,10 +80,10 @@ export class AuthController {
 		}
 	}
 
-	requiresAdminOrHr (req, res, next) {
+	requiresAdminOrHr(req, res, next) {
 		var token = req.param("accessToken");
 		if (token) {
-			jwt.verify(token, "secret_key", function (err, docs) {
+			jwt.verify(token, "secret_key", function(err, docs) {
 				if (err) {
 					next(res.status(400).send({
 						error: "Invalid Token"

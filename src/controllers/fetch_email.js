@@ -60,50 +60,20 @@ export class FetchController extends BaseAPIController {
     }
 
     countEmail = (req, res, next) => {
-        req.email.aggregate([{
-            $unwind: "$tag_id"
-        }, {
+        req.email.aggregate({ $unwind: { path: "$tag_id", preserveNullAndEmptyArrays: true } }, {
             $group: {
-                _id: {
-                    tag_id: "$tag_id"
-                },
-                count_email: {
-                    $sum: 1
-                },
-                unread: {
-                    $sum: {
-                        $cond: [{
-                            $eq: ["$unread", "false"]
-                        }, 0, 1]
-                    }
-                }
-            },
-        }, ], function(err, result) {
+                _id: "$tag_id",
+                count_email: { $sum: 1 },
+                unread: { $sum: { $cond: [{ $eq: ["$unread", "false"] }, 0, 1] } }
+            }
+        }, function(err, result) {
             if (err) {
                 next(new Error(err));
             } else {
-                req.email.find({
-                    $or: [{
-                        tag_id: {
-                            $exists: false
-                        }
-                    }, {
-                        tag_id: {
-                            $size: 0
-                        }
-                    }]
-                }, function(err, result1) {
-                    if (err) {
-                        next(new Error(err));
-                    } else {
-                        result.push({
-                            id: null,
-                            count_email: result1.length
-                        });
-                        res.json({
-                            data: result
-                        });
-                    }
+                res.json({
+                    status: 1,
+                    message: "success",
+                    data: result
                 });
             }
         });

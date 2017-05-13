@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export default function (sequelize, DataTypes) {
+export default function(sequelize, DataTypes) {
 	const User = sequelize.define("USER", {
 		email: {
 			type: DataTypes.STRING,
@@ -18,7 +18,7 @@ export default function (sequelize, DataTypes) {
 		classMethods: {
 
             // login.....
-			login (user) {
+			login(user) {
 				return new Promise((resolve, reject) => {
 					this.find({ where: { email: user.email, password: user.password } })
                         .then((details) => {

@@ -17,7 +17,7 @@ export default (app) => {
     /* Route for delete Tag  */
 	app.route("/email/deleteTag").post(fetch_email.deleteTag);
 
-	/* Route for change unread status  */
+    /* Route for change unread status  */
 	app.route("/email/changeUnreadStatus").post(fetch_email.changeUnreadStatus);
 
 	return app;
