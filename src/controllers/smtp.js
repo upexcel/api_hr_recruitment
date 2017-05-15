@@ -52,7 +52,7 @@ export class SmtpController extends BaseAPIController {
 
     /* Get Smtp data*/
 	getSmtp = (req, res) => {
-		this._db.Smtp.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+		this._db.Smtp.findAll({ offset: (req.params.page - 1) * req.params.limit, limit: req.params.limit })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
 	}

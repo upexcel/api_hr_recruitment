@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export default function (sequelize, DataTypes) {
+export default function(sequelize, DataTypes) {
 	const User = sequelize.define("USER", {
 		email: {
 			type: DataTypes.STRING,

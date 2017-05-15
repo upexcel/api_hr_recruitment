@@ -13,7 +13,7 @@ export default (app) => {
 	app.route("/imap/delete/:id").delete(auth.requiresAdmin, imap.deleteImap);
 
     /* Route for fetch Imap Data*/
-	app.route("/imap/get/:page").get(auth.requiresAdmin, imap.getImap);
+	app.route("/imap/get/:page/:limit").get(auth.requiresAdmin, imap.getImap);
 
 	app.param("id", imap.idResult);
 

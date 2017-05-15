@@ -1,4 +1,4 @@
-export default function (sequelize, DataTypes) {
+export default function(sequelize, DataTypes) {
 	const smtp = sequelize.define("SMTP", {
 		email: {
 			type: DataTypes.STRING,
@@ -24,7 +24,7 @@ export default function (sequelize, DataTypes) {
 			beforeCreate(SMTP) {
 				return new Promise((resolve, reject) => {
 					this.findOne({ where: { email: SMTP.email } })
-          .then((email) => {
+                        .then((email) => {
 	if (email) {
 		reject("Email Already In Use");
 	} else {

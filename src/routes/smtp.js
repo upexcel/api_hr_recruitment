@@ -1,6 +1,5 @@
 import smtp from "../controllers/smtp";
 import auth from "../middleware/auth";
-// import baseController from '../controllers/BaseAPIController'
 
 export default (app) => {
     /* Route for smtp save  */
@@ -13,7 +12,7 @@ export default (app) => {
 	app.route("/smtp/delete/:smtpId").delete(auth.requiresAdmin, smtp.deleteSmtp);
 
     /* Route for fetch smtp Data*/
-	app.route("/smtp/get/:page").get(smtp.getSmtp);
+	app.route("/smtp/get/:page/:limit").get(smtp.getSmtp);
 
     /* Route for fetch Smtp data by id*/
 	app.route("/smtp/getbyid/:smtpId").get(smtp.getSmtpById);

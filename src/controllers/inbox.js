@@ -5,7 +5,7 @@ var DB = require("../mongodb/db"),
 export class InboxController extends BaseAPIController {
     /* Get INBOX data*/
 	getInbox = (req, res, next) => {
-		email.find().skip((req.params.page - 1) * 21).limit(21).exec((err, data) => {
+		email.find().skip((req.params.page - 1) * req.params.limit).limit(req.params.limit).exec((err, data) => {
 			if (err) {
 				next(new Error("invalid page"));
 			} else {
@@ -16,7 +16,7 @@ export class InboxController extends BaseAPIController {
 
     /* Get UID data*/
 	getUid = (req, res, next) => {
-		email.findOne({ uid: parseInt(req.params.uid) }, (err, data) => {
+	email.findOne({ uid: parseInt(req.params.uid) }, (err, data) => {
 			if (err) {
 				next(new Error("invalid UID"));
 			} else {

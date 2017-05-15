@@ -2,7 +2,6 @@ import moment from "moment";
 import jwt from "jsonwebtoken";
 import db from "../db";
 import tag from "../models/constant";
-// import BaseAPIController from "../controllers/BaseAPIController";
 
 export class AuthController {
     // middleware for logged in users

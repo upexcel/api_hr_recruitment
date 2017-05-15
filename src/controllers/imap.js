@@ -37,7 +37,6 @@ export class ImapController extends BaseAPIController {
 	}
 
     /* Imap data delete */
-
 	deleteImap = (req, res) => {
 		this._db.Imap.destroy({ where: { id: req.params.id } })
             .then((data) => {
@@ -52,7 +51,7 @@ export class ImapController extends BaseAPIController {
 
     /* Get Imap data*/
 	getImap = (req, res) => {
-		this._db.Imap.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+		this._db.Imap.findAll({ offset: (req.params.page - 1) * req.params.limit, limit: req.params.limit })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
 	}
