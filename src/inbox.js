@@ -41,9 +41,9 @@ cron.schedule("10 * * * * *", function() {
 			var imap;
 			imap.once("ready", function() {
 				openInbox(function() {
-                    // var totalmsgs= box.messages.total;
+                    // var totalmsgs= box.messages.total;1:10000000
                     // this will fetch all the Emails data from Gmail
-					var f = imap.seq.fetch("1:10000000", {
+					var f = imap.seq.fetch("*", {
 						bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
 						struct: true
 					});
@@ -113,16 +113,13 @@ cron.schedule("10 * * * * *", function() {
 				var filename = attachment.params.name;
 				var encoding = attachment.encoding;
 				var filepath = path.join(__dirname, "/./uploads/", filename);
-                // This example uploads a plain text file to Google Drive with the title "filename" and contents "Hello World".
+				console.log("++++++++++++++++++++++++++++++++++++++++++++++");
+				console.log(encoding);
+				console.log("++++++++++++++++++++++++++++++++++++++++++++++");
 				return function(msg, seqno) {
 					var prefix = "(#" + seqno + ") ";
 					msg.on("body", function(stream) {
 						var writeStream = fs.createWriteStream(filepath);
-						writeStream.on("finish", function() {
-							fs.readFile(filename, {
-								encoding: "utf8"
-							}, function() {});
-						});
 						if (encoding === "BASE64") {
 							stream.pipe(base64.decode()).pipe(writeStream);
 						} else {
@@ -133,10 +130,10 @@ cron.schedule("10 * * * * *", function() {
 						}, function(error, data) {
 							var fileMetadata = {
 								title: filename,
-								mimeType: "text/javascript/html/csv"
+								mimeType: "text/plain/javascript/html/csv/application/pdf"
 							};
 							var media = {
-								mimeType: "text/javascript/html/csv",
+								mimeType: "text/plain/javascript/html/csv/application/pdf",
 								body: data
 							};
 							drive.files.insert({
@@ -157,9 +154,9 @@ cron.schedule("10 * * * * *", function() {
 								}
 							});
 						});
-						fs.unlink(filepath, function() {
-							console.log("success");
-						});
+						// fs.unlink(filepath, function() {
+						// 	console.log("success");
+						// });
 					});
 					msg.once("end", function() {
 						console.log(prefix + "Finished attachment %s", filename);

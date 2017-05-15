@@ -10,5 +10,7 @@ var imap_server = sequelize.define("IMAP", {
 	type: { type: Sequelize.ENUM, values: ["SSL", "TLS"] },
 	status: { type: Sequelize.ENUM, values: ["TRUE", "FALSE"] },
 	active: { type: Sequelize.ENUM, values: ["TRUE", "FALSE"], defaultValue: "FALSE" }
+},{
+	freezeTableName: true,
 });
 module.exports = imap_server;
