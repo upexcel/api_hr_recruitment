@@ -64,6 +64,9 @@ export class FetchController extends BaseAPIController {
     }
 
     countEmail = (req, res, next) => {
+        var count = [];
+
+        // .catch(this.handleErrorResponse.bind(null, res));
         req.email.aggregate({
             $unwind: {
                 path: "$tag_id",
@@ -83,15 +86,33 @@ export class FetchController extends BaseAPIController {
                     }
                 }
             }
-        }, function(err, result) {
+        }, (err, result) => {
             if (err) {
                 next(new Error(err));
             } else {
-                res.json({
-                    status: 1,
-                    message: "success",
-                    data: result
-                });
+                this._db.Tag.findAll()
+                    .then((data) => {
+                        _.forEach(result, (val, key) => {
+                            _.forEach(data, (val1, key1) => {
+                                console.log(val, val1)
+                                if (val._id == val1.id) {
+                                    count.push(_.merge(val, val1));
+                                }
+                            })
+                            if (val._id == null) {
+                                count.push(_.merge(val, {
+                                    title: "Mails",
+                                    color: "#81d4fa",
+                                    type: "Default"
+                                }));
+                            }
+                        });
+                        res.json({
+                            data: count,
+                            status: 1,
+                            message: "success"
+                        })
+                    });
             }
         });
     }
