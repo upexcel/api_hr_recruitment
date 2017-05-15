@@ -23,7 +23,9 @@ export class FetchController extends BaseAPIController {
                 next(err);
             } else {
                 res.json({
-                    data: data
+                    data: data,
+                    status: 1,
+                    message: "success"
                 });
             }
         });
@@ -46,7 +48,9 @@ export class FetchController extends BaseAPIController {
                                     next(new Error(err));
                                 } else {
                                     res.json({
-                                        data: data
+                                        data: data,
+                                        status: 1,
+                                        message: "success"
                                     });
                                 }
                             });
@@ -60,11 +64,24 @@ export class FetchController extends BaseAPIController {
     }
 
     countEmail = (req, res, next) => {
-        req.email.aggregate({ $unwind: { path: "$tag_id", preserveNullAndEmptyArrays: true } }, {
+        req.email.aggregate({
+            $unwind: {
+                path: "$tag_id",
+                preserveNullAndEmptyArrays: true
+            }
+        }, {
             $group: {
                 _id: "$tag_id",
-                count_email: { $sum: 1 },
-                unread: { $sum: { $cond: [{ $eq: ["$unread", "false"] }, 0, 1] } }
+                count_email: {
+                    $sum: 1
+                },
+                unread: {
+                    $sum: {
+                        $cond: [{
+                            $eq: ["$unread", "false"]
+                        }, 0, 1]
+                    }
+                }
             }
         }, function(err, result) {
             if (err) {
@@ -185,8 +202,6 @@ export class FetchController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 }
-
-
 
 const controller = new FetchController();
 export default controller;
