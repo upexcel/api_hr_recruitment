@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "hr_recruitment",
-		"_postman_id": "ae1e2c9c-2929-37f2-517f-7db42e6ac205",
+		"_postman_id": "4bb0f42a-afca-1ab6-52a7-ec3f3a37cd32",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -21,9 +21,9 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"if(jsonData.id){",
-									"    tests[\"status\"] = true;",
+									"    tests[\"status true\"] = true;",
 									"}else{",
-									"    tests[\"status\"] = false;",
+									"    tests[\"status true\"] = false;",
 									"}"
 								]
 							}
@@ -153,7 +153,7 @@
 									"",
 									"var jsonData = JSON.parse(responseBody);",
 									"",
-									"postman.setEnvironmentVariable(\"imapId\", jsonData.id);"
+									"postman.setEnvironmentVariable(\"id\", jsonData.id);"
 								]
 							}
 						}
@@ -208,82 +208,6 @@
 					"response": []
 				},
 				{
-					"name": "Imap Data Update",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"update_email\", \"test\"+ Math.floor((Math.random() * 10) + 20) + \"@gmail.com\");"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{update_email}}",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "imap_server",
-									"value": "sqsq",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "password",
-									"value": "12",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "server_port",
-									"value": "123",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Imap Data Get",
 					"event": [
 						{
@@ -309,33 +233,6 @@
 						"description": ""
 					},
 					"response": []
-				},
-				{
-					"name": "Imap Data Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
 				}
 			]
 		},
@@ -344,7 +241,7 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Save Tag",
+					"name": "save_tag",
 					"event": [
 						{
 							"listen": "test",
@@ -418,7 +315,7 @@
 					"response": []
 				},
 				{
-					"name": "Update Tag",
+					"name": "update_tag",
 					"event": [
 						{
 							"listen": "test",
@@ -492,7 +389,7 @@
 					"response": []
 				},
 				{
-					"name": "Tag Get By Type",
+					"name": "tag_get_by_type",
 					"event": [
 						{
 							"listen": "test",
@@ -519,7 +416,7 @@
 					"response": []
 				},
 				{
-					"name": "Tag Get By Id",
+					"name": "tag_get_by_id",
 					"event": [
 						{
 							"listen": "test",
@@ -537,7 +434,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/tag/getbyid/Manual/{{tagid}}?accessToken={{token}}",
+						"url": "{{url}}/tag/getbyid/Manual/4?accessToken={{token}}",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -546,7 +443,7 @@
 					"response": []
 				},
 				{
-					"name": "Tag Delete",
+					"name": "tag_delete",
 					"event": [
 						{
 							"listen": "test",
@@ -575,25 +472,23 @@
 			]
 		},
 		{
-			"name": "4.smtp_server_setting",
+			"name": "email_API",
 			"description": "",
 			"item": [
 				{
-					"name": "Smtp Data Save",
+					"name": "Inbox",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.id){",
-									"    postman.setEnvironmentVariable(\"smtpId\", jsonData.id);",
-									"    tests['smtp data save'] = true",
+									"if(jsonData.data[0].uid){",
+									"    postman.setEnvironmentVariable(\"uid\", jsonData.data[0].uid);",
+									"    tests[\"status true\"] = true;",
 									"}else{",
-									"    tests['smtp data save'] = false",
+									"    tests[\"status true\"] = false;",
 									"}",
 									""
 								]
@@ -601,150 +496,7 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/smtp/save?accessToken={{token}}",
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "smtp_server",
-									"value": "sass",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "password",
-									"value": "123",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Smtp Data Update",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"update smtp data\"] = true;",
-									"}else{",
-									"    tests[\"update smtp data\"] = false;",
-									"}"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"update_email\", \"test\"+ Math.floor((Math.random() * 10) + 20) + \"@gmail.com\");"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/smtp/update/{{smtpId}}?accessToken={{token}}",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{update_email}}",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "imap_server",
-									"value": "sqsq",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "password",
-									"value": "12",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "server_port",
-									"value": "123",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Smtp Data Get",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"get smtp data\"] = true;",
-									"}else{",
-									"    tests[\"get smtp data\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/smtp/get/1?accessToken={{token}}",
+						"url": "{{url}}/email/inbox/1",
 						"method": "GET",
 						"header": [],
 						"body": {},
@@ -753,7 +505,7 @@
 					"response": []
 				},
 				{
-					"name": "smtp Data Get By Id",
+					"name": "UID",
 					"event": [
 						{
 							"listen": "test",
@@ -761,45 +513,19 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"get smtp data\"] = true;",
+									"if(jsonData.data){",
+									"    tests[\"status true\"] = true;",
 									"}else{",
-									"    tests[\"get smtp data\"] = false;",
-									"}"
+									"    tests[\"status true\"] = false;",
+									"}",
+									""
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+						"url": "{{url}}/email/{{uid}}",
 						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Smtp Data Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"smtp data delete\"] = true;",
-									"}else{",
-									"    tests[\"smtp data delete\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
-						"method": "DELETE",
 						"header": [],
 						"body": {},
 						"description": ""
