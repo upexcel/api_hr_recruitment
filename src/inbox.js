@@ -154,9 +154,9 @@ cron.schedule("10 * * * * *", function() {
 								}
 							});
 						});
-						// fs.unlink(filepath, function() {
-						// 	console.log("success");
-						// });
+						fs.unlink(filepath, function() {
+							console.log("success");
+						});
 					});
 					msg.once("end", function() {
 						console.log(prefix + "Finished attachment %s", filename);
