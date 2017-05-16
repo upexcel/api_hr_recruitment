@@ -3,8 +3,6 @@ var conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
 var DB = require("../inbox");
  // the middleware function
 module.exports = function() {
-	var mongoose = require("mongoose");
-	var conn = mongoose.connect("mongodb://localhost/EMAILPANEL");
     // create schema
 	var emailSchema = mongoose.Schema({}, {
 		collection: "emailStored",
