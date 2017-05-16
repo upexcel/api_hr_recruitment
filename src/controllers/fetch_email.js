@@ -1,7 +1,7 @@
 import BaseAPIController from "./BaseAPIController";
 import MailProvider from "../providers/MailProvider";
 import * as _ from "lodash";
-
+// import * as _ from "underscore";
 
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
@@ -64,15 +64,10 @@ export class FetchController extends BaseAPIController {
     }
 
     countEmail = (req, res, next) => {
-        var count = [];
-
-        // .catch(this.handleErrorResponse.bind(null, res));
+        var totalCount = [];
+        var count1 = [];
+        var tagId = [];
         req.email.aggregate({
-            $unwind: {
-                path: "$tag_id",
-                preserveNullAndEmptyArrays: true
-            }
-        }, {
             $group: {
                 _id: "$tag_id",
                 count_email: {
@@ -83,8 +78,9 @@ export class FetchController extends BaseAPIController {
                         $cond: [{
                             $eq: ["$unread", "false"]
                         }, 0, 1]
-                    }
-                }
+                    },
+                },
+
             }
         }, (err, result) => {
             if (err) {
@@ -92,15 +88,44 @@ export class FetchController extends BaseAPIController {
             } else {
                 this._db.Tag.findAll()
                     .then((data) => {
-                        _.forEach(result, (val, key) => {
+                        _.forEach(data, (val2, key2) => {
+                            tagId.push(val2.id.toString());
+                        })
+                        tagId.push(null);
+                        _.map(tagId, (val) => {
+                            var res = filter(val);
+                            totalCount.push(res);
+                        });
+                        function filter(tagId) {
+                            var b = _.filter(result, function(o) {
+                                if (_.includes(o._id, tagId)) {
+                                    return true;
+                                } else if (o._id === null) {
+                                    return true;
+                                } else {
+                                    return false;
+                                }
+                            });
+                            var count_email = 0;
+                               var unread = 0;
+                            _.map(b, (val, i) => {
+                                count_email += val.count_email;
+                                unread += val.unread;
+                            });
+                            return {
+                                id: tagId,
+                                count_email: count_email,
+                                unread: unread
+                            };
+                        }
+                        _.forEach(totalCount, (val, key) => {
                             _.forEach(data, (val1, key1) => {
-                                console.log(val, val1)
                                 if (val._id == val1.id) {
-                                    count.push(_.merge(val, val1));
+                                    count1.push(_.merge(val, val1));
                                 }
                             })
                             if (val._id == null) {
-                                count.push(_.merge(val, {
+                                count1.push(_.merge(val, {
                                     title: "Mails",
                                     color: "#81d4fa",
                                     type: "Default"
@@ -108,7 +133,7 @@ export class FetchController extends BaseAPIController {
                             }
                         });
                         res.json({
-                            data: count,
+                            data: count1,
                             status: 1,
                             message: "success"
                         })
