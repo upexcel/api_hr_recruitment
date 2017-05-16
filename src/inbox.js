@@ -134,12 +134,11 @@ module.exports = {
 		                        	fields: "id"
 		                        }, function(err, file) {
 		                        	if (!err) {
-		                        		/*eslint-disable*/
-		                        		attachment_file = [{
+		                        		var attachment_file = [{
 		                        			name: attachment.params.name,
 		                        			link: "https://drive.google.com/file/d/" + file.id + "/view"
 		                        		}];
-		                        		database_save(attachment_file, uid, flag, bodyMsg, seqno); /*eslint-enable*/
+		                        		database_save(attachment_file, uid, flag, bodyMsg, seqno);
 		                        		console.log("file is saved");
 		                        	} else {
 		                        		console.log(err);
@@ -171,7 +170,9 @@ module.exports = {
 				answered = in_array("\\Answered", flag),
 				message = bodyMsg,
 				attachment = attachments;
-
+			var str = subject,
+			 match = /angular js|php|Hybrid Mobile Apps|testing/gi,
+			 tag = str.match(match);
 			var detail = new email({
 		            	"email_id": emailid,
 		            	"to": to,
@@ -185,7 +186,8 @@ module.exports = {
 		            	"unread": unread,
 		            	"answered": answered,
 		            	"body": message,
-		            	"attachment": attachment
+		            	"attachment": attachment,
+				           "tags":tag
 			});
 			detail.save(function(err) {
 		            	if (err) {
