@@ -1,11 +1,11 @@
 import BaseAPIController from "./BaseAPIController";
-var DB = require("../mongodb/db"),
-	email = DB.get_schema();
+// var DB = require("../mongodb/db"),
+// 	email = DB.get_schema();
 
 export class InboxController extends BaseAPIController {
     /* Get INBOX data*/
 	getInbox = (req, res, next) => {
-		email.find().skip((req.params.page - 1) * req.params.limit).limit(req.params.limit).exec((err, data) => {
+		req.email.find().skip((req.params.page - 1) * req.params.limit).limit(req.params.limit).exec((err, data) => {
 			if (err) {
 				next(new Error("invalid page"));
 			} else {
@@ -16,7 +16,7 @@ export class InboxController extends BaseAPIController {
 
     /* Get UID data*/
 	getUid = (req, res, next) => {
-	email.findOne({ uid: parseInt(req.params.uid) }, (err, data) => {
+	req.email.findOne({ uid: parseInt(req.params.uid) }, (err, data) => {
 			if (err) {
 				next(new Error("invalid UID"));
 			} else {

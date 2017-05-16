@@ -1,6 +1,4 @@
-
-var cron = require("node-cron"),
-	in_array = require("in_array"),
+var	in_array = require("in_array"),
 	fs = require("fs"),
 	base64 = require("base64-stream"),
 	path = require("path"),
@@ -8,11 +6,9 @@ var cron = require("node-cron"),
 	google = require("googleapis"),
 	OAuth2 = google.auth.OAuth2,
 	Imap = require("imap"),/*eslint-disable*/
-    upload = multer({ dest: "uploads/" }); /*eslint-enable*/
-// var DB = require("./mongodb/db"),
-	// email = DB.get_schema();
+  upload = multer({ dest: "uploads/" }); /*eslint-enable*/
+import db from "./db";
 var config = require("./config.json");
-var imap_server = require("./mongodb/imap");
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
 oauth2Client.setCredentials({
 	access_token: config.access_token,
@@ -21,17 +17,11 @@ oauth2Client.setCredentials({
 	refresh_token: config.refresh_token
 });
 var drive = google.drive({ version: "v2", auth: oauth2Client });
-// import db from "../db";
-// var db = require("./db");
-
 
 module.exports = {
-	hello: function(email) {
-		// cron.schedule("10 * * * * *", function() {
-		// console.log("running a task every 10sec");
-		imap_server.findOne({ where: { "active": "True" } }).then(function(docs, err) {
+	get_schema: function(email) {
+		db.Imap.findOne({ where: { "active": "True" } }).then(function(docs, err) {
 			if (docs) {
-				console.log(docs);
 				imap = new Imap({
 		        	user: docs.dataValues.email,
 		        	password: docs.dataValues.password,
@@ -138,23 +128,23 @@ module.exports = {
 							mimeType: "text/plain/javascript/html/csv/application/pdf",
 							body: data
 						};
-		                        // drive.files.insert({
-		                        // 	resource: fileMetadata,
-		                        // 	media: media,
-		                        // 	fields: "id"
-		                        // }, function(err, file) {
-		                        // 	if (!err) {
-		                        // 		/*eslint-disable*/
-		                        // 		attachment_file = [{
-		                        // 			name: attachment.params.name,
-		                        // 			link: "https://drive.google.com/file/d/" + file.id + "/view"
-		                        // 		}];
-		                        // 		database_save(attachment_file, uid, flag, bodyMsg, seqno); /*eslint-enable*/
-		                        // 		console.log("file is saved");
-		                        // 	} else {
-		                        // 		console.log(err);
-		                        // 	}
-		                        // });
+		                        drive.files.insert({
+		                        	resource: fileMetadata,
+		                        	media: media,
+		                        	fields: "id"
+		                        }, function(err, file) {
+		                        	if (!err) {
+		                        		/*eslint-disable*/
+		                        		attachment_file = [{
+		                        			name: attachment.params.name,
+		                        			link: "https://drive.google.com/file/d/" + file.id + "/view"
+		                        		}];
+		                        		database_save(attachment_file, uid, flag, bodyMsg, seqno); /*eslint-enable*/
+		                        		console.log("file is saved");
+		                        	} else {
+		                        		console.log(err);
+		                        	}
+		                        });
 					});
 					fs.unlink(filepath, function() {
 						console.log("success");
@@ -205,7 +195,6 @@ module.exports = {
 		            	}
 			});
 		}
-
 				imap.once("error", function(err) {
 					console.log(err);
 				});
@@ -217,7 +206,5 @@ module.exports = {
 				console.log(err);
 			}
 		});
-		// });
-
 	}
 };

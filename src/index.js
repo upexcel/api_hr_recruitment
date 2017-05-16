@@ -5,7 +5,7 @@ import morgan from "morgan";
 import path from "path";
 import glob from "glob";
 import chalk from "chalk";
-// import db from "./mongodb/db.js";
+import db from "./mongodb/db.js";
 import bodyParser from "body-parser";
 import config from "./config.json";
 import expressValidator from "express-validator";
@@ -16,7 +16,7 @@ app.server = http.createServer(app);
 // logger
 app.use(morgan("dev"));
 app.use(cors());
-// app.use(db());
+app.use(db());
 
 // 3rd party middleware
 app.use(cors({ exposedHeaders: config.corsHeaders }));
