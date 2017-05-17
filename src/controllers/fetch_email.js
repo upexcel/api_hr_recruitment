@@ -89,7 +89,7 @@ export class FetchController extends BaseAPIController {
                 this._db.Tag.findAll()
                     .then((data) => {
                         _.forEach(data, (val2, key2) => {
-                            tagId.push(val2.id.toString());
+                            tagId.push(val2.id);
                         })
                             _.forEach(result,(val,key)=>{
                                 if(val._id == null){
