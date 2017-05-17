@@ -91,16 +91,23 @@ export class FetchController extends BaseAPIController {
                         _.forEach(data, (val2, key2) => {
                             tagId.push(val2.id.toString());
                         })
-                        tagId.push(null);
+                            _.forEach(result,(val,key)=>{
+                                if(val._id == null){
+                                    count1.push(_.merge(val, {
+                                    title: "Mails",
+                                    color: "#81d4fa",
+                                    type: "Default"
+                                }));
+                                }
+                            });
                         _.map(tagId, (val) => {
                             var res = filter(val);
                             totalCount.push(res);
                         });
                         function filter(tagId) {
+
                             var b = _.filter(result, function(o) {
                                 if (_.includes(o._id, tagId)) {
-                                    return true;
-                                } else if (o._id === null) {
                                     return true;
                                 } else {
                                     return false;
