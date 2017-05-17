@@ -122,8 +122,15 @@ export class FetchController extends BaseAPIController {
                         }
                         _.forEach(totalCount, (val, key) => {
                             _.forEach(data, (val1, key1) => {
+
                                 if (val.id == val1.id) {
-                                    count1.push(_.merge(val, val1));
+                                    console.log(val,val1)
+                                    // count1.push(_.merge(val, val1));
+                                     count1.push(_.merge(val, {
+                                    title: val1.title,
+                                    color: val1.color,
+                                    type: val1.type
+                                }));
                                 }
                             })
                             
