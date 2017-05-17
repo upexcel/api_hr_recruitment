@@ -91,20 +91,24 @@ export class FetchController extends BaseAPIController {
                         _.forEach(data, (val2, key2) => {
                             tagId.push(val2.id.toString());
                         })
-                        // tagId.push(null);
                         _.map(tagId, (val) => {
                             var res = filter(val);
                             totalCount.push(res);
                         });
+                         _.forEach(result,(val,key)=>{
+                            if(val._id == null){
+                                count1.push(_.merge(val, {
+                                    title: "Mails",
+                                    color: "#81d4fa",
+                                    type: "Default"
+                                }));
+                            }
+                        })
                         function filter(tagId) {
                             var b = _.filter(result, function(o) {
                                 if (_.includes(o._id, tagId)) {
                                     return true;
-                                }
-                                //  else if (o._id === null) {
-                                //     return true;
-                                // }
-                                 else {
+                                } else {
                                     return false;
                                 }
                             });
@@ -122,28 +126,15 @@ export class FetchController extends BaseAPIController {
                         }
                         _.forEach(totalCount, (val, key) => {
                             _.forEach(data, (val1, key1) => {
-
                                 if (val.id == val1.id) {
-                                    console.log(val,val1)
-                                    // count1.push(_.merge(val, val1));
                                      count1.push(_.merge(val, {
                                     title: val1.title,
                                     color: val1.color,
                                     type: val1.type
                                 }));
                                 }
-                            })
-                            
+                            }) 
                         });
-                        _.forEach(result,(val,key)=>{
-                            if(val._id == null){
-                                count1.push(_.merge(val, {
-                                    title: "Mails",
-                                    color: "#81d4fa",
-                                    type: "Default"
-                                }));
-                            }
-                        })
                         res.json({
                             data: count1,
                             status: 1,
