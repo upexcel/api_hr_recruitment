@@ -9,16 +9,16 @@ export default (app) => {
 	app.route("/email/assignTag").post(auth.requiresLogin, fetch_email.assignTag);
 
     /* Route for count emails on the basis of tag */
-	app.route("/email/countEmail").post(fetch_email.countEmail);
+	app.route("/email/countEmail").get(auth.requiresLogin, fetch_email.countEmail);
 
     /* Route for assign Multiple Tag  */
-	app.route("/email/assignMultiple").post(fetch_email.assignMultiple);
+	app.route("/email/assignMultiple").post(auth.requiresLogin, fetch_email.assignMultiple);
 
     /* Route for delete Tag  */
-	app.route("/email/deleteTag").post(fetch_email.deleteTag);
+	app.route("/email/deleteTag").post(auth.requiresLogin, fetch_email.deleteTag);
 
     /* Route for change unread status  */
-	app.route("/email/changeUnreadStatus").post(fetch_email.changeUnreadStatus);
+	app.route("/email/changeUnreadStatus").post(auth.requiresLogin, fetch_email.changeUnreadStatus);
 
 	return app;
 };
