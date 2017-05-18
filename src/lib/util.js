@@ -1,4 +1,4 @@
-export default function (err) {
+export default function(err) {
 	if (typeof err === "string") {
 		return {
 			message: err,

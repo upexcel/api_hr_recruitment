@@ -1,4 +1,4 @@
-export default function (sequelize, DataTypes) {
+export default function(sequelize, DataTypes) {
 	const imap = sequelize.define("IMAP", {
 		email: {
 			type: DataTypes.STRING,
@@ -26,10 +26,10 @@ export default function (sequelize, DataTypes) {
 		freezeTableName: true,
 		allowNull: true,
 		hooks: {
-			beforeCreate(IMAP) {
+			beforeCreate: function(IMAP) {
 				return new Promise((resolve, reject) => {
 					this.findOne({ where: { email: IMAP.email } })
-              .then((email) => {
+                        .then((email) => {
 	if (email) {
 		reject("Email Already In Use");
 	} else {
@@ -37,8 +37,8 @@ export default function (sequelize, DataTypes) {
 	}
 });
 				});
-			},
-		},
+			}
+		}
 	});
 	return imap;
 }

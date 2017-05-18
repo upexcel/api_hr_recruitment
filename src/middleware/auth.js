@@ -4,7 +4,8 @@ import db from "../db";
 import tag from "../models/constant";
 
 export class AuthController {
-    // middleware for logged in users
+
+	  // middleware for logged in users
 	requiresLogin(req, res, next) {
 		const token = req.param("accessToken");
 		if (token) {
@@ -75,21 +76,46 @@ export class AuthController {
 					const loginTime = docs.exp;
 					if (loginTime > endTime) {
 						req.token = docs.token;
-						db.User.find({ where: { id: req.token, $or: [{ user_type: tag().userType.admin }, { user_type: tag().userType.hr }] } })
-						.then((user) => {
-							if (user) {
-								req.user = user;
-								next();
-							} else {
-								next(res.status(400).send({ error: "You Are Not Authorized" }));
+
+						db.User.find({
+							where: {
+								id: req.token,
+								$or: [{ user_type: tag().userType.admin }, { user_type: tag().userType.hr }]
 							}
-						});
+						})
+                                .then((user) => {
+	if (user) {
+		req.user = user;
+		next();
+	} else {
+		next(res.status(400).send({
+			error: "You Are Not Authorized"
+		}));
+	}
+});
 					}
 				}
 			});
 		} else {
 			next(res.status(400).send({ error: "User is not logged in" }));
+
 		}
+	}
+        // verify token
+	verifyToken(req, res, next) {
+		var token = req.param("accessToken");
+		if (token) {
+			jwt.verify(req.param("accessToken"), "secret_key", function(err) {
+				if (err) {
+					next(res.status(400).send({ status: false }));
+				} else {
+					res.json({ status: true });
+				}
+			});
+		} else {
+			next(new Error("Token Not Found"));
+		}
+
 	}
 }
 

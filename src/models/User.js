@@ -9,8 +9,8 @@ export default function(sequelize, DataTypes) {
 		password: DataTypes.STRING,
 		user_type: {
 			type: DataTypes.ENUM,
-			values: ["Admin", "Guest", "HR"],
-		},
+			values: ["Admin", "Guest", "HR"]
+		}
 	}, {
 		timestamps: true,
 		freezeTableName: true,
@@ -34,7 +34,7 @@ export default function(sequelize, DataTypes) {
 	}
 });
 				});
-			},
+			}
 
 		},
 	});

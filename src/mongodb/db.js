@@ -4,9 +4,11 @@ var DB = require("../inbox");
 var CronJob = require("cron").CronJob;
 // the middleware function
 module.exports = function() {
-    // create schema
-	var emailSchema = mongoose.Schema({}, {
-		collection: "emailSave",
+
+
+	  // create schema
+	var emailSchema = mongoose.Schema({	}, {
+		collection: "emailStored",
 		strict: false,
 	});
 	var email = conn.model("EMAIL", emailSchema);
