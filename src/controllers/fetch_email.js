@@ -251,23 +251,32 @@ export class FetchController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    deleteEmail = (req, res, next) => {
+deleteEmail = (req, res, next) => {
+    var response = [];
+    MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
+        .then(() => {
+            var size = _.size(req.body.mongo_id);
+            _.forEach(req.body.mongo_id, (val, key) => {
+                req.email.findOne({
+                    _id: val
+                }, function(err, data) {
+                    if (err) {
+                        response.push({status: 0,  message: err,array_length: key});
+                    }
+                    if (!data) {
+                        response.push({status: 0,msg: "not found",array_length: key  });
+                    } else {
+                        data.remove();
+                        response.push({status: 1,msg: "delete success",array_length: key});
+                    }
+                    if (key == (size - 1)) {
+                        res.json({status: 1,message: "success",data: response});
+                    }
+                })
+            })
 
-MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-        req.email.findOne({_id: req.body.mongo_id}, function (err, data) {
-            if (err) {
-                res.json({status: 0, message: err});
-            }
-            if (!data) {
-                res.json({status: 0, msg: "not found"});
-            } else {
-                data.remove();
-                res.json({status: 1, message: " success"});
-            }
-         })
         })
-            .catch(this.handleErrorResponse.bind(null, res));
+        .catch(this.handleErrorResponse.bind(null, res));
     }
   }
 
