@@ -223,7 +223,7 @@ export class FetchController extends BaseAPIController {
                     _id: req.body.mongo_id
                 }, {
                     $set: {
-                        unread: true
+                        unread: false
                     }
                 }, function(err, data) {
                     if (err) {
@@ -232,7 +232,7 @@ export class FetchController extends BaseAPIController {
                     if (!data) {
                         res.json({ status: 0, msg: "not found" });
                     } else {
-                        res.json({ status: 1, message: " the unread status is changed successfully, status : " + req.body.status, data: data });
+                        res.json({ status: 1, message: " the unread status is changed successfully", data: data });
                     }
                 })
             })
