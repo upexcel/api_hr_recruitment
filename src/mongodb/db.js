@@ -4,14 +4,14 @@ var DB = require("../inbox");
 // the middleware function
 module.exports = function() {
     // create schema
-    var emailSchema = mongoose.Schema({}, {
-        collection: "emailStored",
-        strict: false,
-    });
-    var email = conn.model("EMAIL", emailSchema);
-    DB.get_schema(email);
-    return function(req, res, next) {
-        req.email = email;
-        next();
-    };
+	var emailSchema = mongoose.Schema({}, {
+		collection: "emailStored",
+		strict: false,
+	});
+	var email = conn.model("EMAIL", emailSchema);
+	DB.get_schema(email);
+	return function(req, res, next) {
+		req.email = email;
+		next();
+	};
 };

@@ -24,7 +24,7 @@ module.exports = {
 	get_schema: function(email) {
 		db.Imap.findOne({ where: { "active": "True" } }).then(function(docs, err) {
 			if (docs) {
-// }); /*eslint-disable*/
+                // }); /*eslint-disable*/
 				var imap = new Imap({
 					user: docs.dataValues.email,
 					password: docs.dataValues.password,
@@ -38,7 +38,7 @@ function openInbox(cb) { /*eslint-enable*/
 }
 				var headers = {},
 					bodyMsg = "";
-				var imap;
+				// var imap;
 				imap.once("ready", function() {
 					openInbox(function() {
 						var delay = 24 * 3600 * 1000;
@@ -60,7 +60,7 @@ function openInbox(cb) { /*eslint-enable*/
 									}else{
 										var row = resp[0];
 										var Last_UID = row.get("uid");
-										_.forEach(results,(val,key)=>{
+										_.forEach(results,(val)=>{
 											if(val >= Last_UID){
 												UID_arr.push(val);
 											}
