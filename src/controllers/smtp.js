@@ -2,8 +2,8 @@ import BaseAPIController from "./BaseAPIController";
 import SmtpProvider from "../providers/SmtpProvider";
 
 export class SmtpController extends BaseAPIController {
-    /* Controller for Save Smtp Data  */
 
+    /* Controller for Save Smtp Data  */
     save = (req, res) => {
         SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {

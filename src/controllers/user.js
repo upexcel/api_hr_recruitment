@@ -3,6 +3,7 @@ import UserProvider from "../providers/UserProvider.js";
 import LoginProvider from "../providers/UserProvider.js";
 
 export class UserController extends BaseAPIController {
+
     /* Controller for User Register  */
     create = (req, res) => {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())

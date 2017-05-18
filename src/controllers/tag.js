@@ -3,6 +3,7 @@ import TagProvider from "../providers/TagProvider";
 import tag from "../models/constant";
 
 export class ImapController extends BaseAPIController {
+
     /* Controller for Save Imap Data  */
     save = (req, res) => {
         TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())

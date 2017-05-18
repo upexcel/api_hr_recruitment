@@ -1,7 +1,6 @@
 import BaseAPIController from "./BaseAPIController";
 import MailProvider from "../providers/MailProvider";
 import * as _ from "lodash";
-// import * as _ from "underscore";
 
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */

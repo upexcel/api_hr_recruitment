@@ -2,8 +2,8 @@ import BaseAPIController from "./BaseAPIController";
 import ImapProvider from "../providers/ImapProvider";
 
 export class ImapController extends BaseAPIController {
-    /* Controller for Save Imap Data  */
 
+    /* Controller for Save Imap Data  */
     save = (req, res) => {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
