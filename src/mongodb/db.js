@@ -5,9 +5,7 @@ var DB = require("../inbox");
 module.exports = function() {
 
 	  // create schema
-	var emailSchema = mongoose.Schema({
-		uid:     { type: Number, unique:true},
-	}, {
+	var emailSchema = mongoose.Schema({	}, {
 		collection: "emailStored",
 		strict: true,
 	});
