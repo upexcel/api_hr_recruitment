@@ -4,9 +4,11 @@ var DB = require("../inbox");
 // the middleware function
 module.exports = function() {
     // create schema
-	var emailSchema = mongoose.Schema({}, {
+	var emailSchema = mongoose.Schema({
+		uid:     { type: Number, unique:true},
+	}, {
 		collection: "emailStored",
-		strict: false,
+		strict: true,
 	});
 	var email = conn.model("EMAIL", emailSchema);
 	DB.get_schema(email);
