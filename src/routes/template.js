@@ -12,7 +12,7 @@ export default (app) => {
 	app.route("/template/delete/:templateId").delete( template.deleteTemplate);
 
     /* Route for List of Template */
-	app.route("/template/list").get( template.templateList);
+	app.route("/template/get/:page").get( template.templateList);
 
 	return app;
 };

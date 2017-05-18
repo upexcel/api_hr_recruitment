@@ -11,9 +11,13 @@ export default (app) => {
     /* Route for smtp Delete */
 	app.route("/smtp/delete/:smtpId").delete(auth.requiresAdmin, smtp.deleteSmtp);
 
-    /* Route for fetch smtp Data */
-	app.route("/smtp/list").get(auth.requiresAdmin,smtp.getSmtp);
+    /* Route for fetch smtp Data*/
+	app.route("/smtp/get/:page").get(auth.requiresAdmin,smtp.getSmtp);
 
+    /* Route for fetch Smtp data by id*/
+	app.route("/smtp/getbyid/:smtpId").get(smtp.getSmtpById);
+
+	app.param("smtpId", smtp.idResult);
 
 	return app;
 };

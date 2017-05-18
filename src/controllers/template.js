@@ -47,10 +47,10 @@ export class TemplateController extends BaseAPIController {
 
     /*Get List of All Templates*/
     templateList = (req, res) => {
-        this._db.Template.findAll()
-            .then(res.json.bind(res))
-            .catch(this.handleErrorResponse.bind(null, res));
-    }
+  		this._db.Template.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+              .then(res.json.bind(res))
+              .catch(this.handleErrorResponse.bind(null, res));
+  	}
 
 }
 
