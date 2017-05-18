@@ -1,12 +1,13 @@
-var	in_array = require("in_array"),
+var in_array = require("in_array"),
 	fs = require("fs"),
 	base64 = require("base64-stream"),
 	path = require("path"),
 	multer = require("multer"),
 	google = require("googleapis"),
 	OAuth2 = google.auth.OAuth2,
-	Imap = require("imap"),/*eslint-disable*/
-  upload = multer({ dest: "uploads/" }); /*eslint-enable*/
+	Imap = require("imap"),
+    /*eslint-disable*/
+    upload = multer({ dest: "uploads/" }); /*eslint-enable*/
 import db from "./db";
 var config = require("./config.json");
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
@@ -23,22 +24,22 @@ module.exports = {
 		db.Imap.findOne({ where: { "active": "True" } }).then(function(docs, err) {
 			if (docs) {
 				imap = new Imap({
-		        	user: docs.dataValues.email,
-		        	password: docs.dataValues.password,
-		        	host: docs.dataValues.imap_server,
-		        	port: docs.dataValues.server_port,
-		        	tls: docs.dataValues.type,
-				});  /*eslint-disable*/
+					user: docs.dataValues.email,
+					password: docs.dataValues.password,
+					host: docs.dataValues.imap_server,
+					port: docs.dataValues.server_port,
+					tls: docs.dataValues.type,
+				}); /*eslint-disable*/
 
-				function openInbox(cb) { /*eslint-enable*/
-					imap.openBox("INBOX", true, cb);
-				}
+                function openInbox(cb) { /*eslint-enable*/
+	imap.openBox("INBOX", true, cb);
+}
 				var headers = {},
 					bodyMsg = "";
 				var imap;
 				imap.once("ready", function() {
 					openInbox(function() {
-		      // this will fetch all the Emails data from Gmail
+                        // this will fetch all the Emails data from Gmail
 						var f = imap.seq.fetch("1:10000000", {
 							bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
 							struct: true
@@ -91,112 +92,112 @@ module.exports = {
 					});
 				}); /*eslint-disable*/
 
-		function findAttachmentParts(struct, attachments) { /*eslint-enable*/
-			attachments = attachments || [];
-			var len = struct.length;
-			for (var i = 0; i < len; ++i) {
-				if (Array.isArray(struct[i])) {
-					findAttachmentParts(struct[i], attachments);
-				} else if (struct[i].disposition && ["INLINE", "ATTACHMENT"].indexOf(struct[i].disposition.type) > 0) {
-					attachments.push(struct[i]);
-				}
-			}
-			return attachments;
-		} /*eslint-disable*/
-
-		function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
-			var filename = attachment.params.name;
-			var encoding = attachment.encoding;
-			var filepath = path.join(__dirname, "/./uploads/", filename);
-			return function(msg, seqno) {
-				var prefix = "(#" + seqno + ") ";
-				msg.on("body", function(stream) {
-					var writeStream = fs.createWriteStream(filepath);
-					if (encoding === "BASE64") {
-						stream.pipe(base64.decode()).pipe(writeStream);
-					} else {
-						stream.pipe(writeStream);
-					}
-					fs.readFile(filepath, {
-						encoding: "utf8"
-					}, function(error, data) {
-						var fileMetadata = {
-							title: filename,
-							mimeType: "text/plain/javascript/html/csv/application/pdf"
-						};
-						var media = {
-							mimeType: "text/plain/javascript/html/csv/application/pdf",
-							body: data
-						};
-		                        drive.files.insert({
-		                        	resource: fileMetadata,
-		                        	media: media,
-		                        	fields: "id"
-		                        }, function(err, file) {
-		                        	if (!err) {
-		                        		var attachment_file = [{
-		                        			name: attachment.params.name,
-		                        			link: "https://drive.google.com/file/d/" + file.id + "/view"
-		                        		}];
-		                        		database_save(attachment_file, uid, flag, bodyMsg, seqno);
-		                        		console.log("file is saved");
-		                        	} else {
-		                        		console.log(err);
-		                        	}
-		                        });
-					});
-					fs.unlink(filepath, function() {
-						console.log("success");
-					});
-				});
-				msg.once("end", function() {
-					console.log(prefix + "Finished attachment %s", filename);
-				});
-			};
-		} /*eslint-disable */
-
-		function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
-			var emailid = seqno,
-				to = headers.to.toString();
-			var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
-				from = hash1.substring(0, hash1.lastIndexOf("<"));
-			var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
-				sender_mail = hash.substring(0, hash.lastIndexOf(">"));
-			var date = headers.date.toString(),
-				email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
-				email_timestamp = new Date(date).getTime(),
-				subject = headers.subject.toString(),
-				unread = in_array("[]", flag),
-				answered = in_array("\\Answered", flag),
-				message = bodyMsg,
-				attachment = attachments;
-			var str = subject,
-			 match = /angular js|php|Hybrid Mobile Apps|testing/gi,
-			 tag = str.match(match);
-			var detail = new email({
-		            	"email_id": emailid,
-		            	"to": to,
-		            	"from": from,
-		            	"sender_mail": sender_mail,
-		            	"date": date,
-		            	"email_date": email_date,
-		            	"email_timestamp": email_timestamp,
-		            	"subject": subject,
-		            	"uid": uid,
-		            	"unread": unread,
-		            	"answered": answered,
-		            	"body": message,
-		            	"attachment": attachment,
-				           "tags":tag
-			});
-			detail.save(function(err) {
-		            	if (err) {
-		            		console.log("Duplicate Data");
-		            	} else {
-		            		console.log("data saved successfully");
-		            	}
-			});
+                function findAttachmentParts(struct, attachments) { /*eslint-enable*/
+	attachments = attachments || [];
+	var len = struct.length;
+	for (var i = 0; i < len; ++i) {
+		if (Array.isArray(struct[i])) {
+			findAttachmentParts(struct[i], attachments);
+		} else if (struct[i].disposition && ["INLINE", "ATTACHMENT"].indexOf(struct[i].disposition.type) > 0) {
+			attachments.push(struct[i]);
 		}
+	}
+	return attachments;
+} /*eslint-disable*/
+
+                function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
+	var filename = attachment.params.name;
+	var encoding = attachment.encoding;
+	var filepath = path.join(__dirname, "/./uploads/", filename);
+	return function(msg, seqno) {
+		var prefix = "(#" + seqno + ") ";
+		msg.on("body", function(stream) {
+			var writeStream = fs.createWriteStream(filepath);
+			if (encoding === "BASE64") {
+				stream.pipe(base64.decode()).pipe(writeStream);
+			} else {
+				stream.pipe(writeStream);
+			}
+			fs.readFile(filepath, {
+				encoding: "utf8"
+			}, function(error, data) {
+				var fileMetadata = {
+					title: filename,
+					mimeType: "text/plain/javascript/html/csv/application/pdf"
+				};
+				var media = {
+					mimeType: "text/plain/javascript/html/csv/application/pdf",
+					body: data
+				};
+				drive.files.insert({
+					resource: fileMetadata,
+					media: media,
+					fields: "id"
+				}, function(err, file) {
+					if (!err) {
+						var attachment_file = [{
+							name: attachment.params.name,
+							link: "https://drive.google.com/file/d/" + file.id + "/view"
+						}];
+						database_save(attachment_file, uid, flag, bodyMsg, seqno);
+						console.log("file is saved");
+					} else {
+						console.log(err);
+					}
+				});
+			});
+			fs.unlink(filepath, function() {
+				console.log("success");
+			});
+		});
+		msg.once("end", function() {
+			console.log(prefix + "Finished attachment %s", filename);
+		});
+	};
+} /*eslint-disable */
+
+                function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
+	var emailid = seqno,
+		to = headers.to.toString();
+	var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
+		from = hash1.substring(0, hash1.lastIndexOf("<"));
+	var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
+		sender_mail = hash.substring(0, hash.lastIndexOf(">"));
+	var date = headers.date.toString(),
+		email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
+		email_timestamp = new Date(date).getTime(),
+		subject = headers.subject.toString(),
+		unread = in_array("[]", flag),
+		answered = in_array("\\Answered", flag),
+		message = bodyMsg,
+		attachment = attachments;
+	var str = subject,
+		match = /angular js|php|Hybrid Mobile Apps|testing/gi,
+		tag = str.match(match);
+	var detail = new email({
+		"email_id": emailid,
+		"to": to,
+		"from": from,
+		"sender_mail": sender_mail,
+		"date": date,
+		"email_date": email_date,
+		"email_timestamp": email_timestamp,
+		"subject": subject,
+		"uid": uid,
+		"unread": unread,
+		"answered": answered,
+		"body": message,
+		"attachment": attachment,
+		"tags": tag
+	});
+	detail.save(function(err) {
+		if (err) {
+			console.log("Duplicate Data");
+		} else {
+			console.log("data saved successfully");
+		}
+	});
+}
 				imap.once("error", function(err) {
 					console.log(err);
 				});

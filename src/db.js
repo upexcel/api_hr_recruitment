@@ -1,9 +1,6 @@
 import Sequelize from "sequelize";
 import models from "./models";
 import config from "./config";
-// var Sequelize = require ("sequelize");
-// var models = require("./models");
-// var config= require("./config");
 const db = {};
 
 // create your instance of sequelize
@@ -15,14 +12,12 @@ Object.keys(models).forEach((modelName) => {
 	db[modelName] = model;
 });
 
-
 // invoke associations on each of the models
 Object.keys(db).forEach((modelName) => {
 	if (db[modelName].options.associate) {
 		db[modelName].options.associate(db);
 	}
 });
-
 
 sequelize.sync().then(() => {
 	db.Tag.findOne({ where: { type: "Default", title: "Reject" } })
@@ -49,5 +44,5 @@ sequelize.sync().then(() => {
 
 export default Object.assign({}, db, {
 	sequelize,
-	Sequelize,
+	Sequelize
 });

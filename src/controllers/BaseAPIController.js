@@ -1,5 +1,6 @@
 import db from "../db";
 import errorHandler from "../lib/util";
+
 export default class BaseAPIController {
 	constructor() {
 		this._db = db;
@@ -11,7 +12,7 @@ export default class BaseAPIController {
 
 	handleSuccessResponse(res) {
 		res.json({
-			status: "SUCCESS",
+			status: "SUCCESS"
 		});
 	}
 
