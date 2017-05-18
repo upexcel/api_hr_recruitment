@@ -18,7 +18,7 @@ export class FetchController extends BaseAPIController {
             tag_id: {
                 $in: [tag_id]
             }
-        }).skip((page - 1) * 21).limit(21).exec(function(err, data) {
+        }).skip((page - 1) * 21).limit(21).sort({uid:-1}).exec(function(err, data) {
             if (err) {
                 next(err);
             } else {
