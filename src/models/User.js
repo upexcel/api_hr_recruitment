@@ -4,12 +4,12 @@ export default function(sequelize, DataTypes) {
 	const User = sequelize.define("USER", {
 		email: {
 			type: DataTypes.STRING,
-			unique: true
+			unique: true,
 		},
 		password: DataTypes.STRING,
 		user_type: {
 			type: DataTypes.ENUM,
-			values: ["Admin", "Guest", "HR"],
+			values: ["Admin", "Guest", "HR"]
 		}
 	}, {
 		timestamps: true,
@@ -23,20 +23,20 @@ export default function(sequelize, DataTypes) {
 					this.find({ where: { email: user.email, password: user.password } })
                         .then((details) => {
 	if (details) {
-		let token = jwt.sign({
-			token: details.id
+		const token = jwt.sign({
+			token: details.id,
 		}, "secret_key", {
-			expiresIn: 60 * 60
+			expiresIn: 60 * 60,
 		});
-		resolve({ status: 1, token: token });
+		resolve({ status: 1, token });
 	} else {
 		reject("Invalid Login Details");
 	}
 });
 				});
-			},
+			}
 
-		}
+		},
 	});
 	return User;
 }

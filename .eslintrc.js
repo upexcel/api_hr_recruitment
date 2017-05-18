@@ -6,17 +6,22 @@ module.exports = {
         "node": true
     },
     "extends": "eslint:recommended",
+    // "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
         },
         "sourceType": "module"
     },
+    "ecmaFeatures": {
+        "arrowFunctions": true
+    },
     "rules": {
         "indent": [
             "error",
             "tab"
         ],
+        "no-console": 0,
         "linebreak-style": [
             "error",
             "unix"
@@ -28,6 +33,6 @@ module.exports = {
         "semi": [
             "error",
             "always"
-        ]
+        ],
     }
 };

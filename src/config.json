@@ -7,6 +7,13 @@
         "name": "hr_system",
         "password": "java@123",
         "username": "root"
-    }
+    },
+    "CLIENT_ID": "26456531203-aa7qlroeerjrbaoatql4s5di1pcmir46.apps.googleusercontent.com",
+    "CLIENT_SECRET": "k0jbwm1g1Ow69WiYE_UKu5q4",
+    "REDIRECT_URL": "https://developers.google.com/oauthplayground",
+    "access_token": "ya29.Gls_BEQkhGIpdPplXqN5rUiACQ4spvr27C02bPtHYp1niYkQPIw-6e3EowzetEr-KWEBEtPkZM5J0KJKcbonkf3fTV_XCjvG5EpYVrl0Ev0I0beLdo0fWoYgKoSq",
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "refresh_token": "1/vjjHYdLPT7STaQEnv_zXPaWTcpR9dg33oiEbk91m8PE"
 
 }

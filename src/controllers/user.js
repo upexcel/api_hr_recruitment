@@ -1,16 +1,12 @@
-import express from 'express';
-import BaseAPIController from './BaseAPIController';
-import UserProvider from '../providers/UserProvider.js';
-import LoginProvider from '../providers/UserProvider.js';
-import db from '../db';
-import expressJwt from 'express-jwt';
-import jwt from 'jsonwebtoken';
+import BaseAPIController from "./BaseAPIController";
+import UserProvider from "../providers/UserProvider.js";
+import LoginProvider from "../providers/UserProvider.js";
 
 export class UserController extends BaseAPIController {
 
     /* Controller for User Register  */
-    create = (req, res, next) => {
-        const user = UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
+    create = (req, res) => {
+        UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
                 this._db.User.create(user)
                     .then(res.json.bind(res))

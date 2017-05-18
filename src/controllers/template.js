@@ -1,34 +1,30 @@
 import BaseAPIController from "./BaseAPIController";
-import ImapProvider from "../providers/ImapProvider";
+import TemplateProvider from "../providers/TemplateProvider.js";
 
-export class ImapController extends BaseAPIController {
+export class TemplateController extends BaseAPIController {
 
-    /* Controller for Save Imap Data  */
-    save = (req, res) => {
-        ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
-            .then((data) => {
-                this._db.Imap.create(data)
+    /* Controller for User Register  */
+    create = (req, res) => {
+        TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
+            .then((user) => {
+                this._db.Template.create(user)
                     .then(res.json.bind(res))
                     .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* Get Imapp data using id */
-    idResult = (req, res, next, id) => {
-        this.getById(req, res, this._db.Imap, id, next);
-    }
-
-    /* Imap data Update */
+    /* Template Update */
     update = (req, res) => {
-        ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
+        TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                this._db.Imap.update(data, { where: { id: req.params.id } })
+                console.log(data)
+                this._db.Template.update(data, { where: { id: req.params.templateId } })
                     .then((data) => {
                         if (data[0]) {
                             this.handleSuccessResponse(res, null);
                         } else {
-                            this.handleErrorResponse(res, "data not deleted");
+                            this.handleErrorResponse(res, "data not Updated");
                         }
                     })
                     .catch(this.handleErrorResponse.bind(null, res));
@@ -36,10 +32,9 @@ export class ImapController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* Imap data delete */
-
-    deleteImap = (req, res) => {
-        this._db.Imap.destroy({ where: { id: req.params.id } })
+    /* Template delete */
+    deleteTemplate = (req, res, next) => {
+        this._db.Template.destroy({ where: { id: req.params.templateId } })
             .then((data) => {
                 if (data) {
                     this.handleSuccessResponse(res, null);
@@ -50,13 +45,16 @@ export class ImapController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* Get Imap data */
-    getImap = (req, res) => {
-        this._db.Imap.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+    /*Get List of All Templates*/
+    templateList = (req, res) => {
+        this._db.Template.findAll()
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
 }
 
-const controller = new ImapController();
+
+
+const controller = new TemplateController();
 export default controller;

@@ -12,7 +12,6 @@ const save = (model, validate, body, validationResult) => {
 		validationResult.then(function(result) {
 			if (!result.isEmpty()) {
 				reject(util.inspect(result.array()));
-				return;
 			} else {
 				resolve(body);
 			}
@@ -21,5 +20,5 @@ const save = (model, validate, body, validationResult) => {
 };
 export default {
 	BaseProvider,
-	save
+	save,
 };

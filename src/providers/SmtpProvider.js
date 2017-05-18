@@ -2,6 +2,7 @@ import * as BaseProvider from "./BaseProvider";
 import util from "util";
 
 /* Provider for User Registration */
+
 const save = (model, validate, body, validationResult) => {
 	return new Promise((resolve, reject) => {
 		validate("email", "email cannot be empty").notEmpty();
@@ -12,7 +13,6 @@ const save = (model, validate, body, validationResult) => {
 		validationResult.then(function(result) {
 			if (!result.isEmpty()) {
 				reject(util.inspect(result.array()));
-				return;
 			} else {
 				resolve(body);
 			}
@@ -21,5 +21,5 @@ const save = (model, validate, body, validationResult) => {
 };
 export default {
 	BaseProvider,
-	save
+	save,
 };

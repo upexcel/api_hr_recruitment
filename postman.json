@@ -492,6 +492,33 @@
 					"response": []
 				},
 				{
+					"name": "Tag Get All",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData){",
+									"    tests[\"get all\"] = true;",
+									"}else{",
+									"    tests[\"get all\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/tag/get?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Tag Get By Type",
 					"event": [
 						{
@@ -802,6 +829,83 @@
 						"method": "DELETE",
 						"header": [],
 						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5.verify_token",
+			"description": "",
+			"item": []
+		},
+		{
+			"name": "6.email",
+			"description": "",
+			"item": [
+				{
+					"name": "Email fetch",
+					"request": {
+						"url": "{{url}}/email/fetch?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "tag_id",
+									"value": "2",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Tag",
+					"request": {
+						"url": "{{url}}/email/assignTag?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "tag_id",
+									"value": "2",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "mongo_id",
+									"value": "5912d40cc0b0923016e80300",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []

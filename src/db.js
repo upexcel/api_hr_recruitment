@@ -10,9 +10,7 @@ const sequelize = new Sequelize(config.db.name, config.db.username, config.db.pa
 Object.keys(models).forEach((modelName) => {
 	const model = models[modelName](sequelize, Sequelize.DataTypes);
 	db[modelName] = model;
-	console.log(`Loading model - ${modelName}`);
 });
-
 
 // invoke associations on each of the models
 Object.keys(db).forEach((modelName) => {
@@ -21,31 +19,30 @@ Object.keys(db).forEach((modelName) => {
 	}
 });
 
-
 sequelize.sync().then(() => {
-	db.Tag.findOne({ where: { type: "Default" ,title: "Reject"} })
-    .then((id) => {
+	db.Tag.findOne({ where: { type: "Default", title: "Reject" } })
+        .then((id) => {
 	if (!id) {
-		db.Tag.create({ title: "Reject", type: "Default" , color:"#cb891b"});
+		db.Tag.create({ title: "Reject", type: "Default", color: "#cb891b" });
 	}
 });
 
 	db.Tag.findOne({ where: { type: "Default", title: "Ignore" } })
-    .then((id) => {
+        .then((id) => {
 	if (!id) {
-		db.Tag.create({ title: "Ignore", type: "Default" , color:"#ef2e46"});
+		db.Tag.create({ title: "Ignore", type: "Default", color: "#ef2e46" });
 	}
 });
 
-	db.Tag.findOne({ where: { type: "Default", title: "Schedule"} })
-    .then((id) => {
+	db.Tag.findOne({ where: { type: "Default", title: "Schedule" } })
+        .then((id) => {
 	if (!id) {
-		db.Tag.create({ title: "Schedule", type: "Default" , color:"#ba21d3"});
+		db.Tag.create({ title: "Schedule", type: "Default", color: "#ba21d3" });
 	}
 });
 });
 
 export default Object.assign({}, db, {
 	sequelize,
-	Sequelize,
+	Sequelize
 });

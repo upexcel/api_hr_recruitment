@@ -1,15 +1,15 @@
 export default function() {
 	const constant = {
-		tagType:{
+		tagType: {
 			default: "Default",
 			manual: "Manual",
-			automatic: "Automatic"
+			automatic: "Automatic",
 		},
-		userType:{
+		userType: {
 			admin: "Admin",
 			guest: "Guest",
-			hr: "HR"
-		}
+			hr: "HR",
+		},
 	};
 	return constant;
 }
