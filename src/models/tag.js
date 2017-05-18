@@ -2,7 +2,6 @@ export default function(sequelize, DataTypes) {
 	const Tag = sequelize.define("TAG", {
 		email: {
 			type: DataTypes.STRING,
-			unique: true,
 		},
 		title: DataTypes.STRING,
 		color: DataTypes.STRING,
@@ -19,7 +18,6 @@ export default function(sequelize, DataTypes) {
 		allowNull: true,
 
 		classMethods: {
-
             // login.....
 			tag(tag_id) {
 				return new Promise((resolve, reject) => {
