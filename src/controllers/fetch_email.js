@@ -133,7 +133,7 @@ export class FetchController extends BaseAPIController {
                                     type: val1.type
                                 }));
                                 }
-                            }) 
+                            })
                         });
                         res.json({
                             data: count1,
@@ -250,7 +250,26 @@ export class FetchController extends BaseAPIController {
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
-}
+
+    deleteEmail = (req, res, next) => {
+
+MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
+            .then(() => {
+        req.email.findOne({_id: req.body.mongo_id}, function (err, data) {
+            if (err) {
+                res.json({status: 0, message: err});
+            }
+            if (!data) {
+                res.json({status: 0, msg: "not found"});
+            } else {
+                data.remove();
+                res.json({status: 1, message: " success"});
+            }
+         })
+        })
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+  }
 
 const controller = new FetchController();
 export default controller;
