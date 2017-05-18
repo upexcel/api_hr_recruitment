@@ -11,10 +11,6 @@ const save = (model, type, validate, body, validationResult) => {
 		} else if (type === tag().tagType.automatic) {
 			validate("title", "Title cannot be empty").notEmpty();
 			validate("color", "color cannot be empty").notEmpty();
-			validate("email", "email cannot be empty").notEmpty();
-			validate("subject", "subject cannot be empty").notEmpty();
-			validate("to", "Title cannot be empty").notEmpty();
-			validate("from", "color cannot be empty").notEmpty();
 		} else {
 			reject("Invalid Type");
 		}

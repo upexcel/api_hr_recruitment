@@ -3,16 +3,16 @@ import auth from "../middleware/auth";
 
 export default (app) => {
     /* Route for Template Create  */
-	app.route("/template/add").post(auth.requiresAdminOrHr, template.create);
+	app.route("/template/add").post( template.create);
 
     /* Route for Template update  */
-	app.route("/template/update/:templateId").put(auth.requiresAdminOrHr, template.update);
+	app.route("/template/update/:templateId").put( template.update);
 
     /* Route for Template Delete */
-	app.route("/template/delete/:templateId").delete(auth.requiresAdminOrHr, template.deleteTemplate);
+	app.route("/template/delete/:templateId").delete( template.deleteTemplate);
 
     /* Route for List of Template */
-	app.route("/template/list").get(auth.requiresAdminOrHr, template.templateList);
+	app.route("/template/list").get( template.templateList);
 
 	return app;
 };

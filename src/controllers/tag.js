@@ -6,7 +6,7 @@ export class ImapController extends BaseAPIController {
 
     /* Controller for Save Imap Data  */
     save = (req, res) => {
-        TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
+        TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Tag.create(data)
                     .then(res.json.bind(res))
