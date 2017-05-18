@@ -14,11 +14,6 @@ export class SmtpController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* Get Smtpp data using id */
-    idResult = (req, res, next, smtpId) => {
-        this.getById(req, res, this._db.Smtp, smtpId, next);
-    }
-
     /* Smtp data Update */
     update = (req, res) => {
         SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
@@ -49,17 +44,13 @@ export class SmtpController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* Get Smtp data */
+    /*Get List of Smtp data*/
     getSmtp = (req, res) => {
-        this._db.Smtp.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+        this._db.Smtp.findAll()
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* get smtp by id*/
-    getSmtpById = (req, res) => {
-        res.json(req.result);
-    }
 }
 
 const controller = new SmtpController();

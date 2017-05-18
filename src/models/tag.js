@@ -20,7 +20,7 @@ export default function(sequelize, DataTypes) {
 		classMethods: {
             // login.....
 			tag(tag_id) {
-				return new Promise((resolve, reject) => {
+				app.route("/tag/add/:type").post( tag.save);		return new Promise((resolve, reject) => {
 					this.find({
 						where: {
 							id: tag_id
