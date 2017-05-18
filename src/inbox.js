@@ -24,14 +24,14 @@ module.exports = {
 	get_schema: function(email) {
 		db.Imap.findOne({ where: { "active": "True" } }).then(function(docs, err) {
 			if (docs) {
-				imap = new Imap({
+                // }); /*eslint-disable*/
+				var imap = new Imap({
 					user: docs.dataValues.email,
 					password: docs.dataValues.password,
 					host: docs.dataValues.imap_server,
 					port: docs.dataValues.server_port,
 					tls: docs.dataValues.type,
 				}); /*eslint-disable*/
-
 
 function openInbox(cb) { /*eslint-enable*/
 	imap.openBox("INBOX", true, cb);
@@ -134,7 +134,6 @@ function findAttachmentParts(struct, attachments) { /*eslint-enable*/
 	return attachments;
 } /*eslint-disable*/
 
-
 function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
 	var filename = attachment.params.name;
 	var encoding = attachment.encoding;
@@ -233,52 +232,6 @@ function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enabl
 					console.log("data saved successfully");
 				}
 			});
-		});
-		msg.once("end", function() {
-			console.log(prefix + "Finished attachment %s", filename);
-		});
-	};
-} /*eslint-disable */
-
-                function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
-	var emailid = seqno,
-		to = headers.to.toString();
-	var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
-		from = hash1.substring(0, hash1.lastIndexOf("<"));
-	var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
-		sender_mail = hash.substring(0, hash.lastIndexOf(">"));
-	var date = headers.date.toString(),
-		email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
-		email_timestamp = new Date(date).getTime(),
-		subject = headers.subject.toString(),
-		unread = in_array("[]", flag),
-		answered = in_array("\\Answered", flag),
-		message = bodyMsg,
-		attachment = attachments;
-	var str = subject,
-		match = /angular js|php|Hybrid Mobile Apps|testing/gi,
-		tag = str.match(match);
-	var detail = new email({
-		"email_id": emailid,
-		"to": to,
-		"from": from,
-		"sender_mail": sender_mail,
-		"date": date,
-		"email_date": email_date,
-		"email_timestamp": email_timestamp,
-		"subject": subject,
-		"uid": uid,
-		"unread": unread,
-		"answered": answered,
-		"body": message,
-		"attachment": attachment,
-		"tags": tag
-	});
-	detail.save(function(err) {
-		if (err) {
-			console.log("Duplicate Data");
-		} else {
-			console.log("data saved successfully");
 		}
 	});
 }
