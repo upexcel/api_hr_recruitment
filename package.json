@@ -9,7 +9,7 @@
     "start": "node dist",
     "prestart": "npm run -s build",
     "lint": "eslint src --fix",
-
+    "precommit": "npm run lint & newman run postman.json -e env.json"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
