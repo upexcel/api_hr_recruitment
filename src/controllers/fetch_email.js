@@ -100,7 +100,7 @@ export class FetchController extends BaseAPIController {
                                 count1.push(_.merge(val, {
                                     title: "Mails",
                                     color: "#81d4fa",
-                                    type: "Default"
+                                    type: "Main"
                                 }));
                             }
                         })
