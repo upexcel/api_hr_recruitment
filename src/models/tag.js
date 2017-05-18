@@ -18,7 +18,5 @@ export default function (sequelize, DataTypes) {
 		freezeTableName: true,
 		allowNull: true,
 	});
-
-
 	return Tag;
 }
