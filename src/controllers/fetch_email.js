@@ -76,7 +76,7 @@ export class FetchController extends BaseAPIController {
                 unread: {
                     $sum: {
                         $cond: [{
-                            $eq: ["$unread", "false"]
+                            $eq: ["$unread", false]
                         }, 0, 1]
                     },
                 },
@@ -223,7 +223,7 @@ export class FetchController extends BaseAPIController {
                     _id: req.body.mongo_id
                 }, {
                     $set: {
-                        unread: false
+                        unread: true
                     }
                 }, function(err, data) {
                     if (err) {
