@@ -17,7 +17,7 @@ export class FetchController extends BaseAPIController {
             tag_id: {
                 $in: [tag_id]
             }
-        }).skip((page - 1) * 21).limit(21).exec(function(err, data) {
+        }).skip((page - 1) * 21).limit(21).sort({uid:-1}).exec(function(err, data) {
             if (err) {
                 next(err);
             } else {
@@ -99,7 +99,7 @@ export class FetchController extends BaseAPIController {
                                 count1.push(_.merge(val, {
                                     title: "Mails",
                                     color: "#81d4fa",
-                                    type: "Default"
+                                    type: "Main"
                                 }));
                             }
                         })
@@ -216,37 +216,25 @@ export class FetchController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-    changeUnreadStatus = (req, res, next) => {
+     changeUnreadStatus = (req, res, next) => {
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                req.email.find({
-                    mongo_id: req.body.mongo_id
-                }, function(err, result) {
-                    if (err) {
-                        next(new Error(err));
-                    } else if (req.body.status == 'true' || req.body.status == 'false') {
-                        req.email.update({
-                            mongo_id: req.body.mongo_id
-                        }, {
-                            unread: req.body.status,
-                        }, function(error) {
-                            if (error) {
-                                next(new Error(err));
-                            } else {
-                                res.json({
-                                    status: 1,
-                                    message: 'the unread status is successfully changed to ' + req.body.status
-                                });
-                            }
-                        });
-                    } else {
-                        res.json({
-                            status: 0,
-                            message: 'the unread status is not changed successfully,  you have to set status true or false'
-                        });
+                req.email.findOneAndUpdate({
+                    _id: req.body.mongo_id
+                }, {
+                    $set: {
+                        unread: false
                     }
-                });
-
+                }, function(err, data) {
+                    if (err) {
+                        res.json({ status: 0, message: err });
+                    }
+                    if (!data) {
+                        res.json({ status: 0, msg: "not found" });
+                    } else {
+                        res.json({ status: 1, message: " the unread status is changed successfully", data: data });
+                    }
+                })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
