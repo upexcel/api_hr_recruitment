@@ -17,7 +17,6 @@ export class TemplateController extends BaseAPIController {
 	update = (req, res) => {
 		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-	console.log(data);
 	this._db.Template.update(data, {
 		where: {
 			id: req.params.templateId
