@@ -1,13 +1,13 @@
 import BaseAPIController from "./BaseAPIController";
-import TemplateProvider from "../providers/TemplateProvider.js";
+import VariableProvider from "../providers/tempVariableProvider.js";
 
-export class TemplateController extends BaseAPIController {
+export class VariableController extends BaseAPIController {
 
     /* Controller for User Register  */
 	create = (req, res) => {
-		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
+		VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
-	this._db.Template.create(user)
+	this._db.Variable.create(user)
                     .then(res.json.bind(res))
                     .catch(this.handleErrorResponse.bind(null, res));
 })
@@ -16,9 +16,9 @@ export class TemplateController extends BaseAPIController {
 
     /* Template Update */
 	update = (req, res) => {
-		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
+		VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-	this._db.Template.update(data, {
+	this._db.Variable.update(data, {
 		where: {
 			id: req.params.templateId
 		}
@@ -29,14 +29,15 @@ export class TemplateController extends BaseAPIController {
 	} else {
 		this.handleErrorResponse(res, "data not Updated");
 	}
-}).catch(this.handleErrorResponse.bind(null, res));
+})
+                    .catch(this.handleErrorResponse.bind(null, res));
 })
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
     /* Template delete */
-	deleteTemplate = (req, res) => {
-		this._db.Template.destroy({
+	deleteVarable = (req, res) => {
+		this._db.Variable.destroy({
 			where: {
 				id: req.params.templateId
 			}
@@ -47,17 +48,21 @@ export class TemplateController extends BaseAPIController {
 	} else {
 		this.handleErrorResponse(res, "data not deleted");
 	}
-}).catch(this.handleErrorResponse.bind(null, res));
+})
+            .catch(this.handleErrorResponse.bind(null, res));
 	}
 
     /* Get List of All Templates */
-	templateList = (req, res) => {
-		this._db.Template.findAll({offset: (req.params.page - 1) * 10,limit: 10	})
+	variableList = (req, res) => {
+		this._db.Variable.findAll({
+			offset: (req.params.page - 1) * 10,limit: 10})
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
 	}
+
 }
 
 
-const controller = new TemplateController();
+
+const controller = new VariableController();
 export default controller;

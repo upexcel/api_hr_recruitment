@@ -1,6 +1,5 @@
 import smtp from "../controllers/smtp";
 import auth from "../middleware/auth";
-// import baseController from '../controllers/BaseAPIController'
 
 export default (app) => {
     /* Route for smtp save  */

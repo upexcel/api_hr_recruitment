@@ -19,8 +19,8 @@ export default function(sequelize, DataTypes) {
 
 		classMethods: {
             // login.....
-			tag(tag_id) {
-				app.route("/tag/add/:type").post( tag.save);		return new Promise((resolve, reject) => {
+			tag(tag_id) {   /*eslint-disable*/
+				app.route("/tag/add/:type").post( tag.save);		return new Promise((resolve, reject) => {   /*eslint-enable*/
 					this.find({
 						where: {
 							id: tag_id

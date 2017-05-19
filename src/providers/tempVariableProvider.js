@@ -3,9 +3,8 @@ import util from "util";
 
 /* Provider for User Registration */
 const save = (model, validate, body, validationResult) => new Promise((resolve, reject) => {
-	validate("templateName", "Template Name cannot be empty").notEmpty();
-	validate("subject", "Subject cannot be empty").notEmpty();
-	validate("body", "Body cannot be empty").notEmpty();
+	validate("variableCode", "variable Code cannot be empty").notEmpty();
+	validate("variableValue", "variable Value cannot be empty").notEmpty();
 	validationResult.then((result) => {
 		if (!result.isEmpty()) {
 			reject(util.inspect(result.array()));
@@ -14,7 +13,6 @@ const save = (model, validate, body, validationResult) => new Promise((resolve, 
 		}
 	});
 });
-
 
 export default {
 	...BaseProvider,
