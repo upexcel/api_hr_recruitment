@@ -1,12 +1,14 @@
 module.exports = {
+    "parser": "babel-eslint",
     "env": {
         "browser": true,
-        "commonjs": true,
+        // "commonjs": true,
         "es6": true,
-        "node": true
+        "node": true,
+        "jquery": true
     },
     "extends": "eslint:recommended",
-    // "parser": "babel-eslint",
+
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -17,6 +19,7 @@ module.exports = {
         "arrowFunctions": true
     },
     "rules": {
+        "no-tabs": 0,
         "indent": [
             "error",
             "tab"

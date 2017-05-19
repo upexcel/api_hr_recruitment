@@ -5,7 +5,7 @@ import tag from "../models/constant";
 
 export class AuthController {
 
-	  // middleware for logged in users
+	// middleware for logged in users
 	requiresLogin(req, res, next) {
 		const token = req.param("accessToken");
 		if (token) {
