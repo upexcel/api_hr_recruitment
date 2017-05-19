@@ -75,11 +75,10 @@ export class FetchController extends BaseAPIController {
 				unread: {
 					$sum: {
 						$cond: [{
-							$eq: ["$unread", "false"]
+							$eq: ["$unread", false]
 						}, 0, 1]
 					},
 				},
-
 			}
 		}, (err, result) => {
 			if (err) {
