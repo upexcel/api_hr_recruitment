@@ -223,7 +223,7 @@ export class FetchController extends BaseAPIController {
                     _id: req.body.mongo_id
                 }, {
                     $set: {
-                        unread: true
+                        unread: false
                     }
                 }, function(err, data) {
                     if (err) {
