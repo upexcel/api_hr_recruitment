@@ -81,16 +81,16 @@ export class ImapController extends BaseAPIController {
 	if (data[0] == 1) {
 		res.json({ status: 1, message: "success", data: "successfully Active changed to true"});
 	} else if (data[0] == 0) {
-		res.json({ status: 1, message: "error", data: "user not found in database" });
+		res.json({ status: 0, message: "error", data: "user not found in database" });
 	} else {
-		res.json({ status: 1, message: "error", data: "error" });
+		res.json({ status: 0, message: "error", data: "error" });
 	}
 })
 .catch(this.handleErrorResponse.bind(null, res));
 			}
 		});
 	}else{
-		res.json({ status: 1, message: "error", data: "email not found in database" });
+		res.json({ status: 0, message: "error", data: "email not found in database" });
 	}
 })
             .catch(this.handleErrorResponse.bind(null, res));
