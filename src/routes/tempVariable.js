@@ -6,7 +6,7 @@ export default (app) => {
 	app.route("/variable/add").post(auth.requiresAdminOrHr, variable.create);
 
     /* Route for Template Variable update  */
-	app.route("/variable/update/:variableId").put(auth.requiresAdminOrHr, variable.update);
+	app.route("/variable/update/:variableId").put( variable.update);
 
     /* Route for Template Variable Delete */
 	app.route("/variable/delete/:variableId").delete(auth.requiresAdminOrHr,variable.deleteVarable);
