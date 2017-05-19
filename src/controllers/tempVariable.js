@@ -35,10 +35,10 @@ export class VariableController extends BaseAPIController {
 	}
 
     /* Template delete */
-	deleteVarable = (req, res) => {
+	deleteVariable = (req, res) => {
 		this._db.Variable.destroy({
 			where: {
-				id: req.params.templateId
+				id: req.params.variableId
 			}
 		})
             .then((data) => {
