@@ -1,14 +1,14 @@
 {
 	"variables": [],
 	"info": {
-		"name": "hr_recruitment",
-		"_postman_id": "ae1e2c9c-2929-37f2-517f-7db42e6ac205",
+		"name": "hr_recruitment copy",
+		"_postman_id": "9a030d35-12d4-b8c6-784a-d981f38ad50a",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "1.user",
+			"name": "1.User Registration",
 			"description": "",
 			"item": [
 				{
@@ -20,11 +20,13 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.id){",
-									"    tests[\"status\"] = true;",
-									"}else{",
-									"    tests[\"status\"] = false;",
-									"}"
+									"if (jsonData.user_type) {",
+									"   tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"    postman.setEnvironmentVariable(\"type\", jsonData.user_type);",
+									"} else {",
+									"  tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									""
 								]
 							}
 						},
@@ -90,16 +92,14 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.status == 1){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}if(jsonData.token){",
-									"    tests[\"having token\"] = true;",
-									"}else{",
-									"    tests[\"having token\"] = false;",
+									"if (jsonData.token) {",
+									"  tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"    postman.setEnvironmentVariable(\"token\", jsonData.token);",
+									"} else {",
+									"    tests[\"Valid Token\"] = false;",
+									"    tests[\"Critical Test Fail. Make sure admin user exists and verified\"] = false;",
 									"}",
-									"postman.setEnvironmentVariable(\"token\", jsonData.token);"
+									""
 								]
 							}
 						}
@@ -138,22 +138,260 @@
 			]
 		},
 		{
-			"name": "2.imap_server_setting",
+			"name": "2.Email Fetch",
 			"description": "",
 			"item": [
 				{
-					"name": "Imap Data Save",
+					"name": "Inbox",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
 									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"postman.setEnvironmentVariable(\"imapId\", jsonData.id);"
+									"if(jsonData.data[0].uid){",
+									"    postman.setEnvironmentVariable(\"uid\", jsonData.data[0].uid);",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/email/inbox/1",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "UID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.data){",
+									"    tests[\"status true\"] = true;",
+									"}else{",
+									"    tests[\"status true\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/email/{{uid}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3.Email Variable",
+			"description": "",
+			"item": [
+				{
+					"name": "Variable Add",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"    if(jsonData.id) {",
+									"        postman.setEnvironmentVariable(\"variableId\", jsonData.id); ",
+									"         tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"         tests[\"Admin\"] = true;",
+									"        ",
+									"    } else {",
+									"         tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"    }",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/variable/add/?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "variableValue",
+									"value": "rvebdvfbkeh hfrkefuer",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "variableCode",
+									"value": "abc",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable GET",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/variable/get/1/?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/variable/update/{{variableId}}?accessToken={{token}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "variableCode",
+									"value": "vedf ef",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "variableValue",
+									"value": "ytnjyumnkui",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/variable/delete/{{variableId}}?accessToken={{token}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4.IMAP",
+			"description": "",
+			"item": [
+				{
+					"name": "IMAP Save",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type === \"Admin\"){",
+									"    if(jsonData.id) {",
+									"        postman.setEnvironmentVariable(\"id\", jsonData.id);  ",
+									"        tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"         tests[\"Admin\"] = true;",
+									"        ",
+									"    } else {",
+									"         tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"    }",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
 								]
 							}
 						}
@@ -179,7 +417,7 @@
 								},
 								{
 									"key": "imap_server",
-									"value": "sass",
+									"value": "sasssss",
 									"type": "text",
 									"enabled": true
 								},
@@ -208,7 +446,7 @@
 					"response": []
 				},
 				{
-					"name": "Imap Data Update",
+					"name": "IMAP Get",
 					"event": [
 						{
 							"listen": "test",
@@ -216,86 +454,17 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"status true\"] = true;",
+									"if(environment.type === \"Admin\"){",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"update_email\", \"test\"+ Math.floor((Math.random() * 10) + 20) + \"@gmail.com\");"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{update_email}}",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "imap_server",
-									"value": "sqsq",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "password",
-									"value": "12",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "server_port",
-									"value": "123",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Imap Data Get",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
 									"}"
 								]
 							}
@@ -311,7 +480,7 @@
 					"response": []
 				},
 				{
-					"name": "Imap Data Delete",
+					"name": "IMAP Update",
 					"event": [
 						{
 							"listen": "test",
@@ -319,17 +488,388 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"status true\"] = true;",
+									"if(environment.type === \"Admin\"){",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"}else{",
-									"    tests[\"status true\"] = false;",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
 									"}"
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
+						"url": "{{url}}/imap/update/{{id}}?accessToken={{token}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "imap_server",
+									"value": "sasssss",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "type",
+									"value": "TLS",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "12333333333",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "server_port",
+									"value": "8091",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type === \"Admin\"){",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/imap/delete/{{id}}?accessToken={{token}}",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Change Status to Active",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status == 1) {",
+									"    tests[\"get status 1\"] = true;",
+									"} else {",
+									"    tests[\"get status 1\"] = false;",
+									"}",
+									"if (jsonData.data == \"successfully Active changed to true\") {",
+									"    tests[\"successfully changed status\"] = true;",
+									"",
+									"} else {",
+									"    tests[\"successfully changed status\"] = false;",
+									"}",
+									"tests[\"Body contains success\"] = responseBody.has(\"success\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/imap/statusActive?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "vaibhav_pathak@excellencetechnologies.in",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "5.SMTP",
+			"description": "",
+			"item": [
+				{
+					"name": "SMTP Save",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type === \"Admin\"){",
+									"    if(jsonData.id) {",
+									"        postman.setEnvironmentVariable(\"smtpId\", jsonData.id); ",
+									"         tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"         tests[\"Admin\"] = true;",
+									"        ",
+									"    } else {",
+									"         tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"    }",
+									"}else if((environment.type === \"HR\") && (environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/smtp/save/?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "0001",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "smtp_server",
+									"value": "smtp.gmail.com",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "server_port",
+									"value": "993",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "type",
+									"value": "SSL",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "status",
+									"value": "false",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type === \"Admin\"){",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/smtp/get/1/?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type === \"Admin\"){",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/smtp/update/{{smtpId}}?accessToken={{token}}",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "password",
+									"value": "12312",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "smtp_server",
+									"value": "smtp.gmail.com",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "server_port",
+									"value": "993",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "type",
+									"value": "SSL",
+									"type": "text",
+									"enabled": true
+								},
+								{
+									"key": "status",
+									"value": "false",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type === \"Admin\"){",
+									"  if(jsonData){",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"}else if((environment.type === \"HR\") ||(environment.type === \"Guest\") ){",
+									"          tests[\"Invalid Token\"] = false;",
+									"    }else{",
+									"    tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
 						"method": "DELETE",
 						"header": [],
 						"body": {},
@@ -340,7 +880,7 @@
 			]
 		},
 		{
-			"name": "3.tag_system",
+			"name": "6.Tag System",
 			"description": "",
 			"item": [
 				{
@@ -353,10 +893,10 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"if(jsonData.id){",
-									"    postman.setEnvironmentVariable(\"tagid\", jsonData.id);",
-									"    tests[\"status true\"] = true;",
+									"    postman.setEnvironmentVariable(\"id\", jsonData.id);",
+									"     tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"}else{",
-									"    tests[\"status true\"] = false;",
+									"      tests[\"Status code is 400\"] = responseCode.code === 400;",
 									"}"
 								]
 							}
@@ -418,108 +958,7 @@
 					"response": []
 				},
 				{
-					"name": "Update Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/tag/update/Manual/{{tagid}}?accessToken={{token}}",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "title",
-									"value": "fvshfsvdhf",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "color",
-									"value": "changed",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "subject",
-									"value": "changed",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "to",
-									"value": "2017-05-13",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "from",
-									"value": "2017-08-13",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Tag Get All",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"get all\"] = true;",
-									"}else{",
-									"    tests[\"get all\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/tag/get?accessToken={{token}}",
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Tag Get By Type",
+					"name": "Tag get By Type",
 					"event": [
 						{
 							"listen": "test",
@@ -544,93 +983,51 @@
 						"description": ""
 					},
 					"response": []
-				},
-				{
-					"name": "Tag Get By Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/tag/getbyid/Manual/{{tagid}}?accessToken={{token}}",
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Tag Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"status true\"] = true;",
-									"}else{",
-									"    tests[\"status true\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/tag/delete/Manual/{{tagid}}?accessToken={{token}}",
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
 				}
 			]
 		},
 		{
-			"name": "4.smtp_server_setting",
+			"name": "7.Template Page",
 			"description": "",
 			"item": [
 				{
-					"name": "Smtp Data Save",
+					"name": "Template Add",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
 									"var jsonData = JSON.parse(responseBody);",
 									"if(jsonData.id){",
-									"    postman.setEnvironmentVariable(\"smtpId\", jsonData.id);",
-									"    tests['smtp data save'] = true",
+									"    postman.setEnvironmentVariable(\"templateId\", jsonData.id);",
+									"   tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"}else{",
-									"    tests['smtp data save'] = false",
-									"}",
-									""
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}"
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/smtp/save?accessToken={{token}}",
+						"url": "{{url}}/template/add/?accessToken={{token}}",
 						"method": "POST",
 						"header": [
+							{
+								"key": "templateName",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "subject",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "body",
+								"value": "cdegfcvgrejfgvjehrfgre",
+								"description": ""
+							},
 							{
 								"key": "Content-Type",
 								"value": "application/x-www-form-urlencoded",
@@ -641,32 +1038,20 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{email}}",
+									"key": "templateName",
+									"value": "abc",
 									"type": "text",
 									"enabled": true
 								},
 								{
-									"key": "smtp_server",
-									"value": "sass",
+									"key": "subject",
+									"value": "cde",
 									"type": "text",
 									"enabled": true
 								},
 								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "password",
-									"value": "123",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
+									"key": "body",
+									"value": "efcjkjvdf",
 									"type": "text",
 									"enabled": true
 								}
@@ -677,7 +1062,7 @@
 					"response": []
 				},
 				{
-					"name": "Smtp Data Update",
+					"name": "Template List",
 					"event": [
 						{
 							"listen": "test",
@@ -686,25 +1071,47 @@
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
 									"if(jsonData){",
-									"    tests[\"update smtp data\"] = true;",
+									"    tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"}else{",
-									"    tests[\"update smtp data\"] = false;",
-									"}"
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"update_email\", \"test\"+ Math.floor((Math.random() * 10) + 20) + \"@gmail.com\");"
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									""
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/smtp/update/{{smtpId}}?accessToken={{token}}",
+						"url": "{{url}}/template/get/1?accessToken={{token}}",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Template Update",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"}else{",
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/template/update/{{templateId}}?accessToken={{token}}",
 						"method": "PUT",
 						"header": [
 							{
@@ -717,32 +1124,20 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{update_email}}",
+									"key": "templateName",
+									"value": "pqr",
 									"type": "text",
 									"enabled": true
 								},
 								{
-									"key": "imap_server",
-									"value": "sqsq",
+									"key": "subject",
+									"value": "pqr",
 									"type": "text",
 									"enabled": true
 								},
 								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "password",
-									"value": "12",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "server_port",
-									"value": "123",
+									"key": "body",
+									"value": "vfdjvcfehgkvergkvevhgeiy",
 									"type": "text",
 									"enabled": true
 								}
@@ -753,7 +1148,7 @@
 					"response": []
 				},
 				{
-					"name": "Smtp Data Get",
+					"name": "Template Delete",
 					"event": [
 						{
 							"listen": "test",
@@ -761,151 +1156,23 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"get smtp data\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"}else{",
-									"    tests[\"get smtp data\"] = false;",
-									"}"
+									"   tests[\"Status code is 400\"] = responseCode.code === 400;",
+									"}",
+									"",
+									"",
+									""
 								]
 							}
 						}
 					],
 					"request": {
-						"url": "{{url}}/smtp/get/1?accessToken={{token}}",
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "smtp Data Get By Id",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"get smtp data\"] = true;",
-									"}else{",
-									"    tests[\"get smtp data\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Smtp Data Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData){",
-									"    tests[\"smtp data delete\"] = true;",
-									"}else{",
-									"    tests[\"smtp data delete\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+						"url": "{{url}}/template/delete/{{templateId}}?accessToken={{token}}",
 						"method": "DELETE",
 						"header": [],
 						"body": {},
-						"description": ""
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "5.verify_token",
-			"description": "",
-			"item": []
-		},
-		{
-			"name": "6.email",
-			"description": "",
-			"item": [
-				{
-					"name": "Email fetch",
-					"request": {
-						"url": "{{url}}/email/fetch?accessToken={{token}}",
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "tag_id",
-									"value": "2",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "page",
-									"value": "1",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Assign Tag",
-					"request": {
-						"url": "{{url}}/email/assignTag?accessToken={{token}}",
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "tag_id",
-									"value": "2",
-									"type": "text",
-									"enabled": true
-								},
-								{
-									"key": "mongo_id",
-									"value": "5912d40cc0b0923016e80300",
-									"type": "text",
-									"enabled": true
-								}
-							]
-						},
 						"description": ""
 					},
 					"response": []
