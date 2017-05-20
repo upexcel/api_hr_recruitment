@@ -1,5 +1,4 @@
 module.exports = {
-    "parser": "babel-eslint",
     "env": {
         "browser": true,
         // "commonjs": true,
@@ -8,7 +7,7 @@ module.exports = {
         "jquery": true
     },
     "extends": "eslint:recommended",
-
+     "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true

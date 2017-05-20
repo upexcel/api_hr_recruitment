@@ -5,11 +5,13 @@ export class TemplateController extends BaseAPIController {
 
     /* Controller for User Register  */
 	create = (req, res) => {
-		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult()).then((user) => {
-			this._db.Template.create(user)
+
+		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
+            .then((user) => {
+	this._db.Template.create(user)
                     .then(res.json.bind(res))
                     .catch(this.handleErrorResponse.bind(null, res));
-		})
+})
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
@@ -17,7 +19,6 @@ export class TemplateController extends BaseAPIController {
 	update = (req, res) => {
 		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-	console.log(data);
 	this._db.Template.update(data, {
 		where: {
 			id: req.params.templateId
@@ -48,19 +49,18 @@ export class TemplateController extends BaseAPIController {
 	} else {
 		this.handleErrorResponse(res, "data not deleted");
 	}
+
 })
-            .catch(this.handleErrorResponse.bind(null, res));
+.catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /*Get List of All Templates*/
+    /* Get List of All Templates */
 	templateList = (req, res) => {
-		this._db.Template.findAll()
+		this._db.Template.findAll({offset: (req.params.page - 1) * 10,limit: 10	})
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
 	}
-
 }
-
 
 
 const controller = new TemplateController();

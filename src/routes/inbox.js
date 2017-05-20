@@ -10,6 +10,3 @@ export default (app) => {
 
 	return app;
 };
-
-
-//auth.requiresLogin,

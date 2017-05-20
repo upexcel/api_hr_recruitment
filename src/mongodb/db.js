@@ -5,7 +5,6 @@ var CronJob = require("cron").CronJob;
 // the middleware function
 module.exports = function() {
 
-
 	// create schema
 	var emailSchema = mongoose.Schema({	}, {
 		collection: "emailStored",
