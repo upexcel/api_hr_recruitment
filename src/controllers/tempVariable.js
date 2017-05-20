@@ -23,6 +23,7 @@ export class VariableController extends BaseAPIController {
 			id: req.params.variableId
 		}
 	})
+
 .then((data) => {
 	if (data[0]) {
 		this.handleSuccessResponse(res, null);
@@ -54,7 +55,9 @@ export class VariableController extends BaseAPIController {
     /* Get List of All Templates */
 	variableList = (req, res) => {
 		this._db.Variable.findAll({
-			offset: (req.params.page - 1) * 10,limit: 10})
+			offset: (req.params.page - 1) * 10,
+			limit: 10
+		})
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
 	}

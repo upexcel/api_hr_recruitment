@@ -6,8 +6,10 @@ var in_array = require("in_array"),
 	google = require("googleapis"),
 	OAuth2 = google.auth.OAuth2,
 	Imap = require("imap"),
-/*eslint-disable*/
-upload = multer({ dest: "uploads/" }); /*eslint-enable*/
+    /*eslint-disable*/
+    upload = multer({
+        dest: "uploads/"
+    }); /*eslint-enable*/
 import db from "./db";
 var config = require("./config.json");
 var _ = require("lodash");
@@ -19,7 +21,10 @@ oauth2Client.setCredentials({
 	expires_in: config.expires_in,
 	refresh_token: config.refresh_token
 });
-var drive = google.drive({ version: "v2", auth: oauth2Client });
+var drive = google.drive({
+	version: "v2",
+	auth: oauth2Client
+});
 
 module.exports = {
 	get_schema: function(email) {
@@ -35,20 +40,19 @@ module.exports = {
 						tls: val.dataValues.type,
 					}); /*eslint-disable*/
 
-function openInbox(cb) { /*eslint-enable*/
+                    function openInbox(cb) { /*eslint-enable*/
 	imap.openBox("INBOX", true, cb);
 }
 					var headers = {},
 						bodyMsg = "";
-				// var imap;
 					imap.once("ready", function() {
 						openInbox(function() {
 							var delay = 24 * 3600 * 1000;
 							var yesterday = new Date();
 							yesterday.setTime(Date.now() - delay);
 							yesterday = yesterday.toISOString();
-// this will fetch all the Emails data from Gmail
 
+// this will fetch all the Emails data from Gmail
 							imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
 								if (err) throw err;
 								var UID_arr = [];
@@ -109,6 +113,9 @@ function openInbox(cb) { /*eslint-enable*/
 											msg.once("end", function() {
 												console.log(prefix + "Finished");
 											});
+											msg.once("end", function() {
+												console.log(prefix + "Finished");
+											});
 										});
 										f.once("error", function(err) {
 											console.log("Fetch error: " + err);
@@ -123,7 +130,7 @@ function openInbox(cb) { /*eslint-enable*/
 						});
 					}); /*eslint-disable*/
 
-function findAttachmentParts(struct, attachments) { /*eslint-enable*/
+                    function findAttachmentParts(struct, attachments) { /*eslint-enable*/
 	attachments = attachments || [];
 	var len = struct.length;
 	for (var i = 0; i < len; ++i) {
@@ -136,7 +143,7 @@ function findAttachmentParts(struct, attachments) { /*eslint-enable*/
 	return attachments;
 } /*eslint-disable*/
 
-function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
+                    function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
 	var filename = attachment.params.name;
 	var encoding = attachment.encoding;
 	var filepath = path.join(__dirname, "/./uploads/", filename);
@@ -187,13 +194,15 @@ function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enab
 	};
 } /*eslint-disable */
 
-function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
-	email.findOne({uid:uid},function(err,result){
-		if(err){
+                    function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
+	email.findOne({
+		uid: uid
+	}, function(err, result) {
+		if (err) {
 			console.log(err);
-		}else if(result && result !== null){
+		} else if (result && result !== null) {
 			console.log("data is already saved");
-		}else{
+		} else {
 			var emailid = seqno,
 				to = headers.to.toString();
 			var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
@@ -209,32 +218,53 @@ function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enabl
 				message = bodyMsg,
 				attachment = attachments;
 			var str = subject,
-				match = /angular js|php|Hybrid Mobile Apps|testing/gi,
-				tag = str.match(match);
-			var detail = new email({
-				"email_id": emailid,
-				"to": to,
-				"from": from,
-				"sender_mail": sender_mail,
-				"date": date,
-				"email_date": email_date,
-				"email_timestamp": email_timestamp,
-				"subject": subject,
-				"uid": uid,
-				"unread": unread,
-				"answered": answered,
-				"body": message,
-				"attachment": attachment,
-				"tags": tag,
-				"Genuine_Applicant":GENERIC.Genuine_Applicant(subject)
-			});
-			detail.save(function(err) {
-				if (err) {
-					console.log("Duplicate Data");
+				match = /angular js|php|Hybrid Mobile Apps|testing/gi;
+			var tag = str.match(match);
+
+			function tagid(tag, callback) {
+				var tagid = "";
+				if (tag) {
+					db.Tag.find({
+						where: {
+							title: tag
+						}
+					})
+                                            .then((docs) => {
+	tagid = docs.id;
+	callback(tagid);
+});
 				} else {
-					console.log("data saved successfully");
+					callback(null);
 				}
+			}
+
+			tagid(tag, function(tagid) {
+				var detail = new email({
+					"email_id": emailid,
+					"to": to,
+					"from": from,
+					"sender_mail": sender_mail,
+					"date": date,
+					"email_date": email_date,
+					"email_timestamp": email_timestamp,
+					"subject": subject,
+					"uid": uid,
+					"unread": unread,
+					"answered": answered,
+					"body": message,
+					"attachment": attachment,
+					"tag_id": tagid,
+					"Genuine_Applicant":GENERIC.Genuine_Applicant(subject)
+				});
+				detail.save(function(err) {
+					if (err) {
+						console.log("Duplicate Data");
+					} else {
+						console.log("data saved successfully");
+					}
+				});
 			});
+
 		}
 	});
 }
