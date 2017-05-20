@@ -876,6 +876,60 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Smtp test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status == 1) {",
+									"    tests[\"get status 1\"] = true;",
+									"} else {",
+									"    tests[\"get status 1\"] = false;",
+									"}",
+									"if (jsonData.data == \"message sent successfully\") {",
+									"    tests[\"message sent successfully\"] = true;",
+									"",
+									"} else {",
+									"    tests[\"message sent successfully\"] = false;",
+									"}",
+									"tests[\"Body contains success\"] = responseBody.has(\"success\");"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/smtp/testSmtp/?accessToken={{token}}",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"enabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
