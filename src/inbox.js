@@ -13,6 +13,7 @@ var in_array = require("in_array"),
 import db from "./db";
 var config = require("./config.json");
 var _ = require("lodash");
+var GENERIC = require("./modules/generic");
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
 oauth2Client.setCredentials({
 	access_token: config.access_token,
@@ -27,14 +28,10 @@ var drive = google.drive({
 
 module.exports = {
 	get_schema: function(email) {
-		db.Imap.findAll({
-			where: {
-				"active": "True"
-			}
-		}).then(function(docs, err) {
-			if (docs) {
-				_.forEach(docs, (val) => {
-                    // }); /*eslint-disable*/
+		db.Imap.findAll({ where: { "active": "True" } }).then(function(docs, err) {
+			if(docs){
+				_.forEach(docs,(val) => {
+                // }); /*eslint-disable*/
 					var imap = new Imap({
 						user: val.dataValues.email,
 						password: val.dataValues.password,
@@ -48,32 +45,29 @@ module.exports = {
 }
 					var headers = {},
 						bodyMsg = "";
-                    // var imap;
 					imap.once("ready", function() {
 						openInbox(function() {
 							var delay = 24 * 3600 * 1000;
 							var yesterday = new Date();
 							yesterday.setTime(Date.now() - delay);
 							yesterday = yesterday.toISOString();
-                            // this will fetch all the Emails data from Gmail
 
+// this will fetch all the Emails data from Gmail
 							imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
 								if (err) throw err;
 								var UID_arr = [];
 
-								email.find({}).sort({
-									_id: -1
-								}).limit(1).exec(function(err, resp) {
-									if (err) {
+								email.find({}).sort({_id:-1}).limit(1).exec(function (err, resp) {
+									if(err){
 										console.log(err);
 									} else {
-										if (resp.length == 0) {
-											UID_arr = results;
-										} else {
+										if(resp.length == 0){
+											UID_arr=results;
+										}else{
 											var row = resp[0];
 											var Last_UID = row.get("uid");
-											_.forEach(results, (val) => {
-												if (val >= Last_UID) {
+											_.forEach(results,(val)=>{
+												if(val >= Last_UID){
 													UID_arr.push(val);
 												}
 											});
@@ -115,6 +109,9 @@ module.exports = {
 												} else {
 													f.on("message", buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno));
 												}
+											});
+											msg.once("end", function() {
+												console.log(prefix + "Finished");
 											});
 											msg.once("end", function() {
 												console.log(prefix + "Finished");
@@ -257,6 +254,7 @@ module.exports = {
 					"body": message,
 					"attachment": attachment,
 					"tag_id": tagid,
+					"Genuine_Applicant":GENERIC.Genuine_Applicant(subject)
 				});
 				detail.save(function(err) {
 					if (err) {

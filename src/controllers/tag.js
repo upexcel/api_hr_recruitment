@@ -5,7 +5,7 @@ import tag from "../models/constant";
 export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
 	save = (req, res) => {
-		TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
+		TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
 	if (data.type === "Automatic") {
 		this._db.Tag.findOne({
@@ -30,17 +30,17 @@ export class ImapController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /* Get Imapp data using id */
+    /* Get Imap data using id*/
 	idTagResult = (req, res, next, tagId) => {
 		this.getById(req, res, this._db.Tag, tagId, next);
 	}
 
-    /* Imap data Update */
+    /* Imap data Update*/
 	update = (req, res) => {
 		TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
 	this._db.Tag.update(data, { where: { id: req.params.tagId, type: req.params.type } })
-                    .then((data) => {
+                .then((data) => {
 	if (data[0]) {
 		this.handleSuccessResponse(res, null);
 	} else {

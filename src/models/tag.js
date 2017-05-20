@@ -12,6 +12,7 @@ export default function(sequelize, DataTypes) {
 		},
 		to: DataTypes.DATE,
 		from: DataTypes.DATE,
+		template_id:DataTypes.INTEGER,
 	}, {
 		timestamps: true,
 		freezeTableName: true,
