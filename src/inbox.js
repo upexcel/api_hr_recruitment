@@ -11,6 +11,7 @@ upload = multer({ dest: "uploads/" }); /*eslint-enable*/
 import db from "./db";
 var config = require("./config.json");
 var _ = require("lodash");
+var GENERIC = require("./modules/generic");
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
 oauth2Client.setCredentials({
 	access_token: config.access_token,
@@ -224,7 +225,8 @@ function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enabl
 				"answered": answered,
 				"body": message,
 				"attachment": attachment,
-				"tags": tag
+				"tags": tag,
+				"Genuine_Applicant":GENERIC.Genuine_Applicant(subject)
 			});
 			detail.save(function(err) {
 				if (err) {
