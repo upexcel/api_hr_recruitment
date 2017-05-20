@@ -1058,6 +1058,12 @@
 									"value": "2017-08-13",
 									"type": "text",
 									"enabled": true
+								},
+								{
+									"key": "template_id",
+									"value": "1",
+									"type": "text",
+									"enabled": true
 								}
 							]
 						},
