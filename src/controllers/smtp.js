@@ -1,6 +1,7 @@
 import BaseAPIController from "./BaseAPIController";
 import SmtpProvider from "../providers/SmtpProvider";
 var mail = require("../modules/mail");
+var _ = require("lodash");
 
 export class SmtpController extends BaseAPIController {
 
@@ -81,6 +82,37 @@ export class SmtpController extends BaseAPIController {
 			res.json({status:0,messsage:"error" , data:"message not sent successfully"});
 		}
 	});
+})
+							.catch(this.handleErrorResponse.bind(null, res));
+	}
+
+	/* change smtp status*/
+	changeStatus = (req, res) => {
+		SmtpProvider.testSmtp(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
+            .then(() => {
+	this._db.Smtp.findAll({})
+            .then((data) =>{
+	_.map(data,(val,key)=>{
+		if(val.email == req.body.email){
+			this._db.Smtp.update({ status: "TRUE" }, { where: { email: req.body.email }})
+.then(()=>{
+})
+.catch(this.handleErrorResponse.bind(null, res));
+		}else{
+			this._db.Smtp.update({status:"FALSE"}, { where: { email: val.email} })
+.then(()=>{
+})
+.catch(this.handleErrorResponse.bind(null, res));
+		}
+		if (key == (_.size(data) - 1)) {
+			res.json({
+				status: 1,
+				message: "success"
+			});
+		}
+	});
+})
+            .catch(this.handleErrorResponse.bind(null, res));
 })
 							.catch(this.handleErrorResponse.bind(null, res));
 	}
