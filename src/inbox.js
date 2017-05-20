@@ -6,8 +6,10 @@ var in_array = require("in_array"),
 	google = require("googleapis"),
 	OAuth2 = google.auth.OAuth2,
 	Imap = require("imap"),
-/*eslint-disable*/
-upload = multer({ dest: "uploads/" }); /*eslint-enable*/
+    /*eslint-disable*/
+    upload = multer({
+        dest: "uploads/"
+    }); /*eslint-enable*/
 import db from "./db";
 var config = require("./config.json");
 var _ = require("lodash");
@@ -18,110 +20,120 @@ oauth2Client.setCredentials({
 	expires_in: config.expires_in,
 	refresh_token: config.refresh_token
 });
-var drive = google.drive({ version: "v2", auth: oauth2Client });
+var drive = google.drive({
+	version: "v2",
+	auth: oauth2Client
+});
 
 module.exports = {
 	get_schema: function(email) {
-		db.Imap.findOne({ where: { "active": "True" } }).then(function(docs, err) {
+		db.Imap.findAll({
+			where: {
+				"active": "True"
+			}
+		}).then(function(docs, err) {
 			if (docs) {
-                // }); /*eslint-disable*/
-				var imap = new Imap({
-					user: docs.dataValues.email,
-					password: docs.dataValues.password,
-					host: docs.dataValues.imap_server,
-					port: docs.dataValues.server_port,
-					tls: docs.dataValues.type,
-				}); /*eslint-disable*/
+				_.forEach(docs, (val) => {
+                    // }); /*eslint-disable*/
+					var imap = new Imap({
+						user: val.dataValues.email,
+						password: val.dataValues.password,
+						host: val.dataValues.imap_server,
+						port: val.dataValues.server_port,
+						tls: val.dataValues.type,
+					}); /*eslint-disable*/
 
-function openInbox(cb) { /*eslint-enable*/
+                    function openInbox(cb) { /*eslint-enable*/
 	imap.openBox("INBOX", true, cb);
 }
-				var headers = {},
-					bodyMsg = "";
-				// var imap;
-				imap.once("ready", function() {
-					openInbox(function() {
-						var delay = 24 * 3600 * 1000;
-						var yesterday = new Date();
-						yesterday.setTime(Date.now() - delay);
-						yesterday = yesterday.toISOString();
-// this will fetch all the Emails data from Gmail
+					var headers = {},
+						bodyMsg = "";
+                    // var imap;
+					imap.once("ready", function() {
+						openInbox(function() {
+							var delay = 24 * 3600 * 1000;
+							var yesterday = new Date();
+							yesterday.setTime(Date.now() - delay);
+							yesterday = yesterday.toISOString();
+                            // this will fetch all the Emails data from Gmail
 
-						imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
-							if (err) throw err;
-							var UID_arr = [];
+							imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
+								if (err) throw err;
+								var UID_arr = [];
 
-							email.find({}).sort({_id:-1}).limit(1).exec(function (err, resp) {
-								if(err){
-									console.log(err);
-								} else {
-									if(resp.length == 0){
-										UID_arr=results;
-									}else{
-										var row = resp[0];
-										var Last_UID = row.get("uid");
-										_.forEach(results,(val)=>{
-											if(val >= Last_UID){
-												UID_arr.push(val);
-											}
-										});
-									}
-									var f = imap.fetch(UID_arr, {
-										bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
-										struct: true
-									});
-									f.on("message", function(msg, seqno) {
-										var prefix = "(#" + seqno + ") ";
-										msg.on("body", function(stream) {
-											var buffer = "";
-											stream.on("data", function(chunk) {
-												buffer += chunk.toString("utf8");
-											});
-											stream.once("end", function() {
-												headers = Imap.parseHeader(buffer);
-												var hash = buffer.substring(buffer.indexOf("<div")),
-													textmsg = hash.substring(0, hash.lastIndexOf("</div>"));
-												if (textmsg !== "") {
-													bodyMsg = textmsg + "</div>";
+								email.find({}).sort({
+									_id: -1
+								}).limit(1).exec(function(err, resp) {
+									if (err) {
+										console.log(err);
+									} else {
+										if (resp.length == 0) {
+											UID_arr = results;
+										} else {
+											var row = resp[0];
+											var Last_UID = row.get("uid");
+											_.forEach(results, (val) => {
+												if (val >= Last_UID) {
+													UID_arr.push(val);
 												}
 											});
+										}
+										var f = imap.fetch(UID_arr, {
+											bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
+											struct: true
 										});
-										msg.once("attributes", function(attrs) {
-											var attachments = findAttachmentParts(attrs.struct);
-											var len = attachments.length,
-												uid = attrs.uid,
-												flag = attrs.flags;
-											for (var i = 0; i < len; ++i) {
-												var attachment = attachments[i];
-												var f = imap.fetch(attrs.uid, {
-													bodies: [attachment.partID],
-													struct: true
+										f.on("message", function(msg, seqno) {
+											var prefix = "(#" + seqno + ") ";
+											msg.on("body", function(stream) {
+												var buffer = "";
+												stream.on("data", function(chunk) {
+													buffer += chunk.toString("utf8");
 												});
-											}
-											if (attachments[0] == null) {
-												database_save(attachments, uid, flag, bodyMsg, seqno);
-											} else {
-												f.on("message", buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno));
-											}
+												stream.once("end", function() {
+													headers = Imap.parseHeader(buffer);
+													var hash = buffer.substring(buffer.indexOf("<div")),
+														textmsg = hash.substring(0, hash.lastIndexOf("</div>"));
+													if (textmsg !== "") {
+														bodyMsg = textmsg + "</div>";
+													}
+												});
+											});
+											msg.once("attributes", function(attrs) {
+												var attachments = findAttachmentParts(attrs.struct);
+												var len = attachments.length,
+													uid = attrs.uid,
+													flag = attrs.flags;
+												for (var i = 0; i < len; ++i) {
+													var attachment = attachments[i];
+													var f = imap.fetch(attrs.uid, {
+														bodies: [attachment.partID],
+														struct: true
+													});
+												}
+												if (attachments[0] == null) {
+													database_save(attachments, uid, flag, bodyMsg, seqno);
+												} else {
+													f.on("message", buildAttMessageFunction(attachment, uid, flag, bodyMsg, seqno));
+												}
+											});
+											msg.once("end", function() {
+												console.log(prefix + "Finished");
+											});
 										});
-										msg.once("end", function() {
-											console.log(prefix + "Finished");
+										f.once("error", function(err) {
+											console.log("Fetch error: " + err);
 										});
-									});
-									f.once("error", function(err) {
-										console.log("Fetch error: " + err);
-									});
-									f.once("end", function() {
-										console.log("Done fetching all messages!");
-										imap.end();
-									});
-								}
+										f.once("end", function() {
+											console.log("Done fetching all messages!");
+											imap.end();
+										});
+									}
+								});
 							});
 						});
-					});
-				}); /*eslint-disable*/
+					}); /*eslint-disable*/
 
-function findAttachmentParts(struct, attachments) { /*eslint-enable*/
+                    function findAttachmentParts(struct, attachments) { /*eslint-enable*/
 	attachments = attachments || [];
 	var len = struct.length;
 	for (var i = 0; i < len; ++i) {
@@ -134,7 +146,7 @@ function findAttachmentParts(struct, attachments) { /*eslint-enable*/
 	return attachments;
 } /*eslint-disable*/
 
-function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
+                    function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enable*/
 	var filename = attachment.params.name;
 	var encoding = attachment.encoding;
 	var filepath = path.join(__dirname, "/./uploads/", filename);
@@ -185,13 +197,15 @@ function buildAttMessageFunction(attachment, uid, flag, bodyMsg) { /*eslint-enab
 	};
 } /*eslint-disable */
 
-function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
-	email.findOne({uid:uid},function(err,result){
-		if(err){
+                    function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enable*/
+	email.findOne({
+		uid: uid
+	}, function(err, result) {
+		if (err) {
 			console.log(err);
-		}else if(result && result !== null){
+		} else if (result && result !== null) {
 			console.log("data is already saved");
-		}else{
+		} else {
 			var emailid = seqno,
 				to = headers.to.toString();
 			var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
@@ -207,41 +221,63 @@ function database_save(attachments, uid, flag, bodyMsg, seqno) { /* eslint-enabl
 				message = bodyMsg,
 				attachment = attachments;
 			var str = subject,
-				match = /angular js|php|Hybrid Mobile Apps|testing/gi,
-				tag = str.match(match);
-			var detail = new email({
-				"email_id": emailid,
-				"to": to,
-				"from": from,
-				"sender_mail": sender_mail,
-				"date": date,
-				"email_date": email_date,
-				"email_timestamp": email_timestamp,
-				"subject": subject,
-				"uid": uid,
-				"unread": unread,
-				"answered": answered,
-				"body": message,
-				"attachment": attachment,
-				"tags": tag
-			});
-			detail.save(function(err) {
-				if (err) {
-					console.log("Duplicate Data");
+				match = /angular js|php|Hybrid Mobile Apps|testing/gi;
+			var tag = str.match(match);
+
+			function tagid(tag, callback) {
+				var tagid = "";
+				if (tag) {
+					db.Tag.find({
+						where: {
+							title: tag
+						}
+					})
+                                            .then((docs) => {
+	tagid = docs.id;
+	callback(tagid);
+});
 				} else {
-					console.log("data saved successfully");
+					callback(null);
 				}
+			}
+
+			tagid(tag, function(tagid) {
+				var detail = new email({
+					"email_id": emailid,
+					"to": to,
+					"from": from,
+					"sender_mail": sender_mail,
+					"date": date,
+					"email_date": email_date,
+					"email_timestamp": email_timestamp,
+					"subject": subject,
+					"uid": uid,
+					"unread": unread,
+					"answered": answered,
+					"body": message,
+					"attachment": attachment,
+					"tag_id": tagid,
+				});
+				detail.save(function(err) {
+					if (err) {
+						console.log("Duplicate Data");
+					} else {
+						console.log("data saved successfully");
+					}
+				});
 			});
+
 		}
 	});
 }
-				imap.once("error", function(err) {
-					console.log(err);
+					imap.once("error", function(err) {
+						console.log(err);
+					});
+					imap.once("end", function() {
+						console.log("Connection ended");
+					});
+					imap.connect();
 				});
-				imap.once("end", function() {
-					console.log("Connection ended");
-				});
-				imap.connect();
 			} else {
 				console.log(err);
 			}
