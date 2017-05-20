@@ -15,7 +15,6 @@ export default (app) => {
     /* Route for fetch Imap Data */
 	app.route("/imap/get/:page").get(auth.requiresAdmin, imap.getImap);
 
-
 	app.param("id", imap.idResult);
 
 	return app;
