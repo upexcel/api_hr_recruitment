@@ -1,5 +1,6 @@
 import BaseAPIController from "./BaseAPIController";
 import SmtpProvider from "../providers/SmtpProvider";
+var mail = require("../modules/mail");
 
 export class SmtpController extends BaseAPIController {
 
@@ -60,6 +61,30 @@ export class SmtpController extends BaseAPIController {
 	getSmtpById = (req, res) => {
 		res.json(req.result);
 	}
+
+	/* test smtp by email*/
+	testSmtp = (req, res) => {
+		SmtpProvider.testSmtp(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
+            .then(() => {
+	var email = req.body.email;
+	var subject = "Smtp test";
+	var from = "noreply@excellencetechnologies.in";
+	var html = "Smtp test successfully";
+	mail.mail_alert(email, subject, "template", from, html, function (response_msg, response_data, response) {
+		if (response) {
+			if (response.accepted) {
+				res.json({status:1,message:"success",data:"message sent successfully"});
+			} else {
+				res.json({status:0,messsage:"error" , data:"message not sent successfully"});
+			}
+		}else{
+			res.json({status:0,messsage:"error" , data:"message not sent successfully"});
+		}
+	});
+})
+							.catch(this.handleErrorResponse.bind(null, res));
+	}
+
 }
 
 const controller = new SmtpController();
