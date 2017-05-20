@@ -17,21 +17,21 @@ export class VariableController extends BaseAPIController {
     /* Template Update */
 	update = (req, res) => {
 		VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
-	            .then((data) => {
-		this._db.Variable.update(data, {
-			where: {
-				id: req.params.variableId
-			}
-		})
-	                    .then((data) => {
-		if (data[0]) {
-			this.handleSuccessResponse(res, null);
-		} else {
-			this.handleErrorResponse(res, "data not Updated");
+.then((data) => {
+	this._db.Variable.update(data, {
+		where: {
+			id: req.params.variableId
 		}
-	}).catch(this.handleErrorResponse.bind(null, res));
 	})
-	            .catch(this.handleErrorResponse.bind(null, res));
+.then((data) => {
+	if (data[0]) {
+		this.handleSuccessResponse(res, null);
+	} else {
+		this.handleErrorResponse(res, "data not Updated");
+	}
+}).catch(this.handleErrorResponse.bind(null, res));
+})
+.catch(this.handleErrorResponse.bind(null, res));
 	}
 
     /* Template delete */
