@@ -30,7 +30,8 @@ const create = (model, validate, body, validationResult) => {
 const login = (model, body) => {
 	let password = crypto.createHash("sha256").update(body.password).digest("base64");
 	delete body.confirm_password;
-	return {...body, ...{ password } };
+	return {...body, ... { password } };
+
 };
 export default {
 	...BaseProvider,

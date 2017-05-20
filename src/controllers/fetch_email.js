@@ -28,7 +28,7 @@ export class FetchController extends BaseAPIController {
 				});
 			}
 		});
-	}
+	};
 
 	assignTag = (req, res, next) => {
 		MailProvider.assignTag(req.checkBody, req.body, req.getValidationResult())
@@ -79,6 +79,7 @@ export class FetchController extends BaseAPIController {
 						}, 0, 1]
 					},
 				},
+
 			}
 		}, (err, result) => {
 			if (err) {
@@ -215,25 +216,37 @@ export class FetchController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-	changeUnreadStatus = (req, res) => {
+	changeUnreadStatus = (req, res, next) => {
 		MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-	req.email.findOneAndUpdate({
-		_id: req.body.mongo_id
-	}, {
-		$set: {
-			unread: false
-		}
-	}, function(err, data) {
+	req.email.find({
+		mongo_id: req.body.mongo_id
+	}, function(err) {
 		if (err) {
-			res.json({ status: 0, message: err });
-		}
-		if (!data) {
-			res.json({ status: 0, msg: "not found" });
+			next(new Error(err));
+		} else if (req.body.status == "true" || req.body.status == "false") {
+			req.email.update({
+				mongo_id: req.body.mongo_id
+			}, {
+				unread: req.body.status,
+			}, function(error) {
+				if (error) {
+					next(new Error(err));
+				} else {
+					res.json({
+						status: 1,
+						message: "the unread status is successfully changed to " + req.body.status
+					});
+				}
+			});
 		} else {
-			res.json({ status: 1, message: " the unread status is changed successfully", data: data });
+			res.json({
+				status: 0,
+				message: "the unread status is not changed successfully,  you have to set status true or false"
+			});
 		}
 	});
+
 })
             .catch(this.handleErrorResponse.bind(null, res));
 	}

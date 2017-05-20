@@ -37,7 +37,6 @@ export class SmtpController extends BaseAPIController {
 	}
 
     /* Smtp data delete */
-
 	deleteSmtp = (req, res) => {
 		this._db.Smtp.destroy({ where: { id: req.params.smtpId } })
             .then((data) => {
@@ -57,7 +56,7 @@ export class SmtpController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /* get smtp by id */
+    /* get smtp by id*/
 	getSmtpById = (req, res) => {
 		res.json(req.result);
 	}

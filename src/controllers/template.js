@@ -5,6 +5,7 @@ export class TemplateController extends BaseAPIController {
 
     /* Controller for User Register  */
 	create = (req, res) => {
+
 		TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
 	this._db.Template.create(user)
@@ -29,7 +30,8 @@ export class TemplateController extends BaseAPIController {
 	} else {
 		this.handleErrorResponse(res, "data not Updated");
 	}
-}).catch(this.handleErrorResponse.bind(null, res));
+})
+                    .catch(this.handleErrorResponse.bind(null, res));
 })
             .catch(this.handleErrorResponse.bind(null, res));
 	}
@@ -47,7 +49,9 @@ export class TemplateController extends BaseAPIController {
 	} else {
 		this.handleErrorResponse(res, "data not deleted");
 	}
-}).catch(this.handleErrorResponse.bind(null, res));
+
+})
+.catch(this.handleErrorResponse.bind(null, res));
 	}
 
     /* Get List of All Templates */

@@ -5,7 +5,8 @@ import tag from "../models/constant";
 export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
 	save = (req, res) => {
-		TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
+		TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
+
             .then((data) => {
 	this._db.Tag.create(data)
                     .then(res.json.bind(res))
@@ -14,16 +15,17 @@ export class ImapController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 	}
 
-    /* Get Imapp data using id */
+    /* Get Imap data using id*/
 	idTagResult = (req, res, next, tagId) => {
 		this.getById(req, res, this._db.Tag, tagId, next);
 	}
 
-    /* Imap data Update */
+    /* Imap data Update*/
 	update = (req, res) => {
 		TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
 	this._db.Tag.update(data, { where: { id: req.params.tagId, type: req.params.type } })
+
                 .then((data) => {
 	if (data[0]) {
 		this.handleSuccessResponse(res, null);
@@ -75,9 +77,9 @@ export class ImapController extends BaseAPIController {
     /* Get tag by id */
 	getTagById = (req, res, next) => {
 		if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default) {
-			this._db.Tag.findOne({ where : { id: req.result.id, type: req.params.type } })
-            .then(res.json.bind(res))
-            .catch(this.handleErrorResponse.bind(null, res));
+			this._db.Tag.findOne({ where: { id: req.result.id, type: req.params.type } })
+                .then(res.json.bind(res))
+                .catch(this.handleErrorResponse.bind(null, res));
 		} else {
 			next(new Error("Invalid Type"));
 		}

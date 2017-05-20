@@ -1,9 +1,10 @@
 module.exports = {
     "env": {
         "browser": true,
-        "commonjs": true,
+        // "commonjs": true,
         "es6": true,
-        "node": true
+        "node": true,
+        "jquery": true
     },
     "extends": "eslint:recommended",
      "parser": "babel-eslint",
@@ -17,6 +18,7 @@ module.exports = {
         "arrowFunctions": true
     },
     "rules": {
+        "no-tabs": 0,
         "indent": [
             "error",
             "tab"
