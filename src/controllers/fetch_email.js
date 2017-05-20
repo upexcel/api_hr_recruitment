@@ -17,7 +17,7 @@ export class FetchController extends BaseAPIController {
 			tag_id: {
 				$in: [tag_id]
 			}
-		}).skip((page - 1) * 21).limit(21).exec(function(err, data) {
+		}).skip((page - 1) * 21).limit(21).sort({uid:-1}).exec(function(err, data) {
 			if (err) {
 				next(err);
 			} else {
@@ -75,7 +75,7 @@ export class FetchController extends BaseAPIController {
 				unread: {
 					$sum: {
 						$cond: [{
-							$eq: ["$unread", "false"]
+							$eq: ["$unread", false]
 						}, 0, 1]
 					},
 				},
@@ -99,7 +99,7 @@ export class FetchController extends BaseAPIController {
 			count1.push(_.merge(val, {
 				title: "Mails",
 				color: "#81d4fa",
-				type: "Default"
+				type: "Main"
 			}));
 		}
 	});
