@@ -90,7 +90,10 @@ export class SmtpController extends BaseAPIController {
 	changeStatus = (req, res) => {
 		SmtpProvider.testSmtp(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-	this._db.Smtp.findAll({})
+	this._db.Smtp.findOne({ where: { email: req.body.email }})
+            .then((data) =>{
+	if(data){
+		this._db.Smtp.findAll({})
             .then((data) =>{
 	_.map(data,(val,key)=>{
 		if(val.email == req.body.email){
@@ -107,12 +110,19 @@ export class SmtpController extends BaseAPIController {
 		if (key == (_.size(data) - 1)) {
 			res.json({
 				status: 1,
-				message: "success"
+				message: "success",
+				data:"status changed successfully"
 			});
 		}
 	});
 })
             .catch(this.handleErrorResponse.bind(null, res));
+	}else{
+		res.json({status:0,messsage:"error" , data:"email id is not found in database"});
+	}
+})
+            .catch(this.handleErrorResponse.bind(null, res));
+
 })
 							.catch(this.handleErrorResponse.bind(null, res));
 	}
