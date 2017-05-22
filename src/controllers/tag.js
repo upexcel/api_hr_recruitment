@@ -8,9 +8,7 @@ export class ImapController extends BaseAPIController {
 		TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
 	if (data.type === "Automatic") {
-		this._db.Tag.findOne({
-			where: { title: { like: "%" + data.title + "%" } }
-		})
+		this._db.Tag.findOne({where: { title: { like: "%" + data.title + "%" } }})
                         .then((docs) => {
 	if (docs) {
 		this.handleErrorResponse(res, "This title Already Exists");
