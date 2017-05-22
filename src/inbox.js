@@ -224,12 +224,9 @@ module.exports = {
 			function tagid(tag, callback) {
 				var tagid = "";
 				if (tag) {
-					db.Tag.find({
-						where: {
-							title: tag
-						}
-					})
-                                            .then((docs) => {
+					// db.Tag.find({where: {title: tag}})
+					 db.Tag.find({where: { title: { like: "%" + tag + "%" } } })
+          .then((docs) => {
 	tagid = docs.id;
 	callback(tagid);
 });
