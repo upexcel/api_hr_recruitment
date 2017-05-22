@@ -13,7 +13,7 @@ module.exports = function() {
 	var email = conn.model("EMAIL", emailSchema);
 
 	// new CronJob("*/15 * * * *", function() {
-		DB.get_schema(email); // running this function every 15 min
+	DB.get_schema(email); // running this function every 15 min
 	// }, null, true);
 
 	return function(req, res, next) {
