@@ -6,7 +6,6 @@ var in_array = require("in_array"),
 	google = require("googleapis"),
 	OAuth2 = google.auth.OAuth2,
 	Imap = require("imap"),
-	moment = require("moment"),
     /*eslint-disable*/
     upload = multer({
         dest: "uploads/"
@@ -30,9 +29,9 @@ var drive = google.drive({
 module.exports = {
 	get_schema: function(email) {
 		db.Imap.findAll({ where: { "active": "True" } }).then(function(docs, err) {
-			if (docs) {
-				_.forEach(docs, (val) => {
-                    // }); /*eslint-disable*/
+			if(docs){
+				_.forEach(docs,(val) => {
+                // }); /*eslint-disable*/
 					var imap = new Imap({
 						user: val.dataValues.email,
 						password: val.dataValues.password,
@@ -53,22 +52,22 @@ module.exports = {
 							yesterday.setTime(Date.now() - delay);
 							yesterday = yesterday.toISOString();
 
-                            // this will fetch all the Emails data from Gmail
-							imap.search(["ALL", ["SINCE", "May 21, 2010"]], function(err, results) {
+// this will fetch all the Emails data from Gmail
+							imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
 								if (err) throw err;
 								var UID_arr = [];
 
-								email.find({}).sort({ _id: -1 }).limit(1).exec(function(err, resp) {
-									if (err) {
+								email.find({}).sort({_id:-1}).limit(1).exec(function (err, resp) {
+									if(err){
 										console.log(err);
 									} else {
-										if (resp.length == 0) {
-											UID_arr = results;
-										} else {
+										if(resp.length == 0){
+											UID_arr=results;
+										}else{
 											var row = resp[0];
 											var Last_UID = row.get("uid");
-											_.forEach(results, (val) => {
-												if (val >= Last_UID) {
+											_.forEach(results,(val)=>{
+												if(val >= Last_UID){
 													UID_arr.push(val);
 												}
 											});
@@ -168,22 +167,22 @@ module.exports = {
 					mimeType: "text/plain/javascript/html/csv/application/pdf",
 					body: data
 				};
-                                    // drive.files.insert({
-                                    //     resource: fileMetadata,
-                                    //     media: media,
-                                    //     fields: "id"
-                                    // }, function(err, file) {
-                                    //     if (!err) {
-                                    //         var attachment_file = [{
-                                    //             name: attachment.params.name,
-                                    //             link: "https://drive.google.com/file/d/" + file.id + "/view"
-                                    //         }];
-                                    //         database_save(attachment_file, uid, flag, bodyMsg, seqno);
-                                    //         console.log("file is saved");
-                                    //     } else {
-                                    //         console.log(err);
-                                    //     }
-                                    // });
+				drive.files.insert({
+					resource: fileMetadata,
+					media: media,
+					fields: "id"
+				}, function(err, file) {
+					if (!err) {
+						var attachment_file = [{
+							name: attachment.params.name,
+							link: "https://drive.google.com/file/d/" + file.id + "/view"
+						}];
+						database_save(attachment_file, uid, flag, bodyMsg, seqno);
+						console.log("file is saved");
+					} else {
+						console.log(err);
+					}
+				});
 			});
 			fs.unlink(filepath, function() {
 				console.log("success");
@@ -222,66 +221,19 @@ module.exports = {
 				match = /angular js|php|Hybrid Mobile Apps|testing/gi;
 			var tag = str.match(match);
 
-                                // 		console.log("+++++++++++++++++");
-                                // 		// db.Tag.find({ where: { to: new Date("2017-05-22") } })
-                                // 		// db.Tag.findAll({where: ["to.email_date() > email_date"]}); // start is my column, format with DATETIME
-                                // 		db.Tag.findAll({ where:{ from:{$lte:new Date("2017-05-01")}, $or:[{ to:{$gte:new Date("2017-05-22")}}] }})
-                                //             .then((docs, err) => {
-                                // 	if (docs) {
-                                // 		console.log(docs);
-                                // 	} else {
-                                // 		console.log(err);
-                                // 	}
-                                // });
-                                // 		console.log("+++++++++++++++++");
-
-
 			function tagid(tag, callback) {
 				var tagid = "";
 				if (tag) {
-                                        // db.Tag.find({where: {title: tag}})
-					db.Tag.find({ where: { title: { like: "%" + tag + "%" } } })
-                                            .then((docs) => {
-
-	console.log("++++++++++++++++++++++++++++++");
-	console.log(typeof docs.dataValues.to);
-	console.log(docs);
-	console.log("++++++++++++++++++++++++++++++");
+					// db.Tag.find({where: {title: tag}})
+					 db.Tag.find({where: { title: { like: "%" + tag + "%" } } })
+          .then((docs) => {
 	tagid = docs.id;
 	callback(tagid);
 });
-                                        // } else if (email_date) {
-                                        //     db.Tag.find({ where: { to: { like: "%" + tag + "%" } } })
-                                        //         .then((docs) => {
-                                        //             tagid = docs.id;
-                                        //             callback(tagid);
-                                        //         });
 				} else {
 					callback(null);
 				}
 			}
-
-
-			function tagid(tag, callback) {
-				var tagid = "";
-				if (tag) {
-                                        // db.Tag.find({where: {title: tag}})
-					db.Tag.find({ where: { title: { like: "%" + tag + "%" } } })
-                                            .then((docs) => {
-
-	console.log("++++++++++++++++++++++++++++++");
-	console.log(typeof docs.dataValues.to);
-	console.log(docs);
-	console.log("++++++++++++++++++++++++++++++");
-	tagid = docs.id;
-	callback(tagid);
-});
-
-				} else {
-					callback(null);
-				}
-			}
-
 
 			tagid(tag, function(tagid) {
 				var detail = new email({
@@ -299,7 +251,7 @@ module.exports = {
 					"body": message,
 					"attachment": attachment,
 					"tag_id": tagid,
-					"Genuine_Applicant": GENERIC.Genuine_Applicant(subject)
+					"Genuine_Applicant":GENERIC.Genuine_Applicant(subject)
 				});
 				detail.save(function(err) {
 					if (err) {
