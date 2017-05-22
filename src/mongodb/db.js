@@ -7,7 +7,7 @@ module.exports = function() {
 
 	// create schema
 	var emailSchema = mongoose.Schema({	}, {
-		collection: "emailStored",
+		collection: "emailSave",
 		strict: false,
 	});
 	var email = conn.model("EMAIL", emailSchema);
