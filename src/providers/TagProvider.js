@@ -21,9 +21,7 @@ const save = (model, type, validate, body, validationResult) => {
                 body.type = type;
                 resolve(body);
             }
-
         });
-
     });
 };
 export default {
