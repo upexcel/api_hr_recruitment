@@ -5,19 +5,19 @@ var CronJob = require("cron").CronJob;
 // the middleware function
 module.exports = function() {
 
-	// create schema
-	var emailSchema = mongoose.Schema({	}, {
-		collection: "emailSave",
-		strict: false,
-	});
-	var email = conn.model("EMAIL", emailSchema);
+    // create schema
+    var emailSchema = mongoose.Schema({}, {
+        collection: "emailStored",
+        strict: false,
+    });
+    var email = conn.model("EMAIL", emailSchema);
 
-	new CronJob("*/15 * * * *", function() {
-		inbox.fetch_email(email); // running this function every 15 min
-	}, null, true);
-	
-	return function(req, res, next) {
-		req.email = email;
-		next();
-	};
+    new CronJob("*/15 * * * *", function() {
+        inbox.fetch_email(email); // running this function every 15 min
+    }, null, true);
+
+    return function(req, res, next) {
+        req.email = email;
+        next();
+    };
 };
