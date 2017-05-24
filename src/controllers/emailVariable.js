@@ -1,17 +1,23 @@
 import BaseAPIController from "./BaseAPIController";
-import VariableProvider from "../providers/tempVariableProvider.js";
+import VariableProvider from "../providers/EmailVariableProvider.js";
 
 export class VariableController extends BaseAPIController {
 
     /* Controller for User Register  */
-    create = (req, res) => {
+    create = (req, res, next) => {
         VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
-            .then((user) => {
-                this._db.Variable.create(user)
-                    .then(res.json.bind(res))
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            .then((variable) => {
+                this._db.Variable.create(variable)
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Template Update */
@@ -23,17 +29,17 @@ export class VariableController extends BaseAPIController {
                             id: req.params.variableId
                         }
                     })
-
-                    .then((data) => {
-                        if (data[0]) {
+                    .then((docs) => {
+                        if (docs[0]) {
                             this.handleSuccessResponse(res, null);
                         } else {
-                            this.handleErrorResponse(res, "data not Updated");
+                            this.handleErrorResponse(res, "Data Not Updated");
                         }
-                    }).catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
+
+
 
     /* Template delete */
     deleteVariable = (req, res) => {
@@ -46,25 +52,28 @@ export class VariableController extends BaseAPIController {
                 if (data) {
                     this.handleSuccessResponse(res, null);
                 } else {
-                    this.handleErrorResponse(res, "data not deleted");
+                    this.handleErrorResponse(res, "Data Not Deleted");
                 }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get List of All Templates */
     variableList = (req, res) => {
         this._db.Variable.findAll({
-                offset: (req.params.page - 1) * 10,
-                limit: 10
+                offset: (req.params.page - 1) * req.params.limit,
+                limit: req.params.limit
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
+
+    /* Get Variable data using id*/
+    idResult = (req, res, next, variableId) => {
+        this.getById(req, res, this._db.Variable, variableId, next);
+    }
+
 }
-
-
 
 const controller = new VariableController();
 export default controller;

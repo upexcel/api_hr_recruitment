@@ -9,11 +9,18 @@ export class UserController extends BaseAPIController {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
                 this._db.User.create(user)
-                    .then(res.json.bind(res))
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
+
 
     /* Controller for User Login  */
     login = (req, res) => {

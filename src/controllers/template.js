@@ -7,10 +7,17 @@ export class TemplateController extends BaseAPIController {
     create = (req, res) => {
 
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
-            .then((user) => {
-                this._db.Template.create(user)
-                    .then(res.json.bind(res))
-                    .catch(this.handleErrorResponse.bind(null, res));
+            .then((template) => {
+                this._db.Template.create(template)
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -28,13 +35,12 @@ export class TemplateController extends BaseAPIController {
                         if (data[0]) {
                             this.handleSuccessResponse(res, null);
                         } else {
-                            this.handleErrorResponse(res, "data not Updated");
+                            this.handleErrorResponse(res, "Data Not Updated");
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
+
 
     /* Template delete */
     deleteTemplate = (req, res) => {
@@ -47,9 +53,8 @@ export class TemplateController extends BaseAPIController {
                 if (data) {
                     this.handleSuccessResponse(res, null);
                 } else {
-                    this.handleErrorResponse(res, "data not deleted");
+                    this.handleErrorResponse(res, "Data Not Deleted");
                 }
-
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -57,12 +62,18 @@ export class TemplateController extends BaseAPIController {
     /* Get List of All Templates */
     templateList = (req, res) => {
         this._db.Template.findAll({
-                offset: (req.params.page - 1) * 10,
-                limit: 10
+                offset: (req.params.page - 1) * req.params.limit,
+                limit: req.params.limit
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+    /* Get Variable data using id*/
+    idResult = (req, res, next, templateId) => {
+        this.getById(req, res, this._db.Template, templateId, next);
+    }
+
 }
 
 

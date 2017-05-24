@@ -9,15 +9,16 @@ export class ImapController extends BaseAPIController {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.create(data)
-                    .then(res.json.bind(res))
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
-    }
-
-    /* Get Imapp data using id */
-    idResult = (req, res, next, id) => {
-        this.getById(req, res, this._db.Imap, id, next);
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap data Update */
@@ -26,48 +27,50 @@ export class ImapController extends BaseAPIController {
             .then((data) => {
                 this._db.Imap.update(data, {
                         where: {
-                            id: req.params.id
+                            id: req.params.imapId
                         }
                     })
                     .then((data) => {
-                        if (data[0]) {
-                            this.handleSuccessResponse(res, null);
-                        } else {
-                            this.handleErrorResponse(res, "data not deleted");
-                        }
+                        this.handleSuccessResponse(res, null);
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err.errors[0]['message']
+                        }));
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap data delete */
-
     deleteImap = (req, res) => {
         this._db.Imap.destroy({
                 where: {
-                    id: req.params.id
+                    id: req.params.imapId
                 }
             })
             .then((data) => {
                 if (data) {
                     this.handleSuccessResponse(res, null);
                 } else {
-                    this.handleErrorResponse(res, "data not deleted");
+                    this.handleErrorResponse(res, "Data Not Deleted");
                 }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get Imap data */
     getImap = (req, res) => {
         this._db.Imap.findAll({
-                offset: (req.params.page - 1) * 10,
-                limit: 10
+                offset: (req.params.page - 1) * req.params.limit,
+                limit: req.params.limit
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+    /* Get Imapp data using id */
+    idResult = (req, res, next, imapId) => {
+        this.getById(req, res, this._db.Imap, imapId, next);
+    }
+
 
     /* Imap Active  Status */
     statusActive = (req, res) => {
@@ -89,11 +92,9 @@ export class ImapController extends BaseAPIController {
                             });
                             imap_connection(imap, (err) => {
                                 if (err) {
-                                    res.json({
-                                        status: 0,
-                                        message: "error",
-                                        data: err
-                                    });
+                                    throw new Error(res.json(400, {
+                                        error: err
+                                    }));
                                 } else {
                                     this._db.Imap.update({
                                             status: "FALSE"
@@ -104,39 +105,26 @@ export class ImapController extends BaseAPIController {
                                         })
                                         .then((data) => {
                                             if (data[0] == 1) {
-                                                res.json({
-                                                    status: 1,
-                                                    message: "success",
-                                                    data: "successfully Active changed to true"
-                                                });
-                                            } else if (data[0] == 0) {
-                                                res.json({
-                                                    status: 0,
-                                                    message: "error",
-                                                    data: "user not found in database"
-                                                });
+                                                this.handleSuccessResponse(res, null);
                                             } else {
-                                                res.json({
-                                                    status: 0,
-                                                    message: "error",
-                                                    data: "error"
-                                                });
+                                                throw new Error(res.json(400, {
+                                                    error: "User Not Found In Db"
+                                                }));
                                             }
+                                        }, (err) => {
+                                            throw new Error(res.json(400, {
+                                                error: err
+                                            }));
                                         })
-                                        .catch(this.handleErrorResponse.bind(null, res));
                                 }
                             });
                         } else {
-                            res.json({
-                                status: 0,
-                                message: "error",
-                                data: "email not found in database"
-                            });
+                            throw new Error(res.json(400, {
+                                error: "Email Not Found In DB"
+                            }));
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
 }

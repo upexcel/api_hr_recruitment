@@ -14,7 +14,8 @@
     "access_token": "ya29.Gls_BEQkhGIpdPplXqN5rUiACQ4spvr27C02bPtHYp1niYkQPIw-6e3EowzetEr-KWEBEtPkZM5J0KJKcbonkf3fTV_XCjvG5EpYVrl0Ev0I0beLdo0fWoYgKoSq",
     "token_type": "Bearer",
     "expires_in": 3600,
-    "refresh_token": "1/vjjHYdLPT7STaQEnv_zXPaWTcpR9dg33oiEbk91m8PE"
+    "refresh_token": "1/vjjHYdLPT7STaQEnv_zXPaWTcpR9dg33oiEbk91m8PE",
+     "subject" : "Smtp test",
+           "from" : "noreply@excellencetechnologies.in",
+           "html" : "Smtp test successfully"
 }
-
-

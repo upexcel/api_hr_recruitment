@@ -5,8 +5,9 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
-        let page = req.body.page;
-        let tag_id = req.body.tag_id;
+        let page = req.body.page,
+            tag_id = req.body.tag_id,
+            limit = req.body.limit;
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
@@ -17,9 +18,9 @@ export class FetchController extends BaseAPIController {
             tag_id: {
                 $in: [tag_id]
             }
-        }).skip((page - 1) * 21).limit(21).sort({
+        }).skip((page - 1) * limit).limit(limit).sort({
             uid: -1
-        }).exec(function(err, data) {
+        }).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -59,15 +60,14 @@ export class FetchController extends BaseAPIController {
                             next(new Error("invalid tag id"));
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     countEmail = (req, res, next) => {
-        let totalCount = [];
-        let count1 = [];
-        let tagId = [];
+        let totalCount = [],
+            count1 = [],
+            tagId = [];
         req.email.aggregate({
             $group: {
                 _id: "$tag_id",
@@ -177,7 +177,6 @@ export class FetchController extends BaseAPIController {
                             next(new Error("invalid tag id"));
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -213,7 +212,6 @@ export class FetchController extends BaseAPIController {
                             next(new Error("invalid tag id"));
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }

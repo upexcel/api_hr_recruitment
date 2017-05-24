@@ -4,7 +4,7 @@ export class InboxController extends BaseAPIController {
 
     /* Get INBOX data*/
     getInbox = (req, res, next) => {
-        req.email.find().skip((req.params.page - 1) * 21).limit(21).exec((err, data) => {
+        req.email.find().skip((req.params.page - 1) * req.params.limit).limit(req.params.limit).exec((err, data) => {
             if (err) {
                 next(new Error("invalid page"));
             } else {

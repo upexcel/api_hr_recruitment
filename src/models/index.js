@@ -6,10 +6,10 @@ import Template from "./template";
 import Variable from "./tempVariable";
 
 export default {
-	User,
-	Imap,
-	Tag,
-	Smtp,
-	Template,
-	Variable,
+    User,
+    Imap,
+    Tag,
+    Smtp,
+    Template,
+    Variable,
 };

@@ -6,38 +6,20 @@ export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
     save = (req, res) => {
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
-            .then((data) => {
-                if (data.type === "Automatic") {
-                    this._db.Tag.findOne({
-                            where: {
-                                title: {
-                                    like: "%" + data.title + "%"
-                                }
-                            }
+            .then((tag) => {
+                this._db.Tag.create(tag)
+                    .then((data) => {
+                        res.json({
+                            data
                         })
-                        .then((docs) => {
-                            if (docs) {
-                                this.handleErrorResponse(res, "This title Already Exists");
-                            } else {
-                                this._db.Tag.create(data)
-                                    .then(res.json.bind(res))
-                                    .catch(this.handleErrorResponse.bind(null, res));
-                            }
-                        })
-                        .catch(this.handleErrorResponse.bind(null, res));
-                } else {
-                    this._db.Tag.create(data)
-                        .then(res.json.bind(res))
-                        .catch(this.handleErrorResponse.bind(null, res));
-                }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
-    /* Get Imap data using id*/
-    idTagResult = (req, res, next, tagId) => {
-        this.getById(req, res, this._db.Tag, tagId, next);
-    }
 
     /* Imap data Update*/
     update = (req, res) => {
@@ -53,12 +35,10 @@ export class ImapController extends BaseAPIController {
                         if (data[0]) {
                             this.handleSuccessResponse(res, null);
                         } else {
-                            this.handleErrorResponse(res, "data not updated");
+                            this.handleErrorResponse(res, "Data Not Updated");
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap data delete */
@@ -75,7 +55,7 @@ export class ImapController extends BaseAPIController {
                     if (data) {
                         this.handleSuccessResponse(res, null);
                     } else {
-                        this.handleErrorResponse(res, "data not deleted");
+                        this.handleErrorResponse(res, "Data Not Deleted");
                     }
                 })
                 .catch(this.handleErrorResponse.bind(null, res));
@@ -88,8 +68,8 @@ export class ImapController extends BaseAPIController {
     getTag = (req, res, next) => {
         if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default) {
             this._db.Tag.findAll({
-                    offset: (req.params.page - 1) * 10,
-                    limit: 10,
+                    offset: (req.params.page - 1) * req.params.limit,
+                    limit: req.params.limit,
                     where: {
                         type: req.params.type
                     }
@@ -123,6 +103,12 @@ export class ImapController extends BaseAPIController {
             next(new Error("Invalid Type"));
         }
     }
+
+    /* Get Imap data using id*/
+    idResult = (req, res, next, tagId) => {
+        this.getById(req, res, this._db.Tag, tagId, next);
+    }
+
 }
 
 const controller = new ImapController();
