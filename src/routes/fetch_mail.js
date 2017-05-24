@@ -24,4 +24,5 @@ export default (app) => {
     app.route("/email/deleteEmail").post(auth.requiresLogin, fetch_email.deleteEmail);
 
     return app;
+
 };

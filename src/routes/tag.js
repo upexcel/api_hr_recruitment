@@ -3,7 +3,7 @@ import auth from "../middleware/auth";
 
 export default (app) => {
     /* Route for tag save  */
-    app.route("/tag/add/:type").post( tag.save);
+    app.route("/tag/add/:type").post(auth.requiresAdminOrHr, tag.save);
 
     /* Route for tag update  */
     app.route("/tag/update/:type/:tagId").put(auth.requiresAdminOrHr, tag.update);
@@ -20,7 +20,7 @@ export default (app) => {
     /* Route for fetch tag by id */
     app.route("/tag/getbyid/:type/:tagId").get(auth.requiresAdminOrHr, tag.getTagById);
 
-    app.param("tagId", tag.idResult);
+    app.param("tagId", tag.idTagResult);
 
     return app;
 };

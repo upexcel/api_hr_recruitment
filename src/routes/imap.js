@@ -1,6 +1,5 @@
 import imap from "../controllers/imap";
 import auth from "../middleware/auth";
-// import baseController from '../controllers/BaseAPIController'
 
 export default (app) => {
     /* Route for imap save  */
