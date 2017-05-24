@@ -20,7 +20,7 @@ export default (app) => {
     /* Route for fetch tag by id */
     app.route("/tag/getbyid/:type/:tagId").get(auth.requiresAdminOrHr, tag.getTagById);
 
-    app.param("tagId", tag.idTagResult);
+    app.param("tagId", tag.idResult);
 
     return app;
 };
