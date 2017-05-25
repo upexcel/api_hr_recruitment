@@ -6,18 +6,18 @@ export default (app) => {
     app.route("/imap/save").post(auth.requiresAdmin, imap.save);
 
     /* Route for imap update  */
-    app.route("/imap/update/:id").put(auth.requiresAdmin, imap.update);
+    app.route("/imap/update/:imap_id").put(auth.requiresAdmin, imap.update);
 
     /* Route for imap Delete */
-    app.route("/imap/delete/:id").delete(auth.requiresAdmin, imap.deleteImap);
+    app.route("/imap/delete/:imap_id").delete(auth.requiresAdmin, imap.deleteImap);
 
     /* Route for fetch Imap Data */
     app.route("/imap/get/:page").get(auth.requiresAdmin, imap.getImap);
 
     /* Route for fetch Imap Data */
-    app.route("/imap/statusActive").post(auth.requiresAdmin, imap.statusActive);
+    app.route("/imap/statusActive/:email").put(auth.requiresAdmin, imap.statusActive);
 
-    app.param("id", imap.idResult);
+    app.param("imap_id", imap.idResult);
 
     return app;
 };
