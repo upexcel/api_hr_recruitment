@@ -1,13 +1,15 @@
 var nodemailer = require("nodemailer");
 var smtpTransport = require("nodemailer-smtp-transport");
+import config from "../config";
+
 module.exports = {
 	mail_alert: function (email, subject, template, from, html, callback) {
 		var mailer = nodemailer.createTransport(smtpTransport({
-			host: "smtp.sendgrid.net",
-			port: 25,
+			host: SMTP_HOST,
+			port: SMTP_PORT,
 			auth: {
-				user: "apikey",
-				pass: "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"
+				user: SMTP_USER,
+				pass: SMTP_PASS
 			}
 		}));
 		mailer.sendMail({
