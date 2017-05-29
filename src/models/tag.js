@@ -14,25 +14,25 @@ export default function(sequelize, DataTypes) {
         from: DataTypes.DATE,
         template_id: DataTypes.INTEGER,
     }, {
-      hooks: {
-          beforeCreate: function(TAG, options) {
-              return new Promise((resolve, reject) => {
-                  if (TAG.type === "Automatic") {
-                    this.findOne({ where: { title: { like: "%" + TAG.title + "%" } }})
-                      .then((docs) => {
-                          if (docs) {
-                              reject("This title Already Exists");
-                          } else {
-                              resolve({docs})
-                          }
-                      })
-                    }else{
-                      resolve()
+        hooks: {
+            beforeCreate: function(TAG, options) {
+                return new Promise((resolve, reject) => {
+                    if (TAG.type === "Automatic") {
+                        this.findOne({ where: { title: { like: "%" + TAG.title + "%" } } })
+                            .then((docs) => {
+                                if (docs) {
+                                    reject("This title Already Exists");
+                                } else {
+                                    resolve({ docs })
+                                }
+                            })
+                    } else {
+                        resolve()
                     }
-              })
+                })
 
-          }
-      },
+            }
+        },
         timestamps: true,
         freezeTableName: true,
         allowNull: true,

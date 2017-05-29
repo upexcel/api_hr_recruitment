@@ -1,4 +1,5 @@
-var Imap = require("imap");
+import Imap from "imap";
+
 export class imapConnection {
     imapConnection(imap) {
         return new Promise((resolve, reject) => {
