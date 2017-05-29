@@ -1,4 +1,5 @@
 import inbox from "../controllers/inbox";
+import auth from "../middleware/auth";
 
 export default (app) => {
     /* Route for get INBOX */

@@ -5,9 +5,11 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
-        let page = req.body.page,
-            tag_id = req.body.tag_id,
-            limit = req.body.limit;
+        let {
+            page,
+            tag_id,
+            limit
+        } = req.params;
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
@@ -18,7 +20,7 @@ export class FetchController extends BaseAPIController {
             tag_id: {
                 $in: [tag_id]
             }
-        }).skip((page - 1) * limit).limit(limit).sort({
+        }).skip((page - 1) * limit).limit(parseInt(limit)).sort({
             uid: -1
         }).exec((err, data) => {
             if (err) {
@@ -34,40 +36,45 @@ export class FetchController extends BaseAPIController {
     };
 
     assignTag = (req, res, next) => {
-        MailProvider.assignTag(req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-                this._db.Tag.tag(req.body.tag_id)
-                    .then((data) => {
-                        if (data.status) {
-                            req.email.findOneAndUpdate({
-                                "_id": req.body.mongo_id
-                            }, {
-                                "$addToSet": {
-                                    "tag_id": req.body.tag_id
-                                }
-                            }).exec(function(err, data) {
-                                if (err) {
-                                    next(new Error(err));
-                                } else {
-                                    res.json({
-                                        data: data,
-                                        status: 1,
-                                        message: "success"
-                                    });
-                                }
-                            });
-                        } else {
-                            next(new Error("invalid tag id"));
+        let {
+            tag_id,
+            mongo_id
+        } = req.params;
+        this._db.Tag.findOne({
+                where: {
+                    id: tag_id
+                }
+            })
+            .then((data) => {
+                if (data.id) {
+                    req.email.findOneAndUpdate({
+                        "_id": mongo_id
+                    }, {
+                        "$addToSet": {
+                            "tag_id": tag_id
                         }
-                    })
+                    }).exec((err, data) => {
+                        if (err) {
+                            next(new Error(err));
+                        } else {
+                            res.json({
+                                data: data,
+                                status: 1,
+                                message: "success"
+                            });
+                        }
+                    });
+                } else {
+                    next(new Error("invalid tag id"));
+                }
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     countEmail = (req, res, next) => {
-        let totalCount = [],
-            count1 = [],
-            tagId = [];
+        var totalCount = [];
+        var count1 = [];
+        var tagId = [];
         req.email.aggregate({
             $group: {
                 _id: "$tag_id",
@@ -93,7 +100,7 @@ export class FetchController extends BaseAPIController {
                             tagId.push(val2.id.toString());
                         });
                         _.map(tagId, (val) => {
-                            let res = filter(val);
+                            var res = filter(val);
                             totalCount.push(res);
                         });
                         _.forEach(result, (val) => {
@@ -107,15 +114,15 @@ export class FetchController extends BaseAPIController {
                         });
 
                         function filter(tagId) {
-                            let b = _.filter(result, function(o) {
+                            var b = _.filter(result, (o) => {
                                 if (_.includes(o._id, tagId)) {
                                     return true;
                                 } else {
                                     return false;
                                 }
                             });
-                            let count_email = 0;
-                            let unread = 0;
+                            var count_email = 0;
+                            var unread = 0;
                             _.map(b, (val) => {
                                 count_email += val.count_email;
                                 unread += val.unread;
@@ -148,19 +155,26 @@ export class FetchController extends BaseAPIController {
     }
 
     assignMultiple = (req, res, next) => {
-        MailProvider.assignTag(req.checkBody, req.body, req.getValidationResult())
+        MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                this._db.Tag.tag(req.body.tag_id)
+                let {
+                    tag_id
+                } = req.params;
+                this._db.Tag.findOne({
+                        where: {
+                            id: tag_id
+                        }
+                    })
                     .then((data) => {
-                        if (data.status) {
-                            _.each(req.body.mongo_id, function(val, key) {
+                        if (data.id) {
+                            _.each(req.body.mongo_id, (val, key) => {
                                 req.email.findOneAndUpdate({
                                     "_id": val
                                 }, {
                                     "$addToSet": {
-                                        "tag_id": req.body.tag_id
+                                        "tag_id": tag_id
                                     }
-                                }).exec(function(err) {
+                                }).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
                                     } else {
@@ -177,25 +191,30 @@ export class FetchController extends BaseAPIController {
                             next(new Error("invalid tag id"));
                         }
                     })
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
 
     deleteTag = (req, res, next) => {
-        MailProvider.assignTag(req.checkBody, req.body, req.getValidationResult())
+        MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                this._db.Tag.tag(req.body.tag_id)
+                this._db.Tag.findOne({
+                        where: {
+                            id: req.params.tag_id
+                        }
+                    })
                     .then((data) => {
-                        if (data.status) {
-                            _.each(req.body.mongo_id, function(val, key) {
+                        if (data.id) {
+                            _.each(req.body.mongo_id, (val, key) => {
                                 req.email.findOneAndUpdate({
                                     "_id": val
                                 }, {
                                     "$pull": {
-                                        "tag_id": req.body.tag_id
+                                        "tag_id": req.params.tag_id
                                     }
-                                }).exec(function(err) {
+                                }).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
                                     } else {
@@ -212,24 +231,30 @@ export class FetchController extends BaseAPIController {
                             next(new Error("invalid tag id"));
                         }
                     })
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
+
     }
 
     changeUnreadStatus = (req, res, next) => {
+        let {
+            mongo_id,
+            status
+        } = req.params;
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
                 req.email.find({
-                    mongo_id: req.body.mongo_id
-                }, function(err) {
+                    mongo_id: mongo_id
+                }, (err) => {
                     if (err) {
                         next(new Error(err));
-                    } else if (req.body.status == "true" || req.body.status == "false") {
+                    } else if (status == "true" || status == "false") {
                         req.email.update({
-                            mongo_id: req.body.mongo_id
+                            mongo_id: mongo_id
                         }, {
-                            unread: req.body.status,
-                        }, function(error) {
+                            unread: status,
+                        }, (error) => {
                             if (error) {
                                 next(new Error(err));
                             } else {
@@ -252,14 +277,14 @@ export class FetchController extends BaseAPIController {
     }
 
     deleteEmail = (req, res) => {
-        let response = [];
+        var response = [];
         MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                let size = _.size(req.body.mongo_id);
+                var size = _.size(req.body.mongo_id);
                 _.forEach(req.body.mongo_id, (val, key) => {
                     req.email.findOne({
                         _id: val
-                    }, function(err, data) {
+                    }, (err, data) => {
                         if (err) {
                             response.push({
                                 status: 0,

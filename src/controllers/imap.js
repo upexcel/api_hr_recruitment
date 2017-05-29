@@ -58,66 +58,49 @@ export class ImapController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
+    /* Imap Active  Status */
+      statusActive = (req, res) => {
+          this._db.Imap.findOne({ where: { email: req.params.email } })
+              .then((result) => {
+                  if (result) {
+                      var imap = new Imap({
+                          user: result.email,
+                          password: result.password,
+                          host: result.imap_server,
+                          port: result.server_port,
+                          tls: result.type
+                      });
+                      imap_connection(imap, (err) => {
+                          if (err) {
+                              res.json({ status: 0, message: "error", data: err });
+                          } else {
+                              this._db.Imap.update({ status: "FALSE" }, { where: { email: req.body.email } })
+                                  .then((data) => {
+                                      if (data[0] == 1) {
+                                          res.json({ status: 1, message: "success", data: "successfully Active changed to true" });
+                                      } else if (data[0] == 0) {
+                                          res.json({ status: 0, message: "error", data: "user not found in database" });
+                                      } else {
+                                          res.json({ status: 0, message: "error", data: "error" });
+                                      }
+                                  })
+                                  .catch(this.handleErrorResponse.bind(null, res));
+                          }
+                      });
+                  } else {
+                      res.json({ status: 0, message: "error", data: "email not found in database" });
+                  }
+              })
+              .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+
     /* Get Imapp data using id */
     idResult = (req, res, next, imapId) => {
         this.getById(req, res, this._db.Imap, imapId, next);
     }
 
 
-    /* Imap Active  Status */
-    statusActive = (req, res) => {
-        ImapProvider.statusActive(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-                this._db.Imap.findOne({
-                        where: {
-                            email: req.body.email
-                        }
-                    })
-                    .then((result) => {
-                        if (result) {
-                            let imap = new Imap({
-                                user: result.email,
-                                password: result.password,
-                                host: result.imap_server,
-                                port: result.server_port,
-                                tls: result.type
-                            });
-                            imap_connection(imap, (err) => {
-                                if (err) {
-                                    throw new Error(res.json(400, {
-                                        error: err
-                                    }));
-                                } else {
-                                    this._db.Imap.update({
-                                            status: "FALSE"
-                                        }, {
-                                            where: {
-                                                email: req.body.email
-                                            }
-                                        })
-                                        .then((data) => {
-                                            if (data[0] == 1) {
-                                                this.handleSuccessResponse(res, null);
-                                            } else {
-                                                throw new Error(res.json(400, {
-                                                    error: "User Not Found In Db"
-                                                }));
-                                            }
-                                        }, (err) => {
-                                            throw new Error(res.json(400, {
-                                                error: err
-                                            }));
-                                        })
-                                }
-                            });
-                        } else {
-                            throw new Error(res.json(400, {
-                                error: "Email Not Found In DB"
-                            }));
-                        }
-                    })
-            }).catch(this.handleErrorResponse.bind(null, res));
-    }
 
 }
 
