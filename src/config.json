@@ -5,7 +5,7 @@
     "db": {
         "host": "localhost",
         "name": "hr_system",
-        "password": "java@123",
+        "password": "123",
         "username": "root"
     },
     "CLIENT_ID": "26456531203-aa7qlroeerjrbaoatql4s5di1pcmir46.apps.googleusercontent.com",
