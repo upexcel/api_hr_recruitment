@@ -95,8 +95,6 @@ module.exports = {
                                                     subject = headers.subject.toString(),
                                                     unread = in_array("[]", flag),
                                                     answered = in_array("\\Answered", flag);
-
-
                                                 automaticTag.tags(subject, function(tag) {
                                                     if (tag) {
                                                         function tagid(tag, callback) {
@@ -119,7 +117,6 @@ module.exports = {
                                                                 callback(null);
                                                             }
                                                         }
-
                                                         tagid(tag, function(tagid, templateid) {
                                                             db.Template.findOne({
                                                                 where: {
@@ -142,7 +139,6 @@ module.exports = {
                                                                                 });
                                                                         }
                                                                     });
-
                                                                 } else {
                                                                     throw new Error("Message not sent")
                                                                 }
@@ -177,7 +173,6 @@ module.exports = {
                                                                             console.log("data saved successfully");
                                                                         }
                                                                     });
-
                                                                 } else {
                                                                     console.log("data already saved");
                                                                 }
@@ -196,7 +191,6 @@ module.exports = {
                                             imap.end();
                                         });
                                     }
-
                                 });
                             });
                         });
@@ -298,7 +292,7 @@ module.exports = {
                                                     answered: answered,
                                                     uid: uid,
                                                     body: bodyMsg,
-                                                    Genuine_Applicant: GENERIC.Genuine_Applicant(subject)
+                                                    genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                 });
                                                 detail.save(function(err) {
                                                     if (err) {
