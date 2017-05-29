@@ -16,7 +16,6 @@ export class InboxController extends BaseAPIController {
 
     /* Get Emails By EmailId*/
     getByEmailId = (req, res, next) => {
-        console.log(req.params.emailid)
         req.email.find({
             sender_mail: req.params.emailid
         }).sort({

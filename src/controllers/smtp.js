@@ -34,7 +34,7 @@ export class SmtpController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(res, null);
                     })
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -49,7 +49,7 @@ export class SmtpController extends BaseAPIController {
                 }
             })
             .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -60,7 +60,7 @@ export class SmtpController extends BaseAPIController {
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
                 limit: parseInt(req.params.limit)
             })
-             .then(res.json.bind(res))
+            .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -103,11 +103,11 @@ export class SmtpController extends BaseAPIController {
                         .then((data) => {
                             _.map(data, (val, key) => {
                                 if (val.email == req.params.email) {
-                                    this._db.Smtp.update({ status: "TRUE" }, { where: { email: req.params.email } })
+                                    this._db.Smtp.update({ status: true }, { where: { email: req.params.email } })
                                         .then(() => {})
                                         .catch(this.handleErrorResponse.bind(null, res));
                                 } else {
-                                    this._db.Smtp.update({ status: "FALSE" }, { where: { email: val.email } })
+                                    this._db.Smtp.update({ status: false }, { where: { email: val.email } })
                                         .then(() => {})
                                         .catch(this.handleErrorResponse.bind(null, res));
                                 }

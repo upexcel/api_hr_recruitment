@@ -1,3 +1,5 @@
+import imap_connection from "../service/imap";
+import Imap from "imap"
 export default function(sequelize, DataTypes) {
     const imap = sequelize.define("IMAP", {
         email: {
@@ -13,12 +15,12 @@ export default function(sequelize, DataTypes) {
         },
         status: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false
+            defaultValue: false,
         },
         active: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false
-        }
+            defaultValue: false,
+        },
     }, {
         timestamps: true,
         freezeTableName: true,
@@ -26,11 +28,7 @@ export default function(sequelize, DataTypes) {
         hooks: {
             beforeCreate: function(IMAP) {
                 return new Promise((resolve, reject) => {
-                    this.findOne({
-                            where: {
-                                email: IMAP.email
-                            }
-                        })
+                    this.findOne({ where: { email: IMAP.email } })
                         .then((email) => {
                             if (email) {
                                 reject("Email Already In Use");
@@ -40,7 +38,53 @@ export default function(sequelize, DataTypes) {
                         });
                 });
             }
-        }
+        },
+        classMethods: {
+
+            // imap test.....
+            imapTest(email) {
+                return new Promise((resolve, reject) => {
+                    this.findOne({ where: { email: email } })
+                        .then((result) => {
+                            if (result && result.status == false) {
+                                var imap = new Imap({
+                                    user: result.email,
+                                    password: result.password,
+                                    host: result.imap_server,
+                                    port: result.server_port,
+                                    tls: result.type
+                                });
+                                imap_connection.imapConnection(imap)
+                                    .then((response) => {
+                                        if (response) {
+                                            this.update({ status: true }, { where: { email: result.email } })
+                                                .then((data) => {
+                                                    if (data[0] == 1) {
+                                                        resolve({ message: "successfully Active changed to true" });
+                                                    } else if (data[0] == 0) {
+                                                        reject(new Error("user not found in database"));
+                                                    } else {
+                                                        reject(new Error("error"));
+                                                    }
+                                                })
+                                        } else {
+                                            reject(new Error("error"));
+                                        }
+                                    })
+                                    .catch((error) => { reject(error) });
+                            } else {
+                                if (!result) {
+                                    reject(new Error("email not found"));
+                                } else {
+                                    resolve({ message: "Email Already set to True" })
+                                }
+
+                            }
+                        })
+                })
+            },
+        },
+
     });
     return imap;
 }
