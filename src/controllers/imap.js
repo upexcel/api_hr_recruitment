@@ -30,12 +30,8 @@ export class ImapController extends BaseAPIController {
                             id: req.params.imapId
                         }
                     })
-                    .then((data) => {
-                        this.handleSuccessResponse(res, null);
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            error: err.errors[0]['message']
-                        }));
+                    .then((docs) => {
+                            this.handleSuccessResponse(res, null);
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -47,20 +43,16 @@ export class ImapController extends BaseAPIController {
                     id: req.params.imapId
                 }
             })
-            .then((data) => {
-                if (data) {
+            .then((docs) => {
                     this.handleSuccessResponse(res, null);
-                } else {
-                    this.handleErrorResponse(res, "Data Not Deleted");
-                }
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get Imap data */
     getImap = (req, res) => {
         this._db.Imap.findAll({
-                offset: (req.params.page - 1) * req.params.limit,
-                limit: req.params.limit
+                offset: (req.params.page - 1) * parseInt(req.params.limit),
+                limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));

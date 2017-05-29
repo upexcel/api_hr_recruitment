@@ -22,7 +22,7 @@ export default function(sequelize, DataTypes) {
                         })
                         .then((user) => {
                             if (user) {
-                                reject("Email Already In Use");
+                                throw new Error(reject("Email Already In Use"));
                             } else {
                                 resolve()
                             }

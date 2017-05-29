@@ -9,15 +9,7 @@ export class TemplateController extends BaseAPIController {
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
-                    .then((data) => {
-                        res.json({
-                            data
-                        })
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            error: err
-                        }));
-                    })
+                  .then(res.json.bind(res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -31,12 +23,8 @@ export class TemplateController extends BaseAPIController {
                             id: req.params.templateId
                         }
                     })
-                    .then((data) => {
-                        if (data[0]) {
+                    .then((docs) => {
                             this.handleSuccessResponse(res, null);
-                        } else {
-                            this.handleErrorResponse(res, "Data Not Updated");
-                        }
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -49,21 +37,16 @@ export class TemplateController extends BaseAPIController {
                     id: req.params.templateId
                 }
             })
-            .then((data) => {
-                if (data) {
+            .then((docs) => {
                     this.handleSuccessResponse(res, null);
-                } else {
-                    this.handleErrorResponse(res, "Data Not Deleted");
-                }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get List of All Templates */
     templateList = (req, res) => {
         this._db.Template.findAll({
-                offset: (req.params.page - 1) * req.params.limit,
-                limit: req.params.limit
+                offset: (req.params.page - 1) * parseInt(req.params.limit),
+                limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));

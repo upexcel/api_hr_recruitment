@@ -8,15 +8,7 @@ export class VariableController extends BaseAPIController {
         VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((variable) => {
                 this._db.Variable.create(variable)
-                    .then((data) => {
-                        res.json({
-                            data
-                        })
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            error: err
-                        }));
-                    })
+                  .then(res.json.bind(res))
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -30,11 +22,7 @@ export class VariableController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                        if (docs[0]) {
                             this.handleSuccessResponse(res, null);
-                        } else {
-                            this.handleErrorResponse(res, "Data Not Updated");
-                        }
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -48,20 +36,16 @@ export class VariableController extends BaseAPIController {
                     id: req.params.variableId
                 }
             })
-            .then((data) => {
-                if (data) {
+            .then((docs) => {
                     this.handleSuccessResponse(res, null);
-                } else {
-                    this.handleErrorResponse(res, "Data Not Deleted");
-                }
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get List of All Templates */
     variableList = (req, res) => {
         this._db.Variable.findAll({
-                offset: (req.params.page - 1) * req.params.limit,
-                limit: req.params.limit
+                offset: (req.params.page - 1) * parseInt(req.params.limit),
+                limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));

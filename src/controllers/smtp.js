@@ -34,12 +34,8 @@ export class SmtpController extends BaseAPIController {
                             id: req.params.smtpId
                         }
                     })
-                    .then((data) => {
-                        this.handleSuccessResponse(res, null);
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            error: err.errors[0]['message']
-                        }));
+                    .then((docs) => {
+                            this.handleSuccessResponse(res, null);
                     })
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -53,22 +49,17 @@ export class SmtpController extends BaseAPIController {
                     id: req.params.smtpId
                 }
             })
-            .then((data) => {
-                if (data) {
+            .then((docs) => {
                     this.handleSuccessResponse(res, null);
-                } else {
-                    this.handleErrorResponse(res, "data not deleted");
-                }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
 
     /* Get Smtp data */
     getSmtp = (req, res) => {
         this._db.Smtp.findAll({
-                offset: (req.params.page - 1) * req.params.limit,
-                limit: req.params.limit
+                offset: (req.params.page - 1) * parseInt(req.params.limit),
+                limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
@@ -81,21 +72,38 @@ export class SmtpController extends BaseAPIController {
 
     /* test smtp by email*/
     testSmtp = (req, res) => {
-        SmtpProvider.testSmtp(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-                let email = req.body.email;
-                mail.mail_alert(email, config.subject, "template", config.from, config.html, function(response_msg, response_data, response) {
+    SmtpProvider.testSmtp(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
+        .then(() => {
+            var email = req.body.email;
+            var subject = "Smtp test";
+            var from = "noreply@excellencetechnologies.in";
+            var html = "Smtp test successfully";
+            mail.mail_alert(email, subject, "template", from, html, function(response_msg, response_data, response) {
+                if (response) {
                     if (response.accepted) {
-                        this.handleSuccessResponse(res, null);
+                        res.json({
+                            status: 1,
+                            message: "success",
+                            data: "message sent successfully"
+                        });
                     } else {
-                        throw new Error(res.json(400, {
-                            error: "Message not sent successfully"
-                        }))
+                        res.json({
+                            status: 0,
+                            messsage: "error",
+                            data: "message not sent successfully"
+                        });
                     }
-                });
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
-    }
+                } else {
+                    res.json({
+                        status: 0,
+                        messsage: "error",
+                        data: "message not sent successfully"
+                    });
+                }
+            });
+        })
+        .catch(this.handleErrorResponse.bind(null, res));
+}
 
 
     /* change smtp status*/

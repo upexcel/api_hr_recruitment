@@ -15,7 +15,6 @@
     "token_type": "Bearer",
     "expires_in": 3600,
     "refresh_token": "1/vjjHYdLPT7STaQEnv_zXPaWTcpR9dg33oiEbk91m8PE",
-     "subject" : "Smtp test",
-           "from" : "noreply@excellencetechnologies.in",
-           "html" : "Smtp test successfully"
+     "boolean" : "true"
+
 }
