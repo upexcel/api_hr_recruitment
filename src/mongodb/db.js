@@ -18,7 +18,7 @@ module.exports = function() {
         answered: { type: Boolean },
         uid: { type: Number },
         body: { type: String },
-        tags: { type: String },
+        tag_id: { type: Number },
         genuine_applicant: { type: String },
         attachment: { type: String }
     }, {

@@ -5,7 +5,11 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
-        let { page, tag_id, limit } = req.params;
+        let {
+            page,
+            tag_id,
+            limit
+        } = req.params;
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
@@ -16,7 +20,9 @@ export class FetchController extends BaseAPIController {
             tag_id: {
                 $in: [tag_id]
             }
-        }).skip((page - 1) * limit).limit(parseInt(limit)).sort({ uid: -1 }).exec((err, data) => {
+        }).skip((page - 1) * limit).limit(parseInt(limit)).sort({
+            uid: -1
+        }).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -30,8 +36,15 @@ export class FetchController extends BaseAPIController {
     };
 
     assignTag = (req, res, next) => {
-        let { tag_id, mongo_id } = req.params;
-        this._db.Tag.findOne({ where: { id: tag_id } })
+        let {
+            tag_id,
+            mongo_id
+        } = req.params;
+        this._db.Tag.findOne({
+                where: {
+                    id: tag_id
+                }
+            })
             .then((data) => {
                 if (data.id) {
                     req.email.findOneAndUpdate({
@@ -144,8 +157,14 @@ export class FetchController extends BaseAPIController {
     assignMultiple = (req, res, next) => {
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                let { tag_id } = req.params;
-                this._db.Tag.findOne({ where: { id: tag_id } })
+                let {
+                    tag_id
+                } = req.params;
+                this._db.Tag.findOne({
+                        where: {
+                            id: tag_id
+                        }
+                    })
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
@@ -181,7 +200,11 @@ export class FetchController extends BaseAPIController {
     deleteTag = (req, res, next) => {
         MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                this._db.Tag.findOne({ where: { id: req.params.tag_id } })
+                this._db.Tag.findOne({
+                        where: {
+                            id: req.params.tag_id
+                        }
+                    })
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
@@ -215,7 +238,10 @@ export class FetchController extends BaseAPIController {
     }
 
     changeUnreadStatus = (req, res, next) => {
-        let { mongo_id, status } = req.params;
+        let {
+            mongo_id,
+            status
+        } = req.params;
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
                 req.email.find({
@@ -260,16 +286,32 @@ export class FetchController extends BaseAPIController {
                         _id: val
                     }, (err, data) => {
                         if (err) {
-                            response.push({ status: 0, message: err, array_length: key });
+                            response.push({
+                                status: 0,
+                                message: err,
+                                array_length: key
+                            });
                         }
                         if (!data) {
-                            response.push({ status: 0, msg: "not found", array_length: key });
+                            response.push({
+                                status: 0,
+                                msg: "not found",
+                                array_length: key
+                            });
                         } else {
                             data.remove();
-                            response.push({ status: 1, msg: "delete success", array_length: key });
+                            response.push({
+                                status: 1,
+                                msg: "delete success",
+                                array_length: key
+                            });
                         }
                         if (key == (size - 1)) {
-                            res.json({ status: 1, message: "success", data: response });
+                            res.json({
+                                status: 1,
+                                message: "success",
+                                data: response
+                            });
                         }
                     });
                 });

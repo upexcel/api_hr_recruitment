@@ -1,26 +1,24 @@
 import BaseAPIController from "./BaseAPIController";
-import TemplateProvider from "../providers/TemplateProvider.js";
+import VariableProvider from "../providers/EmailVariableProvider.js";
 
-export class TemplateController extends BaseAPIController {
+export class VariableController extends BaseAPIController {
 
     /* Controller for User Register  */
-    create = (req, res) => {
-
-        TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
-            .then((template) => {
-                this._db.Template.create(template)
+    create = (req, res, next) => {
+        VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
+            .then((variable) => {
+                this._db.Variable.create(variable)
                   .then(res.json.bind(res))
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Template Update */
     update = (req, res) => {
-        TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
+        VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                this._db.Template.update(data, {
+                this._db.Variable.update(data, {
                         where: {
-                            id: req.params.templateId
+                            id: req.params.variableId
                         }
                     })
                     .then((docs) => {
@@ -30,11 +28,12 @@ export class TemplateController extends BaseAPIController {
     }
 
 
+
     /* Template delete */
-    deleteTemplate = (req, res) => {
-        this._db.Template.destroy({
+    deleteVariable = (req, res) => {
+        this._db.Variable.destroy({
                 where: {
-                    id: req.params.templateId
+                    id: req.params.variableId
                 }
             })
             .then((docs) => {
@@ -43,8 +42,8 @@ export class TemplateController extends BaseAPIController {
     }
 
     /* Get List of All Templates */
-    templateList = (req, res) => {
-        this._db.Template.findAll({
+    variableList = (req, res) => {
+        this._db.Variable.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
                 limit: parseInt(req.params.limit)
             })
@@ -52,13 +51,13 @@ export class TemplateController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
+
     /* Get Variable data using id*/
-    idResult = (req, res, next, templateId) => {
-        this.getById(req, res, this._db.Template, templateId, next);
+    idResult = (req, res, next, variableId) => {
+        this.getById(req, res, this._db.Variable, variableId, next);
     }
 
 }
 
-
-const controller = new TemplateController();
+const controller = new VariableController();
 export default controller;

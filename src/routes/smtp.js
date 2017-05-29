@@ -12,16 +12,16 @@ export default (app) => {
     app.route("/smtp/delete/:smtpId").delete(auth.requiresAdmin, smtp.deleteSmtp);
 
     /* Route for fetch smtp Data */
-    app.route("/smtp/get/:page").get(auth.requiresAdmin, smtp.getSmtp);
+    app.route("/smtp/get/:page/:limit").get(auth.requiresAdmin, smtp.getSmtp);
 
     /* Route for fetch Smtp data by id */
     app.route("/smtp/getbyid/:smtpId").get(auth.requiresAdmin, smtp.getSmtpById);
 
     /* Route for  Smtp test */
-    app.route("/smtp/testSmtp/:email").put(smtp.testSmtp);
+    app.route("/smtp/testSmtp/:email").put(auth.requiresAdmin, smtp.testSmtp);
 
     /* Route for  change status */
-    app.route("/smtp/changeStatus/:email").put(smtp.changeStatus);
+    app.route("/smtp/changeStatus/:email").put(auth.requiresAdmin, smtp.changeStatus);
 
     app.param("smtpId", smtp.idResult);
 

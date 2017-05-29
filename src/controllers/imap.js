@@ -1,4 +1,4 @@
-var Imap = require("imap");
+import Imap from "imap";
 import BaseAPIController from "./BaseAPIController";
 import ImapProvider from "../providers/ImapProvider";
 
@@ -9,51 +9,48 @@ export class ImapController extends BaseAPIController {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.create(data)
-                    .then(res.json.bind(res))
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
-    }
-
-    /* Get Imapp data using id */
-    idResult = (req, res, next, id) => {
-        this.getById(req, res, this._db.Imap, id, next);
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap data Update */
     update = (req, res) => {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                this._db.Imap.update(data, { where: { id: req.params.imap_id } })
-                    .then((data) => {
-                        if (data[0]) {
-                            this.handleSuccessResponse(res, null);
-                        } else {
-                            this.handleErrorResponse(res, "data not deleted");
+                this._db.Imap.update(data, {
+                        where: {
+                            id: req.params.imapId
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+                    .then((docs) => {
+                        this.handleSuccessResponse(res, null);
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap data delete */
-
     deleteImap = (req, res) => {
-        this._db.Imap.destroy({ where: { id: req.params.imap_id } })
-            .then((data) => {
-                if (data) {
-                    this.handleSuccessResponse(res, null);
-                } else {
-                    this.handleErrorResponse(res, "data not deleted");
+        this._db.Imap.destroy({
+                where: {
+                    id: req.params.imapId
                 }
             })
-            .catch(this.handleErrorResponse.bind(null, res));
+            .then((docs) => {
+                this.handleSuccessResponse(res, null);
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get Imap data */
     getImap = (req, res) => {
-        this._db.Imap.findAll({ offset: (req.params.page - 1) * req.params.limit, limit: req.params.limit })
+        this._db.Imap.findAll({ offset: (req.params.page - 1) * parseInt(req.params.limit), limit: parseInt(req.params.limit) })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -64,7 +61,13 @@ export class ImapController extends BaseAPIController {
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+    /* Get Imapp data using id */
+    idResult = (req, res, next, imapId) => {
+        this.getById(req, res, this._db.Imap, imapId, next);
+    }
 }
+
 
 const controller = new ImapController();
 export default controller;
