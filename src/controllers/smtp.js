@@ -1,7 +1,8 @@
 import BaseAPIController from "./BaseAPIController";
 import SmtpProvider from "../providers/SmtpProvider";
-var mail = require("../modules/mail");
-var _ = require("lodash");
+import mail from "../modules/mail";
+import _ from "lodash";
+import config from "../config.json";
 
 export class SmtpController extends BaseAPIController {
 
@@ -10,50 +11,55 @@ export class SmtpController extends BaseAPIController {
         SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Smtp.create(data)
-                    .then(res.json.bind(res))
-                    .catch(this.handleErrorResponse.bind(null, res));
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
+                    })
             })
             .catch(this.handleErrorResponse.bind(null, res));
-    }
-
-    /* Get Smtpp data using id */
-    idResult = (req, res, next, smtpId) => {
-        this.getById(req, res, this._db.Smtp, smtpId, next);
     }
 
     /* Smtp data Update */
     update = (req, res) => {
         SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                this._db.Smtp.update(data, { where: { id: req.params.smtpId } })
-                    .then((data) => {
-                        if (data[0]) {
-                            this.handleSuccessResponse(res, null);
-                        } else {
-                            this.handleErrorResponse(res, "data not Updated");
+                this._db.Smtp.update(data, {
+                        where: {
+                            id: req.params.smtpId
                         }
                     })
-                    .catch(this.handleErrorResponse.bind(null, res));
+                    .then((docs) => {
+                        this.handleSuccessResponse(res, null);
+                    })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
 
     /* Smtp data delete */
     deleteSmtp = (req, res) => {
-        this._db.Smtp.destroy({ where: { id: req.params.smtpId } })
-            .then((data) => {
-                if (data) {
-                    this.handleSuccessResponse(res, null);
-                } else {
-                    this.handleErrorResponse(res, "data not deleted");
+        this._db.Smtp.destroy({
+                where: {
+                    id: req.params.smtpId
                 }
             })
-            .catch(this.handleErrorResponse.bind(null, res));
+            .then((docs) => {
+                this.handleSuccessResponse(res, null);
+            }).catch(this.handleErrorResponse.bind(null, res));
     }
+
 
     /* Get Smtp data */
     getSmtp = (req, res) => {
-        this._db.Smtp.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+        this._db.Smtp.findAll({
+                offset: (req.params.page - 1) * parseInt(req.params.limit),
+                limit: parseInt(req.params.limit)
+            })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -62,6 +68,7 @@ export class SmtpController extends BaseAPIController {
     getSmtpById = (req, res) => {
         res.json(req.result);
     }
+
 
     /* test smtp by email*/
     testSmtp = (req, res) => {
@@ -86,6 +93,7 @@ export class SmtpController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
+
     /* change smtp status*/
     changeStatus = (req, res) => {
         this._db.Smtp.findOne({ where: { email: req.params.email } })
@@ -95,11 +103,11 @@ export class SmtpController extends BaseAPIController {
                         .then((data) => {
                             _.map(data, (val, key) => {
                                 if (val.email == req.params.email) {
-                                    this._db.Smtp.update({ status: "TRUE" }, { where: { email: req.params.email } })
+                                    this._db.Smtp.update({ status: true }, { where: { email: req.params.email } })
                                         .then(() => {})
                                         .catch(this.handleErrorResponse.bind(null, res));
                                 } else {
-                                    this._db.Smtp.update({ status: "FALSE" }, { where: { email: val.email } })
+                                    this._db.Smtp.update({ status: false }, { where: { email: val.email } })
                                         .then(() => {})
                                         .catch(this.handleErrorResponse.bind(null, res));
                                 }
@@ -119,6 +127,13 @@ export class SmtpController extends BaseAPIController {
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+
+    /* Get Smtpp data using id */
+    idResult = (req, res, next, smtpId) => {
+        this.getById(req, res, this._db.Smtp, smtpId, next);
+    }
+
 
 }
 

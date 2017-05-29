@@ -12,7 +12,9 @@ export default (app) => {
     app.route("/template/delete/:templateId").delete(auth.requiresAdminOrHr, template.deleteTemplate);
 
     /* Route for List of Template */
-    app.route("/template/get/:page").get(auth.requiresAdminOrHr, template.templateList);
+    app.route("/template/get/:page/:limit").get(auth.requiresAdminOrHr, template.templateList);
+
+    app.param("templateId", template.idResult);
 
     return app;
 };

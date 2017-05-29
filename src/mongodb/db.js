@@ -18,7 +18,7 @@ module.exports = function() {
         answered: { type: Boolean },
         uid: { type: Number },
         body: { type: String },
-        tags: { type: String },
+        tag_id: { type: Number },
         Genuine_Applicant: { type: String },
         attachment: { type: String }
     }, {
@@ -26,7 +26,7 @@ module.exports = function() {
         strict: true,
     });
     var email = conn.model("EMAIL", emailSchema);
-    
+
     cronService.cron(email)
     return function(req, res, next) {
         req.email = email;

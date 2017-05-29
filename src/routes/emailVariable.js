@@ -1,4 +1,4 @@
-import variable from "../controllers/tempVariable";
+import variable from "../controllers/emailVariable";
 import auth from "../middleware/auth";
 
 export default (app) => {
@@ -12,7 +12,9 @@ export default (app) => {
     app.route("/variable/delete/:variableId").delete(auth.requiresAdminOrHr, variable.deleteVariable);
 
     /* Route for List of Variable Template */
-    app.route("/variable/get/:page").get(auth.requiresAdminOrHr, variable.variableList);
+    app.route("/variable/get/:page/:limit").get(auth.requiresAdminOrHr, variable.variableList);
+
+    app.param("variableId", variable.idResult);
 
     return app;
 };

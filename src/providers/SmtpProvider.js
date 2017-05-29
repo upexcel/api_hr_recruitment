@@ -4,7 +4,6 @@ import util from "util";
 /* Provider for User Registration */
 
 const save = (model, validate, body, validationResult) => {
-    console.log(body);
     return new Promise((resolve, reject) => {
         validate("email", "email cannot be empty").notEmpty();
         validate("smtp_server", "smtp_server cannot be empty").notEmpty();

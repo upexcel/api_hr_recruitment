@@ -3,13 +3,13 @@ import Imap from "./imap";
 import Tag from "./tag";
 import Smtp from "./smtp";
 import Template from "./template";
-import Variable from "./tempVariable";
+import Variable from "./emailVariable";
 
 export default {
-	User,
-	Imap,
-	Tag,
-	Smtp,
-	Template,
-	Variable,
+    User,
+    Imap,
+    Tag,
+    Smtp,
+    Template,
+    Variable,
 };
