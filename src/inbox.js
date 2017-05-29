@@ -12,7 +12,7 @@ module.exports = {
     fetchEmail: function(email) {
         db.Imap.findAll({
             where: {
-                "active": "True"
+                "active": true
             }
         }).then(function(docs, err) {
             if (docs) {
