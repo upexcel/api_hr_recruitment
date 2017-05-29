@@ -1,11 +1,11 @@
-var mongoose = require("mongoose");
-var conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
+import mongoose from "mongoose";
+let conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
 import cronService from "../service/cron.js";
 // the middleware function
 module.exports = function() {
 
     // create schema
-    var emailSchema = mongoose.Schema({
+    let emailSchema = mongoose.Schema({
         email_id: { type: String },
         from: { type: String },
         to: { type: String },
@@ -25,7 +25,7 @@ module.exports = function() {
         collection: "emailStored",
         strict: true,
     });
-    var email = conn.model("EMAIL", emailSchema);
+    let email = conn.model("EMAIL", emailSchema);
 
     cronService.cron(email)
     return function(req, res, next) {
