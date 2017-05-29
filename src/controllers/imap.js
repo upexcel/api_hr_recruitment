@@ -53,70 +53,17 @@ export class ImapController extends BaseAPIController {
 
     /* Get Imap data */
     getImap = (req, res) => {
-        this._db.Imap.findAll({ offset: (req.params.page - 1) * 10, limit: 10 })
+        this._db.Imap.findAll({ offset: (req.params.page - 1) * req.params.limit, limit: req.params.limit })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap Active  Status */
-    statusActive = (req, res) => {
-        this._db.Imap.findOne({ where: { email: req.params.email } })
-            .then((result) => {
-                if (result) {
-                    var imap = new Imap({
-                        user: result.email,
-                        password: result.password,
-                        host: result.imap_server,
-                        port: result.server_port,
-                        tls: result.type
-                    });
-                    imap_connection(imap, (err) => {
-                        if (err) {
-                            res.json({ status: 0, message: "error", data: err });
-                        } else {
-                            this._db.Imap.update({ status: "FALSE" }, { where: { email: req.body.email } })
-                                .then((data) => {
-                                    if (data[0] == 1) {
-                                        res.json({ status: 1, message: "success", data: "successfully Active changed to true" });
-                                    } else if (data[0] == 0) {
-                                        res.json({ status: 0, message: "error", data: "user not found in database" });
-                                    } else {
-                                        res.json({ status: 0, message: "error", data: "error" });
-                                    }
-                                })
-                                .catch(this.handleErrorResponse.bind(null, res));
-                        }
-                    });
-                } else {
-                    res.json({ status: 0, message: "error", data: "email not found in database" });
-                }
-            })
+    statusActive = (req, res, next) => {
+        this._db.Imap.imapTest(req.params.email)
+            .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
-
-}
-
-function imap_connection(imap, callback) {
-    function openInbox(cb) {
-        imap.openBox("INBOX", true, cb);
-    }
-    imap.once("ready", function() {
-        openInbox(function(err, box) {
-            if (err) {
-                callback(err);
-            } else {
-                callback("", box);
-            }
-            imap.end();
-        });
-    });
-    imap.once("error", function(err) {
-        callback(err);
-    });
-    imap.once("end", function() {
-        console.log("Connection ended");
-    });
-    imap.connect();
 }
 
 const controller = new ImapController();

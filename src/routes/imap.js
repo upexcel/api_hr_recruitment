@@ -12,10 +12,10 @@ export default (app) => {
     app.route("/imap/delete/:imap_id").delete(auth.requiresAdmin, imap.deleteImap);
 
     /* Route for fetch Imap Data */
-    app.route("/imap/get/:page").get(auth.requiresAdmin, imap.getImap);
+    app.route("/imap/get/:page/:limit").get(auth.requiresAdmin, imap.getImap);
 
     /* Route for fetch Imap Data */
-    app.route("/imap/statusActive/:email").put(auth.requiresAdmin, imap.statusActive);
+    app.route("/imap/statusActive/:email").put(imap.statusActive);
 
     app.param("imap_id", imap.idResult);
 

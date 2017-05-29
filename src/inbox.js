@@ -5,7 +5,7 @@ var _ = require("lodash");
 import db from "./db";
 
 module.exports = {
-    fetch_email: function(email) {
+    fetchEmail: function(email) {
         db.Imap.findAll({
             where: {
                 "active": "True"
@@ -115,7 +115,7 @@ module.exports = {
                                                             uid: uid,
                                                             body: bodyMsg,
                                                             tags: tag,
-                                                            Genuine_Applicant: GENERIC.Genuine_Applicant(subject)
+                                                            genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                         });
                                                         detail.save(function(err) {
                                                             if (err) {
@@ -156,7 +156,7 @@ module.exports = {
             }
         });
     },
-    Before_date_email: function(email, date) {
+    beforeDateEmail: function(email, date) {
         db.Imap.findAll({
             where: {
                 "active": "True"
@@ -244,7 +244,7 @@ module.exports = {
                                                     uid: uid,
                                                     body: bodyMsg,
                                                     tags: tag,
-                                                    Genuine_Applicant: GENERIC.Genuine_Applicant(subject)
+                                                    genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                 });
                                                 detail.save(function(err) {
                                                     if (err) {

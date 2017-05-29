@@ -19,14 +19,14 @@ module.exports = function() {
         uid: { type: Number },
         body: { type: String },
         tags: { type: String },
-        Genuine_Applicant: { type: String },
+        genuine_applicant: { type: String },
         attachment: { type: String }
     }, {
         collection: "emailStored",
         strict: true,
     });
     var email = conn.model("EMAIL", emailSchema);
-    
+
     cronService.cron(email)
     return function(req, res, next) {
         req.email = email;
