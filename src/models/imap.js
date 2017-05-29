@@ -1,4 +1,4 @@
-import imap_connection from "../service/imapconnection";
+import imap_connection from "../service/imap";
 import Imap from "imap"
 export default function(sequelize, DataTypes) {
     const imap = sequelize.define("IMAP", {
@@ -14,14 +14,12 @@ export default function(sequelize, DataTypes) {
             values: ["SSL", "TLS"],
         },
         status: {
-            type: DataTypes.ENUM,
-            values: ["TRUE", "FALSE"],
-            defaultValue: "FALSE",
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
         active: {
-            type: DataTypes.ENUM,
-            values: ["TRUE", "FALSE"],
-            defaultValue: "FALSE",
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     }, {
         timestamps: true,
@@ -43,12 +41,12 @@ export default function(sequelize, DataTypes) {
         },
         classMethods: {
 
-            // login.....
+            // imap test.....
             imapTest(email) {
                 return new Promise((resolve, reject) => {
                     this.findOne({ where: { email: email } })
                         .then((result) => {
-                            if (result && result.status == "FALSE") {
+                            if (result && result.status == false) {
                                 var imap = new Imap({
                                     user: result.email,
                                     password: result.password,
@@ -56,22 +54,24 @@ export default function(sequelize, DataTypes) {
                                     port: result.server_port,
                                     tls: result.type
                                 });
-                                imap_connection.imapConnection(imap, (err) => {
-                                    if (err) {
-                                        reject({ status: 0, message: "error", data: err });
-                                    } else {
-                                        this.update({ status: "TRUE" }, { where: { email: result.email } })
-                                            .then((data) => {
-                                                if (data[0] == 1) {
-                                                    resolve({ message: "successfully Active changed to true" });
-                                                } else if (data[0] == 0) {
-                                                    reject(new Error("user not found in database"));
-                                                } else {
-                                                    reject(new Error("error"));
-                                                }
-                                            })
-                                    }
-                                });
+                                imap_connection.imapConnection(imap)
+                                    .then((response) => {
+                                        if (response) {
+                                            this.update({ status: true }, { where: { email: result.email } })
+                                                .then((data) => {
+                                                    if (data[0] == 1) {
+                                                        resolve({ message: "successfully Active changed to true" });
+                                                    } else if (data[0] == 0) {
+                                                        reject(new Error("user not found in database"));
+                                                    } else {
+                                                        reject(new Error("error"));
+                                                    }
+                                                })
+                                        } else {
+                                            reject(new Error("error"));
+                                        }
+                                    })
+                                    .catch((error) => { reject(error) });
                             } else {
                                 if (!result) {
                                     reject(new Error("email not found"));
@@ -82,29 +82,6 @@ export default function(sequelize, DataTypes) {
                             }
                         })
                 })
-
-                // function imap_connection(imap, callback) {
-                //     function openInbox(cb) {
-                //         imap.openBox("INBOX", true, cb);
-                //     }
-                //     imap.once("ready", function() {
-                //         openInbox(function(err, box) {
-                //             if (err) {
-                //                 callback(err);
-                //             } else {
-                //                 callback("", box);
-                //             }
-                //             imap.end();
-                //         });
-                //     });
-                //     imap.once("error", function(err) {
-                //         callback(err);
-                //     });
-                //     imap.once("end", function() {
-                //         console.log("Connection ended");
-                //     });
-                //     imap.connect();
-                // }
             },
         },
 

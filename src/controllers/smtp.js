@@ -67,17 +67,9 @@ export class SmtpController extends BaseAPIController {
     /* test smtp by email*/
 
     testSmtp = (req, res) => {
-        mail.mail_alert(req.params.email, constant().smtp.subject, "template", constant().smtp.from, constant().smtp.html, function(response_msg, response_data, response) {
-            if (response) {
-                if (response.accepted) {
-                    res.json({ status: 1, message: "success", data: "message sent successfully" });
-                } else {
-                    res.json({ status: 0, messsage: "error", data: "message not sent successfully" });
-                }
-            } else {
-                res.json({ status: 0, messsage: "error", data: "message not sent successfully" });
-            }
-        })
+        mail.sendMail(req.params.email, constant().smtp.subject, "template", constant().smtp.from, constant().smtp.html)
+            .then((response) => { res.json(response) })
+            .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* change smtp status*/
@@ -86,7 +78,6 @@ export class SmtpController extends BaseAPIController {
             .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
-
 }
 
 const controller = new SmtpController();

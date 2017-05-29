@@ -18,10 +18,10 @@ export default (app) => {
     app.route("/smtp/getbyid/:smtpId").get(auth.requiresAdmin, smtp.getSmtpById);
 
     /* Route for  Smtp test */
-    app.route("/smtp/testSmtp/:email").put(auth.requiresAdmin, smtp.testSmtp);
+    app.route("/smtp/testSmtp/:email").put(smtp.testSmtp);
 
     /* Route for  change status */
-    app.route("/smtp/changeStatus/:email").put(auth.requiresAdmin, smtp.changeStatus);
+    app.route("/smtp/changeStatus/:email").put(smtp.changeStatus);
 
     app.param("smtpId", smtp.idResult);
 

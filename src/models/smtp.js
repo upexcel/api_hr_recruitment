@@ -13,9 +13,8 @@ export default function(sequelize, DataTypes) {
             values: ["SSL", "TLS"],
         },
         status: {
-            type: DataTypes.ENUM,
-            values: ["TRUE", "FALSE"],
-            defaultValue: "FALSE",
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
         },
     }, {
         timestamps: true,
@@ -43,33 +42,14 @@ export default function(sequelize, DataTypes) {
                     this.findOne({ where: { email: email } })
                         .then((data) => {
                             if (data) {
-                                this.findAll({})
-                                    .then((data) => {
-                                        _.map(data, (val, key) => {
-                                            if (val.email == email) {
-                                                this.update({ status: "TRUE" }, { where: { email: email } })
-                                                    .then(() => {})
-                                                    .catch((error) => { reject(error) })
-                                            } else {
-                                                this.update({ status: "FALSE" }, { where: { email: val.email } })
-                                                    .then(() => {})
-                                                    .catch((error) => { reject(error) });
-                                            }
-                                            if (key == (_.size(data) - 1)) {
-                                                resolve({
-                                                    status: 1,
-                                                    message: "success",
-                                                    data: "status changed successfully"
-                                                });
-                                            }
-                                        });
-                                    })
-                                    .catch((error) => { reject(error) });
+                                sequelize.query(`UPDATE SMTP  SET status = (case when email = "${email}" then 1 else 0 end);`)
+                                    .then(function(users) {
+                                        resolve({ status: 1, message: "success", data: "status changed successfully" });
+                                    });
                             } else {
-                                reject(new Error("email id is not found in database"));
+                                reject("Email not found");
                             }
                         })
-                        .catch((error) => { reject(error) });
                 })
             },
         }
