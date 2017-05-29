@@ -6,4 +6,4 @@
 /.eslintrc.js
 /nbproject/private/
 /nbproject
-/src/config.json
+src/config.json/
