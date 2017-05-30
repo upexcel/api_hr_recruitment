@@ -1,3 +1,4 @@
+import _ from 'lodash';
 export default function(sequelize, DataTypes) {
     const smtp = sequelize.define("SMTP", {
         email: {
@@ -13,8 +14,8 @@ export default function(sequelize, DataTypes) {
         },
         status: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false
-        }
+            defaultValue: false,
+        },
     }, {
         timestamps: true,
         freezeTableName: true,
@@ -22,11 +23,7 @@ export default function(sequelize, DataTypes) {
         hooks: {
             beforeCreate: function(SMTP) {
                 return new Promise((resolve, reject) => {
-                    this.findOne({
-                            where: {
-                                email: SMTP.email
-                            }
-                        })
+                    this.findOne({ where: { email: SMTP.email } })
                         .then((email) => {
                             if (email) {
                                 reject("Email Already In Use");
@@ -37,6 +34,28 @@ export default function(sequelize, DataTypes) {
                 });
 
             }
+        },
+        classMethods: {
+            smtpTest(email) {
+                return new Promise((resolve, reject) => {
+                    this.update({ status: 1 }, { where: { email: email } })
+                        .then((data) => {
+                            if (data[0]) {
+                                this.update({ status: 0 }, { where: { $not: { email: email } } })
+                                    .then((data) => {
+                                        if (data[0]) {
+                                            resolve({ status: 1, message: "success", data: "status changed successfully" })
+                                        } else {
+                                            reject("error")
+                                        }
+                                    })
+                                    .catch((error) => { reject("error") })
+                            } else {
+                                reject("Email not found");
+                            }
+                        })
+                })
+            },
         }
     });
     return smtp;

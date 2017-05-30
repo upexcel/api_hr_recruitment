@@ -10,6 +10,11 @@ export default function() {
             guest: "Guest",
             hr: "HR",
         },
+        smtp: {
+            subject: "Smtp test",
+            from: "noreply@excellencetechnologies.in",
+            html: "Smtp test successfully"
+        }
     };
     return constant;
 }

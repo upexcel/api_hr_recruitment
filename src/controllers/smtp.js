@@ -1,5 +1,6 @@
 import BaseAPIController from "./BaseAPIController";
 import SmtpProvider from "../providers/SmtpProvider";
+import constant from "../models/constant";
 import mail from "../modules/mail";
 import _ from "lodash";
 import config from "../config.json";
@@ -72,69 +73,23 @@ export class SmtpController extends BaseAPIController {
 
     /* test smtp by email*/
     testSmtp = (req, res) => {
-        SmtpProvider.testSmtp(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-                var email = req.body.email;
-                var subject = "Smtp test";
-                var from = "noreply@excellencetechnologies.in";
-                var html = "Smtp test successfully";
-                mail.mail_alert(email, subject, "template", from, html, function(response_msg, response_data, response) {
-                    if (response) {
-                        if (response.accepted) {
-                            res.json({ status: 1, message: "success", data: "message sent successfully" });
-                        } else {
-                            res.json({ status: 0, messsage: "error", data: "message not sent successfully" });
-                        }
-                    } else {
-                        res.json({ status: 0, messsage: "error", data: "message not sent successfully" });
-                    }
-                });
-            })
+        mail.sendMail(req.params.email, constant().smtp.subject, "template", constant().smtp.from, constant().smtp.html)
+            .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
 
     /* change smtp status*/
     changeStatus = (req, res) => {
-        this._db.Smtp.findOne({ where: { email: req.params.email } })
-            .then((data) => {
-                if (data) {
-                    this._db.Smtp.findAll({})
-                        .then((data) => {
-                            _.map(data, (val, key) => {
-                                if (val.email == req.params.email) {
-                                    this._db.Smtp.update({ status: true }, { where: { email: req.params.email } })
-                                        .then(() => {})
-                                        .catch(this.handleErrorResponse.bind(null, res));
-                                } else {
-                                    this._db.Smtp.update({ status: false }, { where: { email: val.email } })
-                                        .then(() => {})
-                                        .catch(this.handleErrorResponse.bind(null, res));
-                                }
-                                if (key == (_.size(data) - 1)) {
-                                    res.json({
-                                        status: 1,
-                                        message: "success",
-                                        data: "status changed successfully"
-                                    });
-                                }
-                            });
-                        })
-                        .catch(this.handleErrorResponse.bind(null, res));
-                } else {
-                    res.json({ status: 0, messsage: "error", data: "email id is not found in database" });
-                }
-            })
+        this._db.Smtp.smtpTest(req.params.email)
+            .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
-
 
     /* Get Smtpp data using id */
     idResult = (req, res, next, smtpId) => {
         this.getById(req, res, this._db.Smtp, smtpId, next);
     }
-
-
 }
 
 const controller = new SmtpController();

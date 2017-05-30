@@ -50,10 +50,7 @@ export class ImapController extends BaseAPIController {
 
     /* Get Imap data */
     getImap = (req, res) => {
-        this._db.Imap.findAll({
-                offset: (req.params.page - 1) * parseInt(req.params.limit),
-                limit: parseInt(req.params.limit)
-            })
+        this._db.Imap.findAll({ offset: (req.params.page - 1) * parseInt(req.params.limit), limit: parseInt(req.params.limit) })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -65,13 +62,10 @@ export class ImapController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
-
     /* Get Imapp data using id */
     idResult = (req, res, next, imapId) => {
         this.getById(req, res, this._db.Imap, imapId, next);
     }
-
-
 }
 
 

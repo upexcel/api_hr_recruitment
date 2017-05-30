@@ -8,7 +8,7 @@ export class VariableController extends BaseAPIController {
         VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((variable) => {
                 this._db.Variable.create(variable)
-                  .then(res.json.bind(res))
+                    .then(res.json.bind(res))
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -22,7 +22,7 @@ export class VariableController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(res, null);
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -37,7 +37,7 @@ export class VariableController extends BaseAPIController {
                 }
             })
             .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 

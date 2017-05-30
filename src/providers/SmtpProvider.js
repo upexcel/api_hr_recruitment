@@ -20,19 +20,6 @@ const save = (model, validate, body, validationResult) => {
     });
 };
 
-const testSmtp = (model, validate, body, validationResult) => {
-    return new Promise((resolve, reject) => {
-        validate("email", "email cannot be empty").notEmpty();
-        validationResult.then(function(result) {
-            if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
-            } else {
-                resolve(body);
-            }
-        });
-    });
-};
-
 const changeStatus = (model, validate, body, validationResult) => {
     return new Promise((resolve, reject) => {
         validate("email", "email cannot be empty").notEmpty();
@@ -48,6 +35,5 @@ const changeStatus = (model, validate, body, validationResult) => {
 export default {
     BaseProvider,
     save,
-    testSmtp,
     changeStatus,
 };

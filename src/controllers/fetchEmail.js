@@ -5,11 +5,7 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
-        let {
-            page,
-            tag_id,
-            limit
-        } = req.params;
+        let { page, tag_id, limit } = req.params;
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
@@ -36,14 +32,9 @@ export class FetchController extends BaseAPIController {
     };
 
     assignTag = (req, res, next) => {
-        let {
-            tag_id,
-            mongo_id
-        } = req.params;
+        let { tag_id, mongo_id } = req.params;
         this._db.Tag.findOne({
-                where: {
-                    id: tag_id
-                }
+                where: { id: tag_id }
             })
             .then((data) => {
                 if (data.id) {
