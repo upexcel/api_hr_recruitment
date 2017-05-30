@@ -55,9 +55,6 @@ module.exports = {
                                                     UID_arr.push(val);
                                                 }
                                             });
-                                            if(UID_arr.length == 0){
-                                                UID_arr.push(Last_UID);
-                                            }
                                         }
 
                                         var f = imap.fetch(UID_arr, {
@@ -99,54 +96,54 @@ module.exports = {
                                                     subject = headers.subject.toString(),
                                                     unread = in_array("[]", flag),
                                                     answered = in_array("\\Answered", flag);
-                                                // automaticTag.tags(subject, function(tag) {
-                                                //     if (tag) {
-                                                //         function tagid(tag, callback) {
-                                                //             var tagid = "";
-                                                //             var templateid = "";
-                                                //             if (tag) {
-                                                //                 db.Tag.findOne({
-                                                //                         where: {
-                                                //                             title: {
-                                                //                                 like: "%" + tag + "%"
-                                                //                             }
-                                                //                         }
-                                                //                     })
-                                                //                     .then((docs) => {
-                                                //                         tagid = docs.id;
-                                                //                         templateid = docs.template_id;
-                                                //                         callback(tagid, templateid);
-                                                //                     });
-                                                //             } else {
-                                                //                 callback(null);
-                                                //             }
-                                                //         }
-                                                //         tagid(tag, function(tagid, templateid) {
-                                                //             db.Template.findOne({
-                                                //                 where: {
-                                                //                     id: templateid
-                                                //                 }
-                                                //             }).then((data) => {
-                                                //                 if (data && config.boolean === "true") {
-                                                //                     let email = sender_mail;
-                                                //                     let subject = data.dataValues.subject;
-                                                //                     let body = data.dataValues.body;
-                                                //                     replace.filter(body, from, function(html) {
-                                                //                         if (html) {
-                                                //                             mail.mail_alert(email, subject, "template", from, html,
-                                                //                                 function(response_msg, response_data, response) {
-                                                //                                     if (response) {
-                                                //                                         console.log("message send successfully")
-                                                //                                     } else {
-                                                //                                         console.log("Message not sent")
-                                                //                                     }
-                                                //                                 });
-                                                //                         }
-                                                //                     });
-                                                //                 } else {
-                                                //                     throw new Error("Message not sent")
-                                                //                 }
-                                                //             })
+                                                automaticTag.tags(subject, function(tag) {
+                                                    if (tag) {
+                                                        function tagid(tag, callback) {
+                                                            var tagid = "";
+                                                            var templateid = "";
+                                                            if (tag) {
+                                                                db.Tag.findOne({
+                                                                        where: {
+                                                                            title: {
+                                                                                like: "%" + tag + "%"
+                                                                            }
+                                                                        }
+                                                                    })
+                                                                    .then((docs) => {
+                                                                        tagid = docs.id;
+                                                                        templateid = docs.template_id;
+                                                                        callback(tagid, templateid);
+                                                                    });
+                                                            } else {
+                                                                callback(null);
+                                                            }
+                                                        }
+                                                        tagid(tag, function(tagid, templateid) {
+                                                            db.Template.findOne({
+                                                                where: {
+                                                                    id: templateid
+                                                                }
+                                                            }).then((data) => {
+                                                                if (data && config.boolean === "true") {
+                                                                    let email = sender_mail;
+                                                                    let subject = data.dataValues.subject;
+                                                                    let body = data.dataValues.body;
+                                                                    replace.filter(body, from, function(html) {
+                                                                        if (html) {
+                                                                            mail.mail_alert(email, subject, "template", from, html,
+                                                                                function(response_msg, response_data, response) {
+                                                                                    if (response) {
+                                                                                        console.log("message send successfully")
+                                                                                    } else {
+                                                                                        console.log("Message not sent")
+                                                                                    }
+                                                                                });
+                                                                        }
+                                                                    });
+                                                                } else {
+                                                                    throw new Error("Message not sent")
+                                                                }
+                                                            })
                                                             email.findOne({
                                                                 uid: uid
                                                             }, function(err, data) {
@@ -181,9 +178,9 @@ module.exports = {
                                                                     console.log("data already saved");
                                                                 }
                                                             })
-                                                //         })
-                                                //     }
-                                                // })
+                                                        })
+                                                    }
+                                                })
                                                 console.log(prefix + "Finished");
                                             });
                                         });
