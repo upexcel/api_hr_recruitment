@@ -6,11 +6,11 @@ export default class BaseAPIController {
         this._db = db;
     }
 
-    handleErrorResponse(res, err,next) {
+    handleErrorResponse(res, err, next) {
         res.status(400).send(errorHandler(err));
     }
 
-    handleSuccessResponse(res,next) {
+    handleSuccessResponse(res, next) {
         res.json({
             status: "SUCCESS"
         });
