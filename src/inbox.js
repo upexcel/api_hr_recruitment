@@ -56,7 +56,8 @@ module.exports = {
                                                 }
                                             });
                                         }
-                                        var f = imap.fetch(UID_arr, {
+                                        //UID_arr
+                                        var f = imap.fetch("*", {
                                             bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                                             struct: true
                                         });
@@ -71,6 +72,7 @@ module.exports = {
                                                     buffer += chunk.toString("utf8");
                                                 });
                                                 stream.once("end", function() {
+
                                                     headers = Imap.parseHeader(buffer);
                                                     var hash = buffer.substring(buffer.indexOf("<div")),
                                                         textmsg = hash.substring(0, hash.lastIndexOf("</div>"));
@@ -95,93 +97,67 @@ module.exports = {
                                                     subject = headers.subject.toString(),
                                                     unread = in_array("[]", flag),
                                                     answered = in_array("\\Answered", flag);
-                                                automaticTag.tags(subject, function(tag) {
-                                                    if (tag) {
-                                                        function tagid(tag, callback) {
-                                                            var tagid = "";
-                                                            var templateid = "";
-                                                            if (tag) {
-                                                                db.Tag.findOne({
-                                                                        where: {
-                                                                            title: {
-                                                                                like: "%" + tag + "%"
+                                                automaticTag.tags(subject)
+                                                    .then((tag) => {
+                                                        console.log(tag)
+                                                        if (tag.id != null) {
+                                                            db.Tag.findOne({ where: { title: { like: "%" + tag.tags + "%" } } })
+                                                                .then((tags) => {
+                                                                    if (tags) {
+                                                                        db.Template.findOne({
+                                                                            where: {
+                                                                                id: tags.template_id
                                                                             }
-                                                                        }
-                                                                    })
-                                                                    .then((docs) => {
-                                                                        tagid = docs.id;
-                                                                        templateid = docs.template_id;
-                                                                        callback(tagid, templateid);
-                                                                    });
-                                                            } else {
-                                                                callback(null);
-                                                            }
-                                                        }
-                                                        tagid(tag, function(tagid, templateid) {
-                                                            db.Template.findOne({
-                                                                where: {
-                                                                    id: templateid
-                                                                }
-                                                            }).then((data) => {
-                                                                if (data || config.boolean === "true") {
-                                                                    let email = sender_mail;
-                                                                    let subject = data.dataValues.subject;
-                                                                    let body = data.dataValues.body;
-                                                                    replace.filter(body, from, function(html) {
-                                                                        if (html) {
-                                                                            mail.mail_alert(email, subject, "template", from, html,
-                                                                                function(response_msg, response_data, response) {
-                                                                                    if (response) {
-                                                                                        console.log("message send successfully")
-                                                                                    } else {
-                                                                                        console.log("Message not sent")
+                                                                        }).then((data) => {
+                                                                            let email = sender_mail;
+                                                                            let subject = data.dataValues.subject;
+                                                                            let body = data.dataValues.body;
+                                                                            replace.filter(data.body, from)
+                                                                                .then((html) => {
+                                                                                    console.log(html)
+                                                                                    if (html) {
+                                                                                        mail.sendMail(email, subject, "template", from, html)
+                                                                                            .then((response) => {
+                                                                                                console.log(response)
+                                                                                            })
+                                                                                            .catch((error) => {
+                                                                                                throw new Error(error)
+                                                                                            })
                                                                                     }
                                                                                 });
-                                                                        }
-                                                                    });
-                                                                } else {
-                                                                    throw new Error("Message not sent")
-                                                                }
-                                                            })
-                                                            email.findOne({
-                                                                uid: uid
-                                                            }, function(err, data) {
-                                                                if (err) {
-                                                                    console.log(err);
-                                                                }
-                                                                if (!data) {
-                                                                    var detail = new email({
-                                                                        email_id: seqno,
-                                                                        from: from,
-                                                                        to: to,
-                                                                        sender_mail: sender_mail,
-                                                                        date: date,
-                                                                        email_date: email_date,
-                                                                        email_timestamp: email_timestamp,
-                                                                        subject: subject,
-                                                                        unread: unread,
-                                                                        answered: answered,
-                                                                        uid: uid,
-                                                                        body: bodyMsg,
-                                                                        tag_id: tagid,
-                                                                        genuine_applicant: GENERIC.Genuine_Applicant(subject)
-                                                                    });
-                                                                    detail.save(function(err) {
-                                                                        if (err) {
-                                                                            console.log("Duplicate Data");
-                                                                        } else {
-                                                                            console.log("data saved successfully");
-                                                                        }
-                                                                    });
-                                                                } else {
-                                                                    console.log("data already saved");
-                                                                }
-                                                            })
-                                                        })
-                                                    }
-                                                })
-                                                console.log(prefix + "Finished");
-                                            });
+                                                                        })
+
+                                                                    } else {
+                                                                        throw new Error("Message not sent")
+                                                                    }
+                                                                })
+                                                        }
+                                                        var detail = new email({
+                                                            email_id: seqno,
+                                                            from: from,
+                                                            to: to,
+                                                            sender_mail: sender_mail,
+                                                            date: date,
+                                                            email_date: email_date,
+                                                            email_timestamp: email_timestamp,
+                                                            subject: subject,
+                                                            unread: unread,
+                                                            answered: answered,
+                                                            uid: uid,
+                                                            body: bodyMsg,
+                                                            tag_id: tag.id,
+                                                            genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                        });
+                                                        detail.save(function(err) {
+                                                            if (err) {
+                                                                console.log("Duplicate Data");
+                                                            } else {
+                                                                console.log("data saved successfully");
+                                                            }
+                                                        });
+                                                    })
+                                            })
+                                            console.log(prefix + "Finished");
                                         });
                                         f.once("error", function(err) {
                                             console.log("Fetch error: " + err);

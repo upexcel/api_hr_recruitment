@@ -16,7 +16,7 @@ module.exports = function() {
         subject: { type: String },
         unread: { type: Boolean },
         answered: { type: Boolean },
-        uid: { type: Number },
+        uid: { type: Number, unique: true },
         body: { type: String },
         tag_id: { type: Number },
         genuine_applicant: { type: String },
