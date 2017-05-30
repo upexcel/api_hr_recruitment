@@ -5,11 +5,11 @@ module.exports = {
                 type: "Automatic"
             })
             .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
-                        let res = new RegExp(data[i].title, 'gi');
-                        let tag = subject.match(res);
-                        callback(tag);
+                for (let i = 0; i < data.length; i++) {
+                    let res = new RegExp(data[i].title, 'gi');
+                    let tag = subject.match(res);
+                    callback(tag);
                 }
             })
-}
+    }
 };

@@ -38,13 +38,18 @@ export default function(sequelize, DataTypes) {
         classMethods: {
             smtpTest(email) {
                 return new Promise((resolve, reject) => {
-                    this.findOne({ where: { email: email } })
+                    this.update({ status: 1 }, { where: { email: email } })
                         .then((data) => {
-                            if (data) {
-                                sequelize.query(`UPDATE SMTP  SET status = (case when email = "${email}" then 1 else 0 end);`)
-                                    .then(function(users) {
-                                        resolve({ status: 1, message: "success", data: "status changed successfully" });
-                                    });
+                            if (data[0]) {
+                                this.update({ status: 0 }, { where: { $not: { email: email } } })
+                                    .then((data) => {
+                                        if (data[0]) {
+                                            resolve({ status: 1, message: "success", data: "status changed successfully" })
+                                        } else {
+                                            reject("error")
+                                        }
+                                    })
+                                    .catch((error) => { reject("error") })
                             } else {
                                 reject("Email not found");
                             }

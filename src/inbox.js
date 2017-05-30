@@ -123,7 +123,7 @@ module.exports = {
                                                                     id: templateid
                                                                 }
                                                             }).then((data) => {
-                                                                if (data && config.boolean === "true") {
+                                                                if (data || config.boolean === "true") {
                                                                     let email = sender_mail;
                                                                     let subject = data.dataValues.subject;
                                                                     let body = data.dataValues.body;
