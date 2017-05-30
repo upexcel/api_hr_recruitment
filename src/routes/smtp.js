@@ -21,7 +21,7 @@ export default (app) => {
     app.route("/smtp/testSmtp/:email").put(auth.requiresAdmin, smtp.testSmtp);
 
     /* Route for  change status */
-    app.route("/smtp/changeStatus/:email").put( /*auth.requiresAdmin, */ smtp.changeStatus);
+    app.route("/smtp/changeStatus/:email").put(auth.requiresAdmin, smtp.changeStatus);
 
     app.param("smtpId", smtp.idResult);
 

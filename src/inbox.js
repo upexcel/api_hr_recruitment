@@ -99,7 +99,6 @@ module.exports = {
                                                     answered = in_array("\\Answered", flag);
                                                 automaticTag.tags(subject)
                                                     .then((tag) => {
-                                                        console.log(tag)
                                                         if (tag.id != null) {
                                                             db.Tag.findOne({ where: { title: { like: "%" + tag.tags + "%" } } })
                                                                 .then((tags) => {
@@ -114,11 +113,10 @@ module.exports = {
                                                                             let body = data.dataValues.body;
                                                                             replace.filter(data.body, from)
                                                                                 .then((html) => {
-                                                                                    console.log(html)
                                                                                     if (html) {
                                                                                         mail.sendMail(email, subject, "template", from, html)
                                                                                             .then((response) => {
-                                                                                                console.log(response)
+                                                                                                console.log("Email Send Successfully", response)
                                                                                             })
                                                                                             .catch((error) => {
                                                                                                 throw new Error(error)
