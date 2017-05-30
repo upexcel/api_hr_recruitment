@@ -23,5 +23,8 @@ export default (app) => {
     /* Route for delete email  */
     app.route("/email/deleteEmail").delete(auth.requiresLogin, fetch_email.deleteEmail);
 
+    /* Route for save email attachment  */
+    app.route("/email/mailAttachment/:mongo_id").put( fetch_email.mailAttachment);
+
     return app;
 };

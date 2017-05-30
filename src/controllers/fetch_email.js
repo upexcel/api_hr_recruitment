@@ -1,7 +1,31 @@
 import BaseAPIController from "./BaseAPIController";
 import MailProvider from "../providers/MailProvider";
 import * as _ from "lodash";
-
+import Imap from "imap";
+import in_array from "in_array";
+import fs from "fs";
+import base64 from "base64-stream";
+import path from "path";
+import multer from "multer";
+import google from "googleapis";
+var OAuth2 = google.auth.OAuth2;
+var upload = multer({
+    dest: "uploads/"
+});
+import db from "../db";
+import config from "../config.json";
+import GENERIC from "../modules/generic";
+var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
+oauth2Client.setCredentials({
+    access_token: config.access_token,
+    token_type: config.token_type,
+    expires_in: config.expires_in,
+    refresh_token: config.refresh_token
+});
+var drive = google.drive({
+    version: "v2",
+    auth: oauth2Client
+});
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
@@ -88,7 +112,6 @@ export class FetchController extends BaseAPIController {
                         }, 0, 1]
                     },
                 },
-
             }
         }, (err, result) => {
             if (err) {
@@ -234,7 +257,6 @@ export class FetchController extends BaseAPIController {
                     .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
-
     }
 
     changeUnreadStatus = (req, res, next) => {
@@ -271,7 +293,6 @@ export class FetchController extends BaseAPIController {
                         });
                     }
                 });
-
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -315,10 +336,164 @@ export class FetchController extends BaseAPIController {
                         }
                     });
                 });
-
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+    mailAttachment = (req, res, next) => {
+        req.email.findOne({ _id: req.params.mongo_id }, (error, data) => {
+            if (error) {
+                next(new Error(error));
+            } else {
+                if (data) {
+                    let sender_mail = data.get("sender_mail");
+                    let to = data.get("to");
+                    let uid = data.get("uid");
+                    this._db.Imap.findOne({ email: to })
+                        .then((data) => {
+                            var imap = new Imap({
+                                user: data.dataValues.email,
+                                password: data.dataValues.password,
+                                host: data.dataValues.imap_server,
+                                port: data.dataValues.server_port,
+                                tls: data.dataValues.type,
+                            });
+                            get_attachment(imap, uid)
+                                .then((response) => {
+                                    req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
+                                        if (err) {
+                                            res.json({ status: 0, message: err });
+                                        } else {
+                                            res.json({ status: 1, message: " attachment save successfully", data: response });
+                                        }
+                                    });
+                                })
+                                .catch(this.handleErrorResponse.bind(null, res));
+                        });
+                } else {
+                    res.json({ status: 0, message: 'mongo_id not found in database' });
+                }
+            }
+        });
+    }
+}
+
+function get_attachment(imap, uid) {
+    return new Promise((resolve, reject) => {
+        function openInbox(cb) {
+            imap.openBox("INBOX", true, cb);
+        }
+        imap.once("ready", () => {
+            openInbox(() => {
+                var f = imap.fetch(uid, {
+                    bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
+                    struct: true
+                });
+                f.on("message", (msg, seqno) => {
+                    var prefix = "(#" + seqno + ") ";
+                    msg.once("attributes", (attrs) => {
+                        var attachments = findAttachmentParts(attrs.struct);
+                        var len = attachments.length,
+                            uid = attrs.uid,
+                            flag = attrs.flags;
+                        for (var i = 0; i < len; ++i) {
+                            var attachment = attachments[i];
+                            var f = imap.fetch(attrs.uid, {
+                                bodies: [attachment.partID],
+                                struct: true
+                            });
+                        }
+                        if (attachments[0] == null) {
+                            resolve(attachments);
+                        } else {
+                            f.on("message", buildAttMessageFunction(attachment, uid, flag, seqno));
+                        }
+                    });
+                    msg.once("end", () => {
+                        console.log(prefix + "Finished");
+                    });
+                });
+                f.once("error", (err) => {
+                    reject("Fetch error: " + err);
+                });
+                f.once("end", () => {
+                    console.log("Done fetching all messages!");
+                    imap.end();
+                });
+            });
+        });
+
+        function findAttachmentParts(struct, attachments) {
+            attachments = attachments || [];
+            var len = struct.length;
+            for (var i = 0; i < len; ++i) {
+                if (Array.isArray(struct[i])) {
+                    findAttachmentParts(struct[i], attachments);
+                } else if (struct[i].disposition && ["INLINE", "ATTACHMENT"].indexOf(struct[i].disposition.type) > 0) {
+                    attachments.push(struct[i]);
+                }
+            }
+            return attachments;
+        }
+
+        function buildAttMessageFunction(attachment, uid, flag) {
+            var filename = attachment.disposition.params.filename;
+            var encoding = attachment.encoding;
+            var filepath = path.join(__dirname, "/./uploads/", filename);
+            return (msg, seqno) => {
+                var prefix = "(#" + seqno + ") ";
+                msg.on("body", (stream) => {
+                    var writeStream = fs.createWriteStream(filepath);
+                    if (encoding === "BASE64") {
+                        stream.pipe(base64.decode()).pipe(writeStream);
+                    } else {
+                        stream.pipe(writeStream);
+                    }
+                    fs.readFile(filepath, {
+                        encoding: "utf8"
+                    }, (error, data) => {
+                        var fileMetadata = {
+                            title: filename,
+                            mimeType: "text/plain/javascript/html/csv/application/pdf"
+                        };
+                        var media = {
+                            mimeType: "text/plain/javascript/html/csv/application/pdf",
+                            body: data
+                        };
+                        drive.files.insert({
+                            resource: fileMetadata,
+                            media: media,
+                            fields: "id"
+                        }, (err, file) => {
+                            if (!err) {
+                                var attachment_file = [{
+                                    name: attachment.disposition.params.filename,
+                                    link: "https://drive.google.com/file/d/" + file.id + "/view"
+                                }];
+                                resolve(attachment_file);
+                            } else {
+                                reject(err);
+                            }
+                        });
+                    });
+                    fs.unlink(filepath, () => {
+                        console.log("success");
+                    });
+                });
+                msg.once("end", () => {
+                    console.log(prefix + "Finished attachment %s", filename);
+                });
+            };
+        }
+        imap.once("error", (err) => {
+            reject(err);
+        });
+        imap.once("end", () => {
+            console.log("Connection ended");
+        });
+        imap.connect();
+    })
+
 }
 
 const controller = new FetchController();
