@@ -47,7 +47,7 @@ export default function(sequelize, DataTypes) {
                     this.findOne({ where: { email: email } })
                         .then((result) => {
                             if (result && result.status == false) {
-                                var imap = new Imap({
+                                const imap = new Imap({
                                     user: result.email,
                                     password: result.password,
                                     host: result.imap_server,
@@ -60,9 +60,9 @@ export default function(sequelize, DataTypes) {
                                             this.update({ status: true }, { where: { email: result.email } })
                                                 .then((data) => {
                                                     if (data[0] == 1) {
-                                                        resolve({ message: "successfully Active changed to true" });
+                                                        resolve({ message: "Successfully Active Changed To True" });
                                                     } else if (data[0] == 0) {
-                                                        reject(new Error("user not found in database"));
+                                                        reject(new Error("User Not Found In Database"));
                                                     } else {
                                                         reject(new Error("error"));
                                                     }
@@ -74,7 +74,7 @@ export default function(sequelize, DataTypes) {
                                     .catch((error) => { reject(error) });
                             } else {
                                 if (!result) {
-                                    reject(new Error("email not found"));
+                                    reject(new Error("EmailId Not found"));
                                 } else {
                                     resolve({ message: "Email Already set to True" })
                                 }

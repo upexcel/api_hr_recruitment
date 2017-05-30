@@ -1,4 +1,4 @@
-import fetch_email from "../controllers/fetch_email";
+import fetch_email from "../controllers/fetchEmail";
 import auth from "../middleware/auth";
 
 export default (app) => {
@@ -24,7 +24,7 @@ export default (app) => {
     app.route("/email/deleteEmail").delete(auth.requiresLogin, fetch_email.deleteEmail);
 
     /* Route for save email attachment  */
-    app.route("/email/mailAttachment/:mongo_id").put(auth.requiresLogin, fetch_email.mailAttachment);
+    app.route("/email/mailAttachment/:mongo_id").put( fetch_email.mailAttachment);
 
     return app;
 };
