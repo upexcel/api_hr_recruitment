@@ -57,7 +57,7 @@ module.exports = {
                                             });
                                         }
                                         //UID_arr
-                                        var f = imap.fetch("*", {
+                                        var f = imap.fetch(UID_arr, {
                                             bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                                             struct: true
                                         });
