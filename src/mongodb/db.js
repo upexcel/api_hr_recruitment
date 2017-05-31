@@ -20,7 +20,7 @@ module.exports = function() {
         body: { type: String },
         tag_id: { type: Number },
         genuine_applicant: { type: String },
-        attachment: { type: String }
+        attachment: { type: Array }
     }, {
         collection: "emailStored",
         strict: true,
