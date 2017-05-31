@@ -117,7 +117,7 @@ module.exports = {
                                                                         console.log("data saved successfully");
                                                                     }
                                                                 });
-                                                            })
+                                                            });
                                                     })
                                                     console.log(prefix + "Finished");
                                                 });
