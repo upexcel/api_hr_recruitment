@@ -47,11 +47,11 @@ var self = module.exports = {
                                 resolve(attachments);
                             } else {
                                 f.on("message", self.buildAttMessageFunction(attachment, uid, flag, (err, response) => {
-                                       if(err){
-                                    reject(err);    
-                                }else{
-                                    resolve(response);
-                                }
+                                    if (err) {
+                                        reject(err);
+                                    } else {
+                                        resolve(response);
+                                    }
                                 }))
                             }
                         });
