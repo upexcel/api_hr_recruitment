@@ -234,7 +234,7 @@ export class FetchController extends BaseAPIController {
             status
         } = req.params;
         req.email.find({
-            mongo_id: mongo_id
+            _id: mongo_id
         }, (err) => {
             if (err) {
                 next(new Error(err));
@@ -249,7 +249,7 @@ export class FetchController extends BaseAPIController {
                     } else {
                         res.json({
                             status: 1,
-                            message: "the unread status is successfully changed to " + req.body.status
+                            message: "the unread status is successfully changed to " + req.params.status
                         });
                     }
                 });
