@@ -22,7 +22,7 @@ module.exports = function() {
         genuine_applicant: { type: String },
         attachment: { type: Array }
     }, {
-        collection: "emailSave",
+        collection: "emailStored",
         strict: true,
     });
     let email = conn.model("EMAIL", emailSchema);
