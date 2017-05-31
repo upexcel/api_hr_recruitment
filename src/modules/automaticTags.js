@@ -5,7 +5,6 @@ import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
 
 module.exports = {
-
     tags: function(subject, email_date, from, email) {
         return new Promise((resolve, reject) => {
             let count = 0;
@@ -15,28 +14,32 @@ module.exports = {
                     }
                 })
                 .then((data) => {
-                    _.forEach(data, (val, key) => {
-                        if ((subject.match(new RegExp(val.title, 'gi'))) || (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) {
-                            db.Template.findOne({
-                                where: {
-                                    id: val.template_id
+                    if (data && data.length) {
+                        _.forEach(data, (val, key) => {
+                            if ((subject.match(new RegExp(val.title, 'gi'))) || (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) {
+                                db.Template.findOne({
+                                    where: {
+                                        id: val.template_id
+                                    }
+                                }).then((data) => {
+                                    replace.filter(data.body, from)
+                                        .then((html) => {
+                                            mail.sendMail(email, data.subject, "template", constant().smtp.from, html)
+                                                .then((response) => {
+                                                    resolve({ message: "Email Send Successfully", tagId: [val.id.toString()] })
+                                                })
+                                        });
+                                });
+                            } else {
+                                ++count;
+                                if (count == _.size(data)) {
+                                    resolve({ tagId: [] });
                                 }
-                            }).then((data) => {
-                                replace.filter(data.body, from)
-                                    .then((html) => {
-                                        mail.sendMail(email, data.subject, "template", constant().smtp.from, html)
-                                            .then((response) => {
-                                                resolve({ message: "Email Send Successfully", tagId: val.id })
-                                            })
-                                    });
-                            });
-                        } else {
-                            ++count;
-                            if (count == _.size(data)) {
-                                resolve({ tagId: null });
                             }
-                        }
-                    })
+                        })
+                    } else {
+                        resolve({ tagId: [] });
+                    }
                 })
         })
     }

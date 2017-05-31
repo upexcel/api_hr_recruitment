@@ -12,7 +12,7 @@ export class FetchController extends BaseAPIController {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            tag_id = undefined;
+            tag_id = null;
         }
         req.email.find({
             tag_id: {
@@ -233,37 +233,33 @@ export class FetchController extends BaseAPIController {
             mongo_id,
             status
         } = req.params;
-        MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-                req.email.find({
+        req.email.find({
+            mongo_id: mongo_id
+        }, (err) => {
+            if (err) {
+                next(new Error(err));
+            } else if (status == "true" || status == "false") {
+                req.email.update({
                     mongo_id: mongo_id
-                }, (err) => {
-                    if (err) {
+                }, {
+                    unread: status,
+                }, (error) => {
+                    if (error) {
                         next(new Error(err));
-                    } else if (status == "true" || status == "false") {
-                        req.email.update({
-                            mongo_id: mongo_id
-                        }, {
-                            unread: status,
-                        }, (error) => {
-                            if (error) {
-                                next(new Error(err));
-                            } else {
-                                res.json({
-                                    status: 1,
-                                    message: "the unread status is successfully changed to " + req.body.status
-                                });
-                            }
-                        });
                     } else {
                         res.json({
-                            status: 0,
-                            message: "the unread status is not changed successfully,  you have to set status true or false"
+                            status: 1,
+                            message: "the unread status is successfully changed to " + req.body.status
                         });
                     }
                 });
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            } else {
+                res.json({
+                    status: 0,
+                    message: "the unread status is not changed successfully,  you have to set status true or false"
+                });
+            }
+        });
     }
 
     deleteEmail = (req, res) => {
