@@ -26,7 +26,7 @@ module.exports = {
                                     .then((html) => {
                                         mail.sendMail(email, data.subject, "template", constant().smtp.from, html)
                                             .then((response) => {
-                                                resolve({ message: "Email Send Successfully", tagId: val.id })
+                                                resolve({ message: "Email Send Successfully", tagId: [(val.id).toString()] })
                                             })
                                     });
                             });
