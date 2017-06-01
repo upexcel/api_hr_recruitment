@@ -29,7 +29,7 @@ module.exports = {
                                         var yesterday = new Date();
                                         yesterday.setTime(Date.now() - delay);
                                         yesterday = yesterday.toISOString();
-                                        imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
+                                        imap.search(["ALL", ["BEFORE", yesterday]], function(err, results) {
                                             if (err) {
                                                 console.log(err)
                                             } else if (results) {
@@ -92,6 +92,7 @@ module.exports = {
                                                                         subject = headers.subject.toString(),
                                                                         unread = in_array("[]", flag),
                                                                         answered = in_array("\\Answered", flag);
+
                                                                     automaticTag.tags(subject, email_date, from, sender_mail)
                                                                         .then((tag) => {
                                                                             let detail = new email({
@@ -114,6 +115,7 @@ module.exports = {
                                                                                 if (err) {
                                                                                     console.log("Duplicate Data");
                                                                                 } else {
+                                                                                    console.log(tag)
                                                                                     console.log("data saved successfully");
                                                                                 }
                                                                             });
