@@ -46,7 +46,7 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     this.findOne({ where: { email: email } })
                         .then((result) => {
-                            if (result && result.status == false) {
+                            if (result && result.active == false) {
                                 const imap = new Imap({
                                     user: result.email,
                                     password: result.password,
@@ -57,10 +57,10 @@ export default function(sequelize, DataTypes) {
                                 imap_connection.imapConnection(imap)
                                     .then((response) => {
                                         if (response) {
-                                            this.update({ status: true }, { where: { email: result.email } })
+                                            this.update({ active: true }, { where: { email: result.email } })
                                                 .then((data) => {
                                                     if (data[0] == 1) {
-                                                        resolve({ message: "Successfully Active Changed To True" });
+                                                        resolve({ message: "Imap Activated Successfully" });
                                                     } else if (data[0] == 0) {
                                                         reject(new Error("User Not Found In Database"));
                                                     } else {
@@ -72,6 +72,17 @@ export default function(sequelize, DataTypes) {
                                         }
                                     })
                                     .catch((error) => { reject(error) });
+                            } else if (result && result.active == true) {
+                                this.update({ active: false }, { where: { email: result.email } })
+                                    .then((data) => {
+                                        if (data[0] == 1) {
+                                            resolve({ message: "Imap Inactivated Successfully" });
+                                        } else if (data[0] == 0) {
+                                            reject(new Error("User Not Found In Database"));
+                                        } else {
+                                            reject(new Error("error"));
+                                        }
+                                    })
                             } else {
                                 if (!result) {
                                     reject(new Error("EmailId Not found"));
@@ -84,7 +95,6 @@ export default function(sequelize, DataTypes) {
                 })
             },
         },
-
     });
     return imap;
 }

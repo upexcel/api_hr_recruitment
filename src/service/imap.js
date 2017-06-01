@@ -17,7 +17,7 @@ export class imapConnection {
                     });
                 });
                 imap.once("error", function(err) {
-                    reject(err);
+                    reject('Invalid details');
                 });
                 imap.once("end", function() {
                     console.log("Connection ended");
