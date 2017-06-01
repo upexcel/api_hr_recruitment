@@ -58,7 +58,7 @@ export class TemplateController extends BaseAPIController {
     templateEmail = (req, res) => {
         TemplateProvider.templateEmail(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
-                mail.sendMail(req.params.email, template.subject, "template", constant().smtp.from, template.html)
+                mail.sendMail(req.params.email, template.subject, "template", constant().smtp.from, template.body)
                     .then((response) => { res.json(response) })
             })
             .catch(this.handleErrorResponse.bind(null, res));

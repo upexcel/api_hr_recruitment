@@ -17,7 +17,7 @@ const save = (model, validate, body, validationResult) => new Promise((resolve, 
 
 const templateEmail = (model, validate, body, validationResult) => new Promise((resolve, reject) => {
     validate("subject", "Subject cannot be empty").notEmpty();
-    validate("html", "Body cannot be empty").notEmpty();
+    validate("body", "body cannot be empty").notEmpty();
     validationResult.then((result) => {
         if (!result.isEmpty()) {
             reject(util.inspect(result.array()));
