@@ -3,7 +3,7 @@ import smtpTransport from "nodemailer-smtp-transport";
 import config from "../config.json";
 
 module.exports = {
-    sendMail: function(email, subject, template, from, html) {
+    sendMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
             var mailer = nodemailer.createTransport(smtpTransport({
                 host: config.SMTP_HOST,
@@ -17,7 +17,7 @@ module.exports = {
                 from: from,
                 to: email,
                 subject: subject,
-                template: "template",
+                template: text,
                 html: html
             }, (error, response) => {
                 if (error) {
