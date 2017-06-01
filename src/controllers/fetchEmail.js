@@ -8,19 +8,18 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
+        var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            tag_id = null;
+            where = { $size: 0 }
+        } else {
+            where = { $in: [tag_id] }
         }
         req.email.find({
-            tag_id: {
-                $in: [tag_id]
-            }
-        }).skip((page - 1) * limit).limit(parseInt(limit)).sort({
-            email_date: -1
-        }).exec((err, data) => {
+            tag_id: where
+        }).sort({ email_date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
