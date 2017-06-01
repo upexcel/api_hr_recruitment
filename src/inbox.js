@@ -32,7 +32,7 @@ module.exports = {
                                     var yesterday = new Date();
                                     yesterday.setTime(Date.now() - delay);
                                     yesterday = yesterday.toISOString();
-                                    imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
+                                    imap.search(["ALL", ["BEFORE", yesterday]], function(err, results) {
                                         if (err) throw err;
                                         var UID_arr = [];
                                         email.find({}).sort({
@@ -52,7 +52,9 @@ module.exports = {
                                                         }
                                                     });
                                                 }
-                                                var f = imap.fetch(UID_arr, {
+
+                                                // UID_arr
+                                                var f = imap.fetch("*", {
                                                     bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                                                     struct: true
                                                 });
