@@ -311,26 +311,31 @@ export class FetchController extends BaseAPIController {
                 next(new Error(error));
             } else {
                 if (data) {
-                    let sender_mail = data.get("sender_mail");
                     let to = data.get("to");
                     let uid = data.get("uid");
-                    this._db.Imap.findOne({ email: to })
-                        .then((data) => {
-                            imap.imapCredential(data)
-                                .then((imap) => {
-                                    Attachment.getAttachment(imap, uid)
-                                        .then((response) => {
-                                            req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
-                                                if (err) {
-                                                    res.json({ status: 0, message: err });
-                                                } else {
-                                                    res.json({ status: 1, message: " attachment save successfully", data: response });
-                                                }
-                                            });
-                                        })
-                                        .catch(this.handleErrorResponse.bind(null, res));
-                                })
-                        });
+                    if (to && uid) {
+                        this._db.Imap.findOne({ email: to })
+                            .then((data) => {
+                                imap.imapCredential(data)
+                                    .then((imap) => {
+                                        Attachment.getAttachment(imap, uid)
+                                            .then((response) => {
+                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
+                                                    if (err) {
+                                                        res.json({ status: 0, message: err });
+                                                    } else {
+                                                        res.json({ status: 1, message: " attachment save successfully", data: response });
+                                                    }
+                                                });
+                                            })
+                                            .catch(this.handleErrorResponse.bind(null, res));
+                                    })
+                                    .catch(this.handleErrorResponse.bind(null, res));
+                            })
+                            .catch(this.handleErrorResponse.bind(null, res));
+                    } else {
+                        res.json({ status: 0, message: 'data not found in database' });
+                    }
                 } else {
                     res.json({ status: 0, message: 'mongo_id not found in database' });
                 }
