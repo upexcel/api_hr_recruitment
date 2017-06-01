@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
                 $in: [tag_id]
             }
         }).skip((page - 1) * limit).limit(parseInt(limit)).sort({
-            uid: -1
+            email_date: -1
         }).exec((err, data) => {
             if (err) {
                 next(err);
