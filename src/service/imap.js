@@ -13,7 +13,6 @@ export class imapConnection {
                     } else {
                         resolve(box);
                     }
-                    imap.end();
                 });
             });
             imap.once("error", function(err) {
