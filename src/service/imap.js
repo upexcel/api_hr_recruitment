@@ -11,10 +11,8 @@ export class imapConnection {
                     if (err) {
                         reject(err);
                     } else {
-                        // console.log((box))
                         resolve(box);
                     }
-                    // imap.end();
                 });
             });
             imap.once("error", function(err) {
