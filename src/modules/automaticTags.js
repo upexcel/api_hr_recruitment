@@ -30,7 +30,7 @@ module.exports = {
                     }).then((data) => {
                         replace.filter(data.body, from)
                             .then((html) => {
-                                mail.sendMail(email, data.subject, "template", constant().smtp.from, html)
+                                mail.sendMail(email, data.subject, constant().smtp.text, constant().smtp.from, html)
                                     .then((response) => {
                                         resolve({ message: "Email Send Successfully", tagId: tagId.toString() })
                                     })

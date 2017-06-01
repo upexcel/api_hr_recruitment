@@ -83,7 +83,6 @@ module.exports = {
                                                                 msg.once("end", function() {
                                                                     var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
                                                                         from = hash1.substring(0, hash1.lastIndexOf("<"));
-                                                                    console.log(from)
                                                                     var to = headers.to.toString();
                                                                     var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
                                                                         sender_mail = hash.substring(0, hash.lastIndexOf(">"));
