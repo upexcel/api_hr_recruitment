@@ -5,5 +5,6 @@ export default function(sequelize, DataTypes) {
         timestamps: true,
         freezeTableName: true,
     });
+
     return Variable;
 }
