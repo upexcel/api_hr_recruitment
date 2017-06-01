@@ -3,6 +3,7 @@ import _ from "lodash";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
+import config from "../config"
 
 module.exports = {
     tags: function(subject, email_date, from, email) {
@@ -30,10 +31,15 @@ module.exports = {
                     }).then((data) => {
                         replace.filter(data.body, from)
                             .then((html) => {
-                                mail.sendMail(email, data.subject, constant().smtp.text, constant().smtp.from, html)
-                                    .then((response) => {
-                                        resolve({ message: "Email Send Successfully", tagId: tagId.toString() })
-                                    })
+                                if (config.boolean === true) {
+                                    mail.sendMail(email, data.subject, constant().smtp.text, constant().smtp.from, html)
+                                        .then((response) => {
+                                            resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
+                                        })
+                                } else {
+                                    resolve({ message: "Email Not Send ", tagId: tagId.toString() })
+                                }
+
                             });
                     })
                 })
