@@ -23,7 +23,7 @@ module.exports = {
                 if (error) {
                     reject("messsage not send successfully");
                 } else {
-                    resolve({ messsage: "messsage send successfully" });
+                    resolve({ message: "messsage send successfully" });
                 }
                 mailer.close();
             });
