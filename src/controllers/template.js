@@ -1,5 +1,7 @@
 import BaseAPIController from "./BaseAPIController";
 import TemplateProvider from "../providers/TemplateProvider.js";
+import constant from "../models/constant";
+import mail from "../modules/mail";
 
 export class TemplateController extends BaseAPIController {
 
@@ -9,7 +11,7 @@ export class TemplateController extends BaseAPIController {
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
-                  .then(res.json.bind(res))
+                    .then(res.json.bind(res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -24,7 +26,7 @@ export class TemplateController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(res, null);
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -38,7 +40,7 @@ export class TemplateController extends BaseAPIController {
                 }
             })
             .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -49,6 +51,13 @@ export class TemplateController extends BaseAPIController {
                 limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /* Get List of All Templates */
+    templateEmail = (req, res) => {
+        mail.sendMail(req.params.email, req.body.subject, "template", constant().smtp.from, req.body.html)
+            .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
