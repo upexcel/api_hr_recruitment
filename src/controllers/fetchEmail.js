@@ -95,7 +95,7 @@ export class FetchController extends BaseAPIController {
                             totalCount.push(res);
                         });
                         _.forEach(result, (val) => {
-                            if (val._id == null) {
+                            if (val._id.length == 0) {
                                 count1.push(_.merge(val, {
                                     title: "Mails",
                                     color: "#81d4fa",
