@@ -1,5 +1,8 @@
 import BaseAPIController from "./BaseAPIController";
 import TemplateProvider from "../providers/TemplateProvider.js";
+import replace from "../modules/replaceVariable";
+import constant from "../models/constant";
+import mail from "../modules/mail";
 
 export class TemplateController extends BaseAPIController {
 
@@ -9,7 +12,7 @@ export class TemplateController extends BaseAPIController {
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
-                  .then(res.json.bind(res))
+                    .then(res.json.bind(res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -24,7 +27,7 @@ export class TemplateController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(res, null);
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -38,7 +41,7 @@ export class TemplateController extends BaseAPIController {
                 }
             })
             .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -49,6 +52,27 @@ export class TemplateController extends BaseAPIController {
                 limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+
+    /* Template  Test */
+    templateTest = (req, res) => {
+        this._db.Template.findById(req.params.templateId)
+            .then((data) => {
+                replace.filter(data.body)
+                    .then(res.json.bind(res))
+            })
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /* Send Email */
+    templateEmail = (req, res) => {
+        TemplateProvider.templateEmail(this._db, req.checkBody, req.body, req.getValidationResult())
+            .then((template) => {
+                mail.sendMail(req.params.email, template.subject, constant().smtp.text, constant().smtp.from, template.body)
+                    .then((response) => { res.json(response) })
+            })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 

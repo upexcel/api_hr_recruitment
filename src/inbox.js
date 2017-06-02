@@ -29,11 +29,10 @@ module.exports = {
                                         var yesterday = new Date();
                                         yesterday.setTime(Date.now() - delay);
                                         yesterday = yesterday.toISOString();
-                                        imap.search(["ALL", ["BEFORE", yesterday]], function(err, results) {
+                                        imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
                                             if (err) {
                                                 console.log(err)
                                             } else if (results) {
-
                                                 let UID_arr = [];
                                                 email.find({}).sort({
                                                     _id: -1
@@ -227,13 +226,9 @@ module.exports = {
                                                                 subject = headers.subject.toString(),
                                                                 unread = in_array("[]", flag),
                                                                 answered = in_array("\\Answered", flag);
-                                                            email.findOne({
-                                                                uid: uid
-                                                            }, function(err, data) {
-                                                                if (err) {
-                                                                    console.log(err);
-                                                                } else if (!data) {
-                                                                    var detail = new email({
+                                                            automaticTag.tags(subject, email_date, from, sender_mail)
+                                                                .then((tag) => {
+                                                                    let detail = new email({
                                                                         email_id: seqno,
                                                                         from: from,
                                                                         to: to,
@@ -246,19 +241,18 @@ module.exports = {
                                                                         answered: answered,
                                                                         uid: uid,
                                                                         body: bodyMsg,
+                                                                        tag_id: tag.tagId,
                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                     });
                                                                     detail.save(function(err) {
                                                                         if (err) {
                                                                             console.log("Duplicate Data");
                                                                         } else {
+                                                                            console.log(tag)
                                                                             console.log("data saved successfully");
                                                                         }
                                                                     });
-                                                                } else {
-                                                                    console.log("data already saved");
-                                                                }
-                                                            });
+                                                                });
                                                             console.log(prefix + "Finished");
                                                         });
                                                     });

@@ -20,7 +20,7 @@ module.exports = {
                         } else {
                             ++count;
                             if (count == _.size(data)) {
-                                resolve({ tagId: null });
+                                resolve({ tagId: [] });
                             }
                         }
                     })
@@ -29,18 +29,22 @@ module.exports = {
                             id: template_id[0]
                         }
                     }).then((data) => {
-                        replace.filter(data.body, from)
-                            .then((html) => {
-                                if (config.boolean === true) {
-                                    mail.sendMail(email, data.subject, constant().smtp.text, constant().smtp.from, html)
-                                        .then((response) => {
-                                            resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
-                                        })
-                                } else {
-                                    resolve({ message: "Email Not Send ", tagId: tagId.toString() })
-                                }
+                        if (data != null) {
+                            replace.filter(data.body, from)
+                                .then((html) => {
+                                    if (config.boolean === true) {
+                                        mail.sendMail(email, data.subject, constant().smtp.text, constant().smtp.from, html)
+                                            .then((response) => {
+                                                resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
+                                            })
+                                    } else {
+                                        resolve({ message: "Email Not Send ", tagId: tagId.toString() })
+                                    }
 
-                            });
+                                });
+                        } else {
+                            reject("Email Not send")
+                        }
                     })
                 })
         })
