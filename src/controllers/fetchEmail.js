@@ -8,19 +8,18 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
+        var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            tag_id = undefined;
+            where = { $size: 0 }
+        } else {
+            where = { $in: [tag_id] }
         }
         req.email.find({
-            tag_id: {
-                $in: [tag_id]
-            }
-        }).skip((page - 1) * limit).limit(parseInt(limit)).sort({
-            uid: -1
-        }).exec((err, data) => {
+            tag_id: where
+        }).sort({ email_date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -96,7 +95,7 @@ export class FetchController extends BaseAPIController {
                             totalCount.push(res);
                         });
                         _.forEach(result, (val) => {
-                            if (val._id == null) {
+                            if (val._id.length == 0) {
                                 count1.push(_.merge(val, {
                                     title: "Mails",
                                     color: "#81d4fa",
@@ -233,37 +232,33 @@ export class FetchController extends BaseAPIController {
             mongo_id,
             status
         } = req.params;
-        MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
-            .then(() => {
-                req.email.find({
-                    mongo_id: mongo_id
-                }, (err) => {
-                    if (err) {
+        req.email.find({
+            _id: mongo_id
+        }, (err) => {
+            if (err) {
+                next(new Error(err));
+            } else if (status == "true" || status == "false") {
+                req.email.update({
+                    _id: mongo_id
+                }, {
+                    unread: status,
+                }, (error) => {
+                    if (error) {
                         next(new Error(err));
-                    } else if (status == "true" || status == "false") {
-                        req.email.update({
-                            mongo_id: mongo_id
-                        }, {
-                            unread: status,
-                        }, (error) => {
-                            if (error) {
-                                next(new Error(err));
-                            } else {
-                                res.json({
-                                    status: 1,
-                                    message: "the unread status is successfully changed to " + req.body.status
-                                });
-                            }
-                        });
                     } else {
                         res.json({
-                            status: 0,
-                            message: "the unread status is not changed successfully,  you have to set status true or false"
+                            status: 1,
+                            message: "the unread status is successfully changed to " + req.params.status
                         });
                     }
                 });
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+            } else {
+                res.json({
+                    status: 0,
+                    message: "the unread status is not changed successfully,  you have to set status true or false"
+                });
+            }
+        });
     }
 
     deleteEmail = (req, res) => {
@@ -315,26 +310,31 @@ export class FetchController extends BaseAPIController {
                 next(new Error(error));
             } else {
                 if (data) {
-                    let sender_mail = data.get("sender_mail");
                     let to = data.get("to");
                     let uid = data.get("uid");
-                    this._db.Imap.findOne({ email: to })
-                        .then((data) => {
-                            imap.imapCredential(data)
-                                .then((imap) => {
-                                    Attachment.getAttachment(imap, uid)
-                                        .then((response) => {
-                                            req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
-                                                if (err) {
-                                                    res.json({ status: 0, message: err });
-                                                } else {
-                                                    res.json({ status: 1, message: " attachment save successfully", data: response });
-                                                }
-                                            });
-                                        })
-                                        .catch(this.handleErrorResponse.bind(null, res));
-                                })
-                        });
+                    if (to && uid) {
+                        this._db.Imap.findOne({ email: to })
+                            .then((data) => {
+                                imap.imapCredential(data)
+                                    .then((imap) => {
+                                        Attachment.getAttachment(imap, uid)
+                                            .then((response) => {
+                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
+                                                    if (err) {
+                                                        res.json({ status: 0, message: err });
+                                                    } else {
+                                                        res.json({ status: 1, message: " attachment save successfully", data: response });
+                                                    }
+                                                });
+                                            })
+                                            .catch(this.handleErrorResponse.bind(null, res));
+                                    })
+                                    .catch(this.handleErrorResponse.bind(null, res));
+                            })
+                            .catch(this.handleErrorResponse.bind(null, res));
+                    } else {
+                        res.json({ status: 0, message: 'data not found in database' });
+                    }
                 } else {
                     res.json({ status: 0, message: 'mongo_id not found in database' });
                 }

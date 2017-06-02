@@ -44,7 +44,7 @@ export default function(sequelize, DataTypes) {
                                 this.update({ status: 0 }, { where: { $not: { email: email } } })
                                     .then((data) => {
                                         if (data[0]) {
-                                            resolve({ status: 1, message: "success", data: "status changed successfully" })
+                                            resolve({message: "Status Changed Successfully" })
                                         } else {
                                             reject("error")
                                         }

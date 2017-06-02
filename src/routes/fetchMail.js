@@ -21,7 +21,7 @@ export default (app) => {
     app.route("/email/changeUnreadStatus/:mongo_id/:status").put(auth.requiresLogin, fetch_email.changeUnreadStatus);
 
     /* Route for delete email  */
-    app.route("/email/deleteEmail").delete(auth.requiresLogin, fetch_email.deleteEmail);
+    app.route("/email/deleteEmail").post(auth.requiresLogin, fetch_email.deleteEmail);
 
     /* Route for save email attachment  */
     app.route("/email/mailAttachment/:mongo_id").put(fetch_email.mailAttachment);

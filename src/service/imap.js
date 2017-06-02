@@ -9,7 +9,7 @@ export class imapConnection {
             imap.once("ready", function() {
                 openInbox(function(err, box) {
                     if (err) {
-                        reject(err);
+                        reject('Invalid details');
                     } else {
                         resolve(box);
                     }
