@@ -8,15 +8,15 @@ export class ImapController extends BaseAPIController {
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((tag) => {
                 this._db.Tag.create(tag)
-                .then((data) => {
-                    res.json({
-                        data
+                    .then((data) => {
+                        res.json({
+                            data
+                        })
+                    }, (err) => {
+                        throw new Error(res.json(400, {
+                            error: err
+                        }));
                     })
-                }, (err) => {
-                    throw new Error(res.json(400, {
-                        error: err
-                    }));
-                })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -32,7 +32,7 @@ export class ImapController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(res, null);
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -48,7 +48,7 @@ export class ImapController extends BaseAPIController {
                     }
                 })
                 .then((docs) => {
-                        this.handleSuccessResponse(res, null);
+                    this.handleSuccessResponse(res, null);
                 }).catch(this.handleErrorResponse.bind(null, res));
         } else {
             next(new Error("Invalid Type"));
