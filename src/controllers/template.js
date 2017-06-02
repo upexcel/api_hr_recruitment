@@ -61,7 +61,7 @@ export class TemplateController extends BaseAPIController {
     templateTest = (req, res) => {
         this._db.Template.findById(req.params.templateId)
             .then((data) => {
-                replace.filter(data.body)
+                replace.templateTest(data.body)
                     .then(res.json.bind(res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
