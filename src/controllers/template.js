@@ -1,5 +1,6 @@
 import BaseAPIController from "./BaseAPIController";
 import TemplateProvider from "../providers/TemplateProvider.js";
+import replace from "../modules/replaceVariable";
 
 export class TemplateController extends BaseAPIController {
 
@@ -9,7 +10,7 @@ export class TemplateController extends BaseAPIController {
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
-                  .then(res.json.bind(res))
+                    .then(res.json.bind(res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -24,7 +25,7 @@ export class TemplateController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(res, null);
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -38,7 +39,7 @@ export class TemplateController extends BaseAPIController {
                 }
             })
             .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -49,6 +50,16 @@ export class TemplateController extends BaseAPIController {
                 limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /* Template  Test */
+    templateTest = (req, res) => {
+        this._db.Template.findById(req.params.templateId)
+            .then((data) => {
+                replace.filter(data.body)
+                    .then(res.json.bind(res))
+            })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 

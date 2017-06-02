@@ -14,6 +14,9 @@ export default (app) => {
     /* Route for List of Template */
     app.route("/template/get/:page/:limit").get(auth.requiresAdminOrHr, template.templateList);
 
+    app.route("/template/test/:templateId").get(template.templateTest);
+
+
     app.param("templateId", template.idResult);
 
     return app;
