@@ -19,7 +19,7 @@ module.exports = {
         }).then(function(docs, err) {
             if (docs) {
                 _.forEach(docs, (val) => {
-                    imapService.imapCredential(docs[0])
+                    imapService.imapCredential(val)
                         .then((imap) => {
                             var headers = {};
                             imap.once("ready", function() {
@@ -108,6 +108,7 @@ module.exports = {
                                                                                 uid: uid,
                                                                                 body: bodyMsg,
                                                                                 tag_id: tag.tagId,
+                                                                                imap_email: val.dataValues.email,
                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                             });
                                                                             detail.save(function(err) {
@@ -139,7 +140,6 @@ module.exports = {
                                     })
                                     .catch((error) => {
                                         console.log(error)
-                                            // throw new Error(error)
                                     })
                             });
                             imap.once("error", function(err) {
@@ -164,7 +164,7 @@ module.exports = {
         }).then(function(docs, err) {
             if (docs[0] != null) {
                 _.forEach(docs, (val) => {
-                    imapService.imapCredential(docs[0])
+                    imapService.imapCredential(val)
                         .then((imap) => {
                             var headers = {};
                             imap.once("ready", function() {
@@ -242,6 +242,7 @@ module.exports = {
                                                                         uid: uid,
                                                                         body: bodyMsg,
                                                                         tag_id: tag.tagId,
+                                                                        imap_email: val.dataValues.email,
                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                     });
                                                                     detail.save(function(err) {
@@ -269,7 +270,7 @@ module.exports = {
 
                                     })
                                     .then((error) => {
-                                        throw new Error(error)
+                                        console.log(error)
                                     })
                             });
                             imap.once("error", function(err) {
@@ -282,7 +283,7 @@ module.exports = {
                         });
                 });
             } else {
-                throw new Error("No Active connection")
+                console.log("No Active connection")
             }
         });
     }

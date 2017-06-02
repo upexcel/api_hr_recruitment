@@ -308,7 +308,7 @@ export class FetchController extends BaseAPIController {
                 next(new Error(error));
             } else {
                 if (data) {
-                    let to = data.get("to");
+                    let to = data.get("imap_email");
                     let uid = data.get("uid");
                     if (to && uid) {
                         this._db.Imap.findOne({ email: to })
