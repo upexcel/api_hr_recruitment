@@ -156,6 +156,52 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Verify Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.status == true){",
+									"    tests[\"token verify\"] = true;",
+									"}else{",
+									"    tests[\"token verify\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/verify?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"verify"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -529,7 +575,6 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
 									"",
 									"if (jsonData.message) {",
@@ -1337,8 +1382,6 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
 									"var jsonData = JSON.parse(responseBody);",
 									"if (jsonData.message) {",
 									"    tests[\"successfully changed status\"] = true;",
@@ -1712,6 +1755,64 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp GetById ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.id) {",
+									"    tests[\"id found\"] = true;",
+									"} else {",
+									"    tests[\"id found\"] = false;",
+									"}",
+									"if (jsonData.email) {",
+									"    tests[\"email found\"] = true;",
+									"} else {",
+									"    tests[\"email found\"] = false;",
+									"}",
+									"if (jsonData.password) {",
+									"    tests[\"password found\"] = true;",
+									"} else {",
+									"    tests[\"password found\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"getbyid",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -2303,15 +2404,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/template/add/?accessToken={{token}}",
+							"raw": "{{url}}/template/add?accessToken={{token}}",
 							"auth": {},
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"template",
-								"add",
-								""
+								"add"
 							],
 							"query": [
 								{
@@ -2546,6 +2646,137 @@
 							"variable": []
 						},
 						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Send Template",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.message == \"messsage send successfully\") {",
+									"    tests[\"message sent successfully\"] = true;",
+									"} else {",
+									"    tests[\"message sent successfully\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"email",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "subject",
+									"value": "abcdef",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "defgh",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8.System Variable",
+			"description": "",
+			"item": [
+				{
+					"name": "Get System Variables",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"for (var i = 0; i < jsonData.length; i++) {",
+									"    if (jsonData[i].id) {",
+									"        tests[\"id exist\" + i] = true;",
+									"    } else {",
+									"        tests[\"id exist\" + i] = false;",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/systemVariable/get/{{page}}/{{limit}}?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"systemVariable",
+								"get",
+								"{{page}}",
+								"{{limit}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
 						"header": [],
 						"body": {},
 						"description": ""
