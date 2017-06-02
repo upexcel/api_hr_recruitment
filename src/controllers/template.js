@@ -1,5 +1,6 @@
 import BaseAPIController from "./BaseAPIController";
 import TemplateProvider from "../providers/TemplateProvider.js";
+import replace from "../modules/replaceVariable";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 
@@ -51,6 +52,17 @@ export class TemplateController extends BaseAPIController {
                 limit: parseInt(req.params.limit)
             })
             .then(res.json.bind(res))
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+
+    /* Template  Test */
+    templateTest = (req, res) => {
+        this._db.Template.findById(req.params.templateId)
+            .then((data) => {
+                replace.filter(data.body)
+                    .then(res.json.bind(res))
+            })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 

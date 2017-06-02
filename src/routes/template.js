@@ -14,6 +14,9 @@ export default (app) => {
     /* Route for List of Template */
     app.route("/template/get/:page/:limit").get(auth.requiresAdminOrHr, template.templateList);
 
+    /* Route for TEST Template */
+    app.route("/template/test/:templateId").get(template.templateTest);
+
     /* Route for Send Email Template */
     app.route("/template/email/:email").post(auth.requiresAdminOrHr, template.templateEmail);
 
