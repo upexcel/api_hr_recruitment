@@ -8,7 +8,7 @@ const save = (model, validate, body, validationResult) => new Promise((resolve, 
     validate("body", "Body cannot be empty").notEmpty();
     validationResult.then((result) => {
         if (!result.isEmpty()) {
-            reject(util.inspect(result.array()));
+            reject(result.array()[0].msg);
         } else {
             resolve(body);
         }
@@ -20,7 +20,7 @@ const templateEmail = (model, validate, body, validationResult) => new Promise((
     validate("body", "body cannot be empty").notEmpty();
     validationResult.then((result) => {
         if (!result.isEmpty()) {
-            reject(util.inspect(result.array()));
+            reject(result.array()[0].msg);
         } else {
             resolve(body);
         }

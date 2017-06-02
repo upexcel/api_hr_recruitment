@@ -11,7 +11,7 @@ const create = (model, validate, body, validationResult) => {
         validate("confirm_password", "confirm_password cannot be empty").notEmpty();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
                 return;
             } else {
                 if (body.password == body.confirm_password) {
@@ -30,8 +30,8 @@ const create = (model, validate, body, validationResult) => {
 const login = (model, body) => {
     let password = crypto.createHash("sha256").update(body.password).digest("base64");
     delete body.confirm_password;
-    return { ...body,
-        ...{
+    return {...body,
+        ... {
             password
         }
     };

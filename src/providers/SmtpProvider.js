@@ -12,7 +12,7 @@ const save = (model, validate, body, validationResult) => {
         validate("server_port", "port cannot be empty and must be integer").notEmpty().isInt();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
                 resolve(body);
             }
@@ -25,7 +25,7 @@ const changeStatus = (model, validate, body, validationResult) => {
         validate("email", "email cannot be empty").notEmpty();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
                 resolve(body);
             }

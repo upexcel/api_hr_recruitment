@@ -14,7 +14,7 @@ export class ImapController extends BaseAPIController {
                         })
                     }, (err) => {
                         throw new Error(res.json(400, {
-                            error: err
+                            message: err
                         }));
                     })
             }).catch(this.handleErrorResponse.bind(null, res));

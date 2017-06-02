@@ -7,7 +7,7 @@ const save = (model, validate, body, validationResult) => new Promise((resolve, 
     validate("variableValue", "variable Value cannot be empty").notEmpty();
     validationResult.then((result) => {
         if (!result.isEmpty()) {
-            reject(util.inspect(result.array()));
+            reject(result.array()[0].msg);
         } else {
             resolve(body);
         }
