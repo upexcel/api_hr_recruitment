@@ -49,7 +49,8 @@ export class TemplateController extends BaseAPIController {
     templateList = (req, res) => {
         this._db.Template.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
-                limit: parseInt(req.params.limit)
+                limit: parseInt(req.params.limit),
+                order: '`id` DESC'
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));

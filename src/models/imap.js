@@ -71,7 +71,7 @@ export default function(sequelize, DataTypes) {
                                             reject(new Error("error"));
                                         }
                                     })
-                                    .catch((error) => { reject(error) });
+                                    .catch((error) => { reject("Invalid Details Can Not Activated") });
                             } else if (result && result.active == true) {
                                 this.update({ active: false }, { where: { email: result.email } })
                                     .then((data) => {
