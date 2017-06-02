@@ -1,8 +1,8 @@
 import BaseAPIController from "./BaseAPIController";
-import TemplateProvider from "../providers/TemplateProvider.js"; << << << < HEAD
-import replace from "../modules/replaceVariable"; === === =
+import TemplateProvider from "../providers/TemplateProvider.js";
+import replace from "../modules/replaceVariable";
 import constant from "../models/constant";
-import mail from "../modules/mail"; >>> >>> > 36 c6277c2a236b5d7a1249ef16610b1229688c8c
+import mail from "../modules/mail";
 
 export class TemplateController extends BaseAPIController {
 
