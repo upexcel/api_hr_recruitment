@@ -18,9 +18,9 @@ module.exports = function() {
         answered: { type: Boolean },
         uid: { type: Number, unique: true },
         body: { type: String },
-        tag_id: { type: Number },
+        tag_id: { type: Array },
         genuine_applicant: { type: String },
-        attachment: { type: String }
+        attachment: { type: Array }
     }, {
         collection: "emailStored",
         strict: true,

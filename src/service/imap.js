@@ -9,11 +9,10 @@ export class imapConnection {
             imap.once("ready", function() {
                 openInbox(function(err, box) {
                     if (err) {
-                        reject(err);
+                        reject('Invalid details');
                     } else {
                         resolve(box);
                     }
-                    imap.end();
                 });
             });
             imap.once("error", function(err) {
@@ -25,6 +24,18 @@ export class imapConnection {
             imap.connect();
         });
 
+    }
+    imapCredential(data) {
+        return new Promise((resolve, reject) => {
+            var imap = new Imap({
+                user: data.dataValues.email,
+                password: data.dataValues.password,
+                host: data.dataValues.imap_server,
+                port: data.dataValues.server_port,
+                tls: data.dataValues.type,
+            });
+            resolve(imap);
+        });
     }
 }
 const imap = new imapConnection();

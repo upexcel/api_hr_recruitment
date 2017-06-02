@@ -13,7 +13,8 @@ export default function() {
         smtp: {
             subject: "Smtp test",
             from: "noreply@excellencetechnologies.in",
-            html: "Smtp test successfully"
+            html: "Smtp test successfully",
+            text: "Template"
         }
     };
     return constant;

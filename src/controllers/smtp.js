@@ -73,7 +73,7 @@ export class SmtpController extends BaseAPIController {
 
     /* test smtp by email*/
     testSmtp = (req, res) => {
-        mail.sendMail(req.params.email, constant().smtp.subject, "template", constant().smtp.from, constant().smtp.html)
+        mail.sendMail(req.params.email, constant().smtp.subject, constant().smtp.text, constant().smtp.from, constant().smtp.html)
             .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
