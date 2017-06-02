@@ -74,7 +74,7 @@ export class SmtpController extends BaseAPIController {
 
     /* test smtp by email*/
     testSmtp = (req, res) => {
-        mail.sendMail(req.params.email, constant().smtp.subject, constant().smtp.text, constant().smtp.from, constant().smtp.html)
+        this._db.Smtp.testSmtp(req.params.email)
             .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -82,7 +82,7 @@ export class SmtpController extends BaseAPIController {
 
     /* change smtp status*/
     changeStatus = (req, res) => {
-        this._db.Smtp.smtpTest(req.params.email)
+        this._db.Smtp.changeStatus(req.params.email)
             .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
