@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ email_date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -229,13 +229,13 @@ export class FetchController extends BaseAPIController {
 
     changeUnreadStatus = (req, res, next) => {
         let { mongo_id } = req.params;
-        let status = Boolean(req.params.status);
+        let status = (req.params.status + '').toLowerCase() === 'true'
         req.email.find({
             _id: mongo_id
         }, (err) => {
             if (err) {
                 next(new Error(err));
-            } else if (status == true) {
+            } else if (status == false) {
                 req.email.update({
                     _id: mongo_id
                 }, {
@@ -308,7 +308,7 @@ export class FetchController extends BaseAPIController {
                 next(new Error(error));
             } else {
                 if (data) {
-                    let to = data.get("to");
+                    let to = data.get("imap_email");
                     let uid = data.get("uid");
                     if (to && uid) {
                         this._db.Imap.findOne({ email: to })

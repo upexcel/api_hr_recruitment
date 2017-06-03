@@ -15,7 +15,7 @@ export class UserController extends BaseAPIController {
                         })
                     }, (err) => {
                         throw new Error(res.json(400, {
-                            error: err
+                            meesage: err
                         }));
                     })
             }).catch(this.handleErrorResponse.bind(null, res));

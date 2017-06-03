@@ -6,7 +6,7 @@ const changeUnreadStatus = (validate, body, validationResult) => {
         validate("mongo_id", "mongo_id cannot be empty").notEmpty();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
                 resolve(body);
             }
@@ -19,7 +19,7 @@ const deleteEmail = (validate, body, validationResult) => {
         validate("mongo_id", "mongo_id cannot be empty").notEmpty();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
                 resolve(body);
             }

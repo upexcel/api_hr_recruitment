@@ -14,7 +14,7 @@ export class ImapController extends BaseAPIController {
                         })
                     }, (err) => {
                         throw new Error(res.json(400, {
-                            error: err
+                            message: err
                         }));
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
@@ -63,7 +63,8 @@ export class ImapController extends BaseAPIController {
                     limit: parseInt(req.params.limit),
                     where: {
                         type: req.params.type
-                    }
+                    },
+                    order: '`id` DESC'
                 })
                 .then(res.json.bind(res))
                 .catch(this.handleErrorResponse.bind(null, res));
@@ -74,7 +75,7 @@ export class ImapController extends BaseAPIController {
 
     /* Get all tag */
     getAllTag = (req, res) => {
-        this._db.Tag.findAll()
+        this._db.Tag.findAll({ order: '`id` DESC' })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }

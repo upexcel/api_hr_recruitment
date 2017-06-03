@@ -1,5 +1,6 @@
 import * as BaseProvider from "./BaseProvider";
 import util from "util";
+import emailExistence from "email-existence";
 
 /* Provider for User Registration */
 
@@ -12,9 +13,16 @@ const save = (model, validate, body, validationResult) => {
         validate("server_port", "port cannot be empty and must be integer").notEmpty().isInt();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
-                resolve(body);
+                emailExistence.check(body.email, function(err, res) {
+                    if (res) {
+                        resolve(body);
+                    } else {
+                        reject("Invalid Email Details")
+                    }
+                })
+
             }
         });
     });
@@ -25,7 +33,7 @@ const changeStatus = (model, validate, body, validationResult) => {
         validate("email", "email cannot be empty").notEmpty();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
                 resolve(body);
             }
