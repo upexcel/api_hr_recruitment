@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import mail from "../modules/mail";
 import constant from "../models/constant";
+import emailExistence from "email-existence";
+
 export default function(sequelize, DataTypes) {
     const smtp = sequelize.define("SMTP", {
         email: {
@@ -61,13 +63,19 @@ export default function(sequelize, DataTypes) {
 
             testSmtp(email) {
                 return new Promise((resolve, reject) => {
-                    this.findOne({ where: { email: email } })
+                    this.findOne({ where: { status: true } })
                         .then((data) => {
                             if (data) {
-                                if (data.dataValues.status == true) {
-                                    mail.sendMail(email, constant().smtp.subject, constant().smtp.text, constant().smtp.from, constant().smtp.html)
-                                        .then((response) => { resolve(response) })
-                                        .catch((error) => { reject(error) });
+                                if (data.status == true) {
+                                    emailExistence.check(data.email, function(err, res) {
+                                        if (res) {
+                                            mail.sendMail(email, constant().smtp.subject, constant().smtp.text, data.email, constant().smtp.html)
+                                                .then((response) => { resolve(response) })
+                                                .catch((error) => { reject(error) });
+                                        } else {
+                                            reject("Invalid Active Email")
+                                        }
+                                    })
                                 } else {
                                     reject("Email Is Not Active , Active And Try Again...");
                                 }

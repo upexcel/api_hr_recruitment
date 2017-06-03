@@ -1,5 +1,6 @@
 import * as BaseProvider from "./BaseProvider";
 import util from "util";
+import emailExistence from "email-existence";
 
 /* Provider for User Registration */
 
@@ -14,7 +15,14 @@ const save = (model, validate, body, validationResult) => {
             if (!result.isEmpty()) {
                 reject(result.array()[0].msg);
             } else {
-                resolve(body);
+                emailExistence.check(body.email, function(err, res) {
+                    if (res) {
+                        resolve(body);
+                    } else {
+                        reject("Invalid Email Details")
+                    }
+                })
+
             }
         });
     });

@@ -18,7 +18,7 @@ export class SmtpController extends BaseAPIController {
                         })
                     }, (err) => {
                         throw new Error(res.json(400, {
-                            message: err
+                            message: "Data Already Saved"
                         }));
                     })
             })

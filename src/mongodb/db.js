@@ -6,12 +6,12 @@ module.exports = function() {
 
     // create schema
     let emailSchema = mongoose.Schema({
-        email_id: { type: String },
+        email_id: { type: Number, unique: true },
         from: { type: String },
         to: { type: String },
         sender_mail: { type: String },
-        date: { type: String },
-        email_date: { type: String },
+        date: { type: Date },
+        email_date: { type: Date },
         email_timestamp: { type: String },
         subject: { type: String },
         unread: { type: Boolean },
