@@ -4,6 +4,7 @@ export default function() {
             default: "Default",
             manual: "Manual",
             automatic: "Automatic",
+            genuine: "Genuine Applicant"
         },
         userType: {
             admin: "Admin",
