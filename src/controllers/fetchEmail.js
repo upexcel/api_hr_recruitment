@@ -229,7 +229,7 @@ export class FetchController extends BaseAPIController {
 
     changeUnreadStatus = (req, res, next) => {
         let { mongo_id } = req.params;
-        let status = Boolean(req.params.status);
+        let status = (req.params.status + '').toLowerCase() === 'true'
         req.email.find({
             _id: mongo_id
         }, (err) => {

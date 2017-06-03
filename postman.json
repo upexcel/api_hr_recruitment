@@ -571,16 +571,7 @@
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
 									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"the unread status is successfully changed to true\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
+									""
 								]
 							}
 						}
@@ -2721,6 +2712,37 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
