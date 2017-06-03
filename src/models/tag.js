@@ -12,7 +12,7 @@ export default function(sequelize, DataTypes) {
         },
         to: DataTypes.DATE,
         from: DataTypes.DATE,
-        template_id: DataTypes.INTEGER,
+        template_id: { type: DataTypes.INTEGER, defaultValue: 0 },
     }, {
         hooks: {
             beforeCreate: function(TAG, options) {
