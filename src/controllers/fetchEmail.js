@@ -235,7 +235,7 @@ export class FetchController extends BaseAPIController {
         }, (err) => {
             if (err) {
                 next(new Error(err));
-            } else if (status == true) {
+            } else if (status == false) {
                 req.email.update({
                     _id: mongo_id
                 }, {
