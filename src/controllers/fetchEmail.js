@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ email_date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ email_id: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
