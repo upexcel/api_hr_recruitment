@@ -360,26 +360,7 @@
 									"} else {",
 									"    tests[\"Success message exist\"] = false;",
 									"}",
-									"if (jsonData.data) {",
-									"    tests[\"data exist\"] = true;",
-									"    if (jsonData.data._id) {",
-									"        tests[\"mongo_id exist\"] = true;",
-									"    } else {",
-									"        tests[\"mongo_id exist\"] = true;",
-									"    }",
-									"    if (jsonData.data.email_date) {",
-									"        tests[\"email_date exist\"] = true;",
-									"    } else {",
-									"        tests[\"email_date exist\"] = true;",
-									"    }",
-									"    if (jsonData.data.date) {",
-									"        tests[\"date exist\"] = true;",
-									"    } else {",
-									"        tests[\"date exist\"] = true;",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}"
+									""
 								]
 							}
 						}
