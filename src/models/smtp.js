@@ -44,16 +44,12 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     this.update({ status: 1 }, { where: { email: email } })
                         .then((data) => {
-                            if (data[0] && data.length !== 0) {
+                            if (data[0]) {
                                 this.update({ status: 0 }, { where: { $not: { email: email } } })
                                     .then((data) => {
-                                        if (data[0]) {
-                                            resolve({ message: "Status Changed Successfully" })
-                                        } else {
-                                            reject("error")
-                                        }
+                                        resolve({ message: "Status Changed Successfully" })
                                     })
-                                    .catch((error) => { resolve({ message: "Status Changed Successfully" }) })
+                                    .catch((error) => { reject("error") })
                             } else {
                                 reject("Email not found");
                             }
