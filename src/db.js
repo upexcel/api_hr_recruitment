@@ -41,6 +41,13 @@ sequelize.sync().then(() => {
             }
         });
 
+    db.Tag.findOne({ where: { type: "Default", title: "Genuine Applicant" } })
+        .then((id) => {
+            if (!id) {
+                db.Tag.create({ title: "Genuine Applicant", type: "Default", color: "#cb891b" });
+            }
+        });
+
     db.SystemVariable.findOne({ where: { variableCode: "#date" } })
         .then((id) => {
             if (!id) {

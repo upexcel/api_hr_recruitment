@@ -19,7 +19,7 @@ module.exports = {
         }).then(function(docs, err) {
             if (docs) {
                 _.forEach(docs, (val) => {
-                    imapService.imapCredential(val)
+                    imapService.imapCredential(docs[0])
                         .then((imap) => {
                             var headers = {};
                             imap.once("ready", function() {
@@ -29,10 +29,11 @@ module.exports = {
                                         var yesterday = new Date();
                                         yesterday.setTime(Date.now() - delay);
                                         yesterday = yesterday.toISOString();
-                                        imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
+                                        imap.search(["ALL", ["BEFORE", yesterday]], function(err, results) {
                                             if (err) {
                                                 console.log(err)
                                             } else if (results) {
+
                                                 let UID_arr = [];
                                                 email.find({}).sort({
                                                     _id: -1
@@ -86,7 +87,7 @@ module.exports = {
                                                                     var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
                                                                         sender_mail = hash.substring(0, hash.lastIndexOf(">"));
                                                                     var date = headers.date.toString(),
-                                                                        email_date = new Date(date).toISOString().split('T')[0],
+                                                                        email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
                                                                         email_timestamp = new Date(date).getTime(),
                                                                         subject = headers.subject.toString(),
                                                                         unread = in_array("[]", flag),
@@ -94,6 +95,9 @@ module.exports = {
 
                                                                     automaticTag.tags(subject, email_date, from, sender_mail)
                                                                         .then((tag) => {
+                                                                            console.log("============")
+                                                                            console.log(tag)
+                                                                            console.log("============")
                                                                             let detail = new email({
                                                                                 email_id: seqno,
                                                                                 from: from,
@@ -108,7 +112,6 @@ module.exports = {
                                                                                 uid: uid,
                                                                                 body: bodyMsg,
                                                                                 tag_id: tag.tagId,
-                                                                                imap_email: val.dataValues.email,
                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                             });
                                                                             detail.save(function(err) {
@@ -140,6 +143,7 @@ module.exports = {
                                     })
                                     .catch((error) => {
                                         console.log(error)
+                                            // throw new Error(error)
                                     })
                             });
                             imap.once("error", function(err) {
@@ -164,7 +168,7 @@ module.exports = {
         }).then(function(docs, err) {
             if (docs[0] != null) {
                 _.forEach(docs, (val) => {
-                    imapService.imapCredential(val)
+                    imapService.imapCredential(docs[0])
                         .then((imap) => {
                             var headers = {};
                             imap.once("ready", function() {
@@ -221,14 +225,18 @@ module.exports = {
                                                             var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
                                                                 sender_mail = hash.substring(0, hash.lastIndexOf(">"));
                                                             var date = headers.date.toString(),
-                                                                email_date = new Date(date).toISOString().split('T')[0],
+                                                                email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
                                                                 email_timestamp = new Date(date).getTime(),
                                                                 subject = headers.subject.toString(),
                                                                 unread = in_array("[]", flag),
                                                                 answered = in_array("\\Answered", flag);
-                                                            automaticTag.tags(subject, email_date, from, sender_mail)
-                                                                .then((tag) => {
-                                                                    let detail = new email({
+                                                            email.findOne({
+                                                                uid: uid
+                                                            }, function(err, data) {
+                                                                if (err) {
+                                                                    console.log(err);
+                                                                } else if (!data) {
+                                                                    var detail = new email({
                                                                         email_id: seqno,
                                                                         from: from,
                                                                         to: to,
@@ -241,19 +249,19 @@ module.exports = {
                                                                         answered: answered,
                                                                         uid: uid,
                                                                         body: bodyMsg,
-                                                                        tag_id: tag.tagId,
-                                                                        imap_email: val.dataValues.email,
                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                     });
                                                                     detail.save(function(err) {
                                                                         if (err) {
                                                                             console.log("Duplicate Data");
                                                                         } else {
-                                                                            console.log(tag)
                                                                             console.log("data saved successfully");
                                                                         }
                                                                     });
-                                                                });
+                                                                } else {
+                                                                    console.log("data already saved");
+                                                                }
+                                                            });
                                                             console.log(prefix + "Finished");
                                                         });
                                                     });
@@ -270,7 +278,7 @@ module.exports = {
 
                                     })
                                     .then((error) => {
-                                        console.log(error)
+                                        throw new Error(error)
                                     })
                             });
                             imap.once("error", function(err) {
@@ -283,7 +291,7 @@ module.exports = {
                         });
                 });
             } else {
-                console.log("No Active connection")
+                throw new Error("No Active connection")
             }
         });
     }
