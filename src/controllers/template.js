@@ -71,8 +71,16 @@ export class TemplateController extends BaseAPIController {
     templateEmail = (req, res) => {
         TemplateProvider.templateEmail(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
-                mail.sendMail(req.params.email, template.subject, constant().smtp.text, constant().smtp.from, template.body)
-                    .then((response) => { res.json(response) })
+                this._db.Smtp.findOne({ where: { status: true } })
+                    .then((data) => {
+                        if (data) {
+                            mail.sendMail(req.params.email, template.subject, constant().smtp.text, data.email, template.body)
+                                .then((response) => { res.json(response) })
+                        } else {
+                            throw new Error("Not Active Smtp Email is found")
+                        }
+                    })
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }

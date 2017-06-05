@@ -48,7 +48,7 @@ module.exports = {
                                         }
                                     });
                             } else {
-                                resolve({ message: "Email Not send", tagId: [] })
+                                resolve({ message: "Email Not send", tagId: tagId.toString() })
                             }
                         })
                     })

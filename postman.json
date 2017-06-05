@@ -1518,7 +1518,7 @@
 								},
 								{
 									"key": "status",
-									"value": "false",
+									"value": "true",
 									"type": "text"
 								}
 							]
@@ -2483,6 +2483,128 @@
 					"response": []
 				},
 				{
+					"name": "change status",
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/changeStatus/testhr69@gmail.com?accessToken={{token}}",
+							"auth": {
+								"user": "{{url}}/smtp/changeStatus/testhr69",
+								"password": ""
+							},
+							"host": [
+								"gmail",
+								"com"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Send Template",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.message == \"messsage send successfully\") {",
+									"    tests[\"message sent successfully\"] = true;",
+									"} else {",
+									"    tests[\"message sent successfully\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"email",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "subject",
+									"value": "abcdef",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "defgh",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Template List",
 					"event": [
 						{
@@ -2660,79 +2782,6 @@
 						"method": "DELETE",
 						"header": [],
 						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Send Template",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.message == \"messsage send successfully\") {",
-									"    tests[\"message sent successfully\"] = true;",
-									"} else {",
-									"    tests[\"message sent successfully\"] = false;",
-									"}",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"template",
-								"email",
-								"{{email}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "subject",
-									"value": "abcdef",
-									"description": "",
-									"type": "text"
-								},
-								{
-									"key": "body",
-									"value": "defgh",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
 						"description": ""
 					},
 					"response": []
