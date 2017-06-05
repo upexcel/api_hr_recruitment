@@ -5,7 +5,7 @@ import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
 import config from "../config"
 module.exports = {
-    tags: function(subject, email_date, from, email) {
+    tags: function(subject, email_date, from, email, sender_mail) {
         return new Promise((resolve, reject) => {
             let count = 0;
             let tagId = [];
@@ -39,7 +39,7 @@ module.exports = {
                                 replace.filter(data.body, from)
                                     .then((html) => {
                                         if (config.boolean === true) {
-                                            mail.sendMail(email, data.subject, constant().smtp.text, constant().smtp.from, html)
+                                            mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
                                                 .then((response) => {
                                                     resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
                                                 })

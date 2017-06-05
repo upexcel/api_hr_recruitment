@@ -91,7 +91,7 @@ module.exports = {
                                                                         subject = headers.subject.toString(),
                                                                         unread = !(in_array('\\Seen', flag)),
                                                                         answered = in_array("\\Answered", flag);
-                                                                    automaticTag.tags(subject, email_date, from, sender_mail)
+                                                                    automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
                                                                         .then((tag) => {
                                                                             let detail = new email({
                                                                                 email_id: seqno,
@@ -226,7 +226,7 @@ module.exports = {
                                                                     subject = headers.subject.toString(),
                                                                     unread = in_array('\\Seen', flag),
                                                                     answered = in_array("\\Answered", flag);
-                                                                automaticTag.tags(subject, email_date, from, sender_mail)
+                                                                automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
                                                                     .then((tag) => {
                                                                         let detail = new email({
                                                                             email_id: seqno,
