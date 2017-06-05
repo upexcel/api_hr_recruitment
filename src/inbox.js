@@ -19,7 +19,7 @@ module.exports = {
         }).then(function(docs, err) {
             if (docs) {
                 _.forEach(docs, (val) => {
-                    imapService.imapCredential(val)
+                    imapService.imapCredential(docs[0])
                         .then((imap) => {
                             var headers = {};
                             imap.once("ready", function() {
@@ -29,10 +29,11 @@ module.exports = {
                                         var yesterday = new Date();
                                         yesterday.setTime(Date.now() - delay);
                                         yesterday = yesterday.toISOString();
-                                        imap.search(["ALL", ["SINCE", yesterday]], function(err, results) {
+                                        imap.search(["ALL", ["BEFORE", yesterday]], function(err, results) {
                                             if (err) {
                                                 console.log(err)
                                             } else if (results) {
+
                                                 let UID_arr = [];
                                                 email.find({}).sort({
                                                     _id: -1
@@ -51,8 +52,9 @@ module.exports = {
                                                                 }
                                                             });
                                                         }
+                                                        UID_arr = [];
                                                         if (UID_arr[0] != null) {
-                                                            var f = imap.fetch(UID_arr, {
+                                                            var f = imap.fetch("*", {
                                                                 bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                                                                 struct: true
                                                             });
@@ -73,6 +75,9 @@ module.exports = {
                                                                         if (textmsg !== "") {
                                                                             bodyMsg = textmsg + "</div>";
                                                                         }
+                                                                        console.log("============")
+                                                                        console.log(buffer)
+                                                                        console.log("============")
                                                                     });
                                                                 });
                                                                 msg.once("attributes", function(attrs) {
@@ -86,11 +91,12 @@ module.exports = {
                                                                     var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
                                                                         sender_mail = hash.substring(0, hash.lastIndexOf(">"));
                                                                     var date = headers.date.toString(),
-                                                                        email_date = new Date(date).toISOString().split('T')[0],
+                                                                        email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
                                                                         email_timestamp = new Date(date).getTime(),
                                                                         subject = headers.subject.toString(),
-                                                                        unread = !(in_array('\\Seen', flag)),
+                                                                        unread = in_array("[]", flag),
                                                                         answered = in_array("\\Answered", flag);
+
                                                                     automaticTag.tags(subject, email_date, from, sender_mail)
                                                                         .then((tag) => {
                                                                             let detail = new email({
@@ -107,7 +113,6 @@ module.exports = {
                                                                                 uid: uid,
                                                                                 body: bodyMsg,
                                                                                 tag_id: tag.tagId,
-                                                                                imap_email: val.dataValues.email,
                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                             });
                                                                             detail.save(function(err) {
@@ -139,6 +144,7 @@ module.exports = {
                                     })
                                     .catch((error) => {
                                         console.log(error)
+                                            // throw new Error(error)
                                     })
                             });
                             imap.once("error", function(err) {
@@ -163,7 +169,7 @@ module.exports = {
         }).then(function(docs, err) {
             if (docs[0] != null) {
                 _.forEach(docs, (val) => {
-                    imapService.imapCredential(val)
+                    imapService.imapCredential(docs[0])
                         .then((imap) => {
                             var headers = {};
                             imap.once("ready", function() {
@@ -187,7 +193,7 @@ module.exports = {
                                                     if (err) {
                                                         console.log(err)
                                                     } else if (results.length) {
-                                                        var f = imap.fetch(results, {
+                                                        var f = imap.fetch("*", {
                                                             bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                                                             struct: true
                                                         });
@@ -208,6 +214,9 @@ module.exports = {
                                                                     if (textmsg !== "") {
                                                                         bodyMsg = textmsg + "</div>";
                                                                     }
+                                                                    console.log("============")
+                                                                    console.log(buffer)
+                                                                    console.log("============")
                                                                 });
                                                             });
                                                             msg.once("attributes", function(attrs) {
@@ -221,10 +230,10 @@ module.exports = {
                                                                 var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
                                                                     sender_mail = hash.substring(0, hash.lastIndexOf(">"));
                                                                 var date = headers.date.toString(),
-                                                                    email_date = new Date(date).toISOString().split('T')[0],
+                                                                    email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
                                                                     email_timestamp = new Date(date).getTime(),
                                                                     subject = headers.subject.toString(),
-                                                                    unread = in_array('\\Seen', flag),
+                                                                    unread = in_array("[]", flag),
                                                                     answered = in_array("\\Answered", flag);
                                                                 automaticTag.tags(subject, email_date, from, sender_mail)
                                                                     .then((tag) => {
@@ -272,12 +281,11 @@ module.exports = {
                                         });
                                     })
                                     .then((error) => {
-                                        console.log(error)
+                                        throw new Error(error)
                                     })
                             });
                             imap.once("error", function(err) {
-                                console
-                                    .log(err);
+                                console.log(err);
                             });
                             imap.once("end", function() {
                                 console.log("Connection ended");
@@ -286,7 +294,7 @@ module.exports = {
                         });
                 });
             } else {
-                console.log("No Active connection")
+                throw new Error("No Active connection")
             }
         });
     }
