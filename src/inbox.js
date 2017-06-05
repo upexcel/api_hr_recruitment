@@ -51,7 +51,6 @@ module.exports = {
                                                                 }
                                                             });
                                                         }
-                                                        UID_arr = [];
                                                         if (UID_arr[0] != null) {
                                                             var f = imap.fetch(UID_arr, {
                                                                 bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
@@ -279,7 +278,7 @@ module.exports = {
                             });
                             imap.once("error", function(err) {
                                 console
-.log(err);
+                                    .log(err);
                             });
                             imap.once("end", function() {
                                 console.log("Connection ended");
