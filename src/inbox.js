@@ -34,7 +34,7 @@ module.exports = {
                                                 console.log(err)
                                             } else if (results) {
                                                 let UID_arr = [];
-                                                email.find({}).sort({
+                                                email.find({ imap_email: val.dataValues.email }).sort({
                                                     _id: -1
                                                 }).limit(1).exec(function(err, resp) {
                                                     if (err) {
@@ -82,7 +82,7 @@ module.exports = {
                                                                 msg.once("end", function() {
                                                                     var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
                                                                         from = hash1.substring(0, hash1.lastIndexOf("<"));
-                                                                    var to = headers.to.toString();
+                                                                    var to = headers.to;
                                                                     var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
                                                                         sender_mail = hash.substring(0, hash.lastIndexOf(">"));
                                                                     var date = headers.date.toString(),
@@ -181,8 +181,8 @@ module.exports = {
                             imap.once("ready", function() {
                                 imapService.imapConnection(imap)
                                     .then((response) => {
-                                        email.find({}).sort({
-                                            uid: -1
+                                        email.find({ imap_email: val.dataValues.email }).sort({
+                                            uid: 1
                                         }).limit(1).exec(function(err, resp) {
                                             let date = '';
                                             if (err) {
@@ -192,7 +192,6 @@ module.exports = {
                                                 if (row && row.get("email_date")) {
                                                     date = moment(new Date(row.get("email_date"))).format("MMM DD, YYYY");
                                                 } else {
-
                                                     date = moment(new Date()).format("MMM DD, YYYY");
                                                 }
                                                 imap.search(["ALL", ["BEFORE", date]], function(err, results) {
