@@ -9,6 +9,8 @@ import replace from "./modules/replaceVariable";
 import automaticTag from "./modules/automaticTags";
 import imapService from "./service/imap";
 import moment from "moment";
+var MailParser = require("mailparser").MailParser;
+
 
 module.exports = {
     fetchEmail: function(email) {
@@ -53,26 +55,30 @@ module.exports = {
                                                         }
                                                         if (UID_arr[0] != null) {
                                                             var f = imap.fetch(UID_arr, {
-                                                                bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
-                                                                struct: true
+                                                                bodies: "",
+                                                                struct: false
                                                             });
                                                             f.on("message", function(msg, seqno) {
                                                                 var flag = "";
                                                                 var uid = "";
                                                                 var bodyMsg = "";
                                                                 var prefix = "(#" + seqno + ") ";
+                                                                var parser = new MailParser();
+                                                                var body;
+                                                                parser.on("data", data => {
+                                                                    // console.log("Header: " + JSON.stringify(headers));
+                                                                    body = data.html
+                                                                });
                                                                 msg.on("body", function(stream) {
+
                                                                     var buffer = "";
                                                                     stream.on("data", function(chunk) {
+                                                                        parser.write(chunk.toString("utf8"));
                                                                         buffer += chunk.toString("utf8");
                                                                     });
+
                                                                     stream.once("end", function() {
                                                                         headers = Imap.parseHeader(buffer);
-                                                                        var hash = buffer.substring(buffer.indexOf("<div")),
-                                                                            textmsg = hash.substring(0, hash.lastIndexOf("</div>"));
-                                                                        if (textmsg !== "") {
-                                                                            bodyMsg = textmsg + "</div>";
-                                                                        }
                                                                     });
                                                                 });
                                                                 msg.once("attributes", function(attrs) {
@@ -80,6 +86,7 @@ module.exports = {
                                                                     uid = attrs.uid;
                                                                 });
                                                                 msg.once("end", function() {
+                                                                    parser.end()
                                                                     var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
                                                                         from = hash1.substring(0, hash1.lastIndexOf("<"));
                                                                     var to = headers.to;
@@ -91,35 +98,38 @@ module.exports = {
                                                                         subject = headers.subject.toString(),
                                                                         unread = !(in_array('\\Seen', flag)),
                                                                         answered = in_array("\\Answered", flag);
-                                                                    automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
-                                                                        .then((tag) => {
-                                                                            let detail = new email({
-                                                                                email_id: seqno,
-                                                                                from: from,
-                                                                                to: to,
-                                                                                sender_mail: sender_mail,
-                                                                                date: date,
-                                                                                email_date: email_date,
-                                                                                email_timestamp: email_timestamp,
-                                                                                subject: subject,
-                                                                                unread: unread,
-                                                                                answered: answered,
-                                                                                uid: uid,
-                                                                                body: bodyMsg,
-                                                                                tag_id: tag.tagId,
-                                                                                imap_email: val.dataValues.email,
-                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                    parser.once("end", function() {
+                                                                        automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
+                                                                            .then((tag) => {
+                                                                                let detail = new email({
+                                                                                    email_id: seqno,
+                                                                                    from: from,
+                                                                                    to: to,
+                                                                                    sender_mail: sender_mail,
+                                                                                    date: date,
+                                                                                    email_date: email_date,
+                                                                                    email_timestamp: email_timestamp,
+                                                                                    subject: subject,
+                                                                                    unread: unread,
+                                                                                    answered: answered,
+                                                                                    uid: uid,
+                                                                                    body: body,
+                                                                                    tag_id: tag.tagId,
+                                                                                    imap_email: val.dataValues.email,
+                                                                                    genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                                });
+                                                                                detail.save(function(err) {
+                                                                                    if (err) {
+                                                                                        console.log("Duplicate Data");
+                                                                                    } else {
+                                                                                        console.log(tag)
+                                                                                        console.log("data saved successfully");
+                                                                                    }
+                                                                                });
                                                                             });
-                                                                            detail.save(function(err) {
-                                                                                if (err) {
-                                                                                    console.log("Duplicate Data");
-                                                                                } else {
-                                                                                    console.log(tag)
-                                                                                    console.log("data saved successfully");
-                                                                                }
-                                                                            });
-                                                                        });
+                                                                    })
                                                                 })
+
                                                                 console.log(prefix + "Finished");
                                                             });
                                                             f.once("error", function(err) {

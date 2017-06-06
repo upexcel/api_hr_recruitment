@@ -2438,17 +2438,15 @@
 					"name": "change status",
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/changeStatus/testhr69@gmail.com?accessToken={{token}}",
-							"auth": {
-								"user": "{{url}}/smtp/changeStatus/testhr69",
-								"password": ""
-							},
+							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"auth": {},
 							"host": [
-								"gmail",
-								"com"
+								"{{url}}"
 							],
 							"path": [
-								""
+								"smtp",
+								"changeStatus",
+								"{{email}}"
 							],
 							"query": [
 								{
@@ -2473,7 +2471,7 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "testhr69@gmail.com",
+									"value": "{{email}}",
 									"description": "",
 									"type": "text"
 								}
@@ -2485,26 +2483,6 @@
 				},
 				{
 					"name": "Send Template",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.message == \"messsage send successfully\") {",
-									"    tests[\"message sent successfully\"] = true;",
-									"} else {",
-									"    tests[\"message sent successfully\"] = false;",
-									"}",
-									""
-								]
-							}
-						}
-					],
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
