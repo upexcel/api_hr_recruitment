@@ -18,13 +18,17 @@ export class InboxController extends BaseAPIController {
 
     /* Get Emails By EmailId*/
     getByEmailId = (req, res, next) => {
-        req.email.find({
-            sender_mail: req.params.emailid
-        }).sort({
+        var re = /\S+@\S+\.\S+/;
+        if (re.test(req.params.emailid)) {
+            var where = { sender_mail: req.params.emailid }
+        } else {
+            where = { _id: req.params.emailid }
+        }
+        req.email.find(where).sort({
             email_date: -1
         }).exec((err, data) => {
             if (err) {
-                next(new Error(" Invalid Email Id"));
+                next(new Error(err));
             } else {
                 res.json({
                     data
