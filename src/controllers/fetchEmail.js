@@ -7,7 +7,7 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
-        let { page, tag_id, limit } = req.params;
+        let { page, tag_id, limit } = parseInt(req.params);
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ date: -1 }).skip((page - 1) * limit).limit(limit).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
