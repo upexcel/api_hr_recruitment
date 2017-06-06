@@ -23,14 +23,14 @@ export class AuthController {
                                     req.user = user;
                                     next();
                                 } else {
-                                    next(res.status(400).send({ error: "Invalid User Token" }));
+                                    next(res.status(400).send({ message: "Invalid User Token" }));
                                 }
                             });
                     }
                 }
             });
         } else {
-            res.status(400).send({ error: "User is not logged in" });
+            res.status(400).send({ message: "User is not logged in" });
             next();
         }
     }
@@ -40,7 +40,7 @@ export class AuthController {
         if (token) {
             jwt.verify(token, "secret_key", (err, docs) => {
                 if (err) {
-                    next(res.status(400).send({ error: "Invalid Token" }));
+                    next(res.status(400).send({ message: "Invalid Token" }));
                 } else {
                     const endTime = moment().unix();
                     const loginTime = docs.exp;
@@ -52,7 +52,7 @@ export class AuthController {
                                     req.user = admin;
                                     next();
                                 } else {
-                                    res.status(400).send({ error: "You Are Not Authorized" });
+                                    res.status(400).send({ message: "You Are Not Authorized" });
                                     next();
                                 }
                             });
@@ -60,7 +60,7 @@ export class AuthController {
                 }
             });
         } else {
-            next(res.status(400).send({ error: "User is not logged in" }));
+            next(res.status(400).send({ message: "User is not logged in" }));
         }
     }
 
@@ -88,7 +88,7 @@ export class AuthController {
                                         next();
                                     } else {
                                         next(res.status(400).send({
-                                            error: "You Are Not Authorized"
+                                            message: "You Are Not Authorized"
                                         }));
                                     }
                                 });
@@ -96,7 +96,7 @@ export class AuthController {
                     }
                 });
             } else {
-                next(res.status(400).send({ error: "User is not logged in" }));
+                next(res.status(400).send({ message: "User is not logged in" }));
 
             }
         }
@@ -112,7 +112,7 @@ export class AuthController {
                 }
             });
         } else {
-            next(new Error("Token Not Found"));
+            next(res.status(400).send({ message: "Token Not Found" }));
         }
 
     }
