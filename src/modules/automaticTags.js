@@ -48,7 +48,11 @@ module.exports = {
                                         }
                                     });
                             } else {
-                                resolve({ message: "Email Not send", tagId: tagId.toString() })
+                                if (tagId.length !== 0) {
+                                    resolve({ message: "Email Not send", tagId: tagId.toString() })
+                                } else {
+                                    resolve({ message: "Email Not send", tagId: [] })
+                                }
                             }
                         })
                     })
