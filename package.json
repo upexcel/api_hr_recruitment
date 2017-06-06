@@ -26,6 +26,7 @@
     "express-validator": "^3.2.0",
     "googleapis": "^19.0.0",
     "in_array": "^1.1.0",
+    "mailparser": "^2.0.5",
     "mandrill-api": "^1.0.45",
     "moment": "^2.18.1",
     "mongoose": "^4.9.8",
