@@ -292,54 +292,6 @@
 					"response": []
 				},
 				{
-					"name": "Email Attachment",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.message) {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/mailAttachment/{{mongo_id}}?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"mailAttachment",
-								"{{mongo_id}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Assign Tag",
 					"event": [
 						{
