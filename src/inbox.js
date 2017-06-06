@@ -93,29 +93,41 @@ module.exports = {
                                                                         answered = in_array("\\Answered", flag);
                                                                     automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
                                                                         .then((tag) => {
-                                                                            let detail = new email({
-                                                                                email_id: seqno,
-                                                                                from: from,
-                                                                                to: to,
-                                                                                sender_mail: sender_mail,
-                                                                                date: date,
-                                                                                email_date: email_date,
-                                                                                email_timestamp: email_timestamp,
-                                                                                subject: subject,
-                                                                                unread: unread,
-                                                                                answered: answered,
+                                                                            email.findOne({
                                                                                 uid: uid,
-                                                                                body: bodyMsg,
-                                                                                tag_id: tag.tagId,
-                                                                                imap_email: val.dataValues.email,
-                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject)
-                                                                            });
-                                                                            detail.save(function(err) {
+                                                                                imap_email: val.dataValues.email
+                                                                            }, function(err, data) {
                                                                                 if (err) {
-                                                                                    console.log("Duplicate Data");
+                                                                                    console.log(err);
+                                                                                }
+                                                                                if (!data) {
+                                                                                    let detail = new email({
+                                                                                        email_id: seqno,
+                                                                                        from: from,
+                                                                                        to: to,
+                                                                                        sender_mail: sender_mail,
+                                                                                        date: date,
+                                                                                        email_date: email_date,
+                                                                                        email_timestamp: email_timestamp,
+                                                                                        subject: subject,
+                                                                                        unread: unread,
+                                                                                        answered: answered,
+                                                                                        uid: uid,
+                                                                                        body: bodyMsg,
+                                                                                        tag_id: tag.tagId,
+                                                                                        imap_email: val.dataValues.email,
+                                                                                        genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                                    });
+                                                                                    detail.save(function(err) {
+                                                                                        if (err) {
+                                                                                            console.log("Duplicate Data");
+                                                                                        } else {
+                                                                                            console.log(tag)
+                                                                                            console.log("data saved successfully");
+                                                                                        }
+                                                                                    });
                                                                                 } else {
-                                                                                    console.log(tag)
-                                                                                    console.log("data saved successfully");
+                                                                                    console.log("data already saved");
                                                                                 }
                                                                             });
                                                                         });
@@ -228,29 +240,41 @@ module.exports = {
                                                                     answered = in_array("\\Answered", flag);
                                                                 automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
                                                                     .then((tag) => {
-                                                                        let detail = new email({
-                                                                            email_id: seqno,
-                                                                            from: from,
-                                                                            to: to,
-                                                                            sender_mail: sender_mail,
-                                                                            date: date,
-                                                                            email_date: email_date,
-                                                                            email_timestamp: email_timestamp,
-                                                                            subject: subject,
-                                                                            unread: unread,
-                                                                            answered: answered,
+                                                                        email.findOne({
                                                                             uid: uid,
-                                                                            body: bodyMsg,
-                                                                            tag_id: tag.tagId,
-                                                                            imap_email: val.dataValues.email,
-                                                                            genuine_applicant: GENERIC.Genuine_Applicant(subject)
-                                                                        });
-                                                                        detail.save(function(err) {
+                                                                            imap_email: val.dataValues.email
+                                                                        }, function(err, data) {
                                                                             if (err) {
-                                                                                console.log("Duplicate Data");
+                                                                                console.log(err);
+                                                                            }
+                                                                            if (!data) {
+                                                                                let detail = new email({
+                                                                                    email_id: seqno,
+                                                                                    from: from,
+                                                                                    to: to,
+                                                                                    sender_mail: sender_mail,
+                                                                                    date: date,
+                                                                                    email_date: email_date,
+                                                                                    email_timestamp: email_timestamp,
+                                                                                    subject: subject,
+                                                                                    unread: unread,
+                                                                                    answered: answered,
+                                                                                    uid: uid,
+                                                                                    body: bodyMsg,
+                                                                                    tag_id: tag.tagId,
+                                                                                    imap_email: val.dataValues.email,
+                                                                                    genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                                });
+                                                                                detail.save(function(err) {
+                                                                                    if (err) {
+                                                                                        console.log("Duplicate Data");
+                                                                                    } else {
+                                                                                        console.log(tag)
+                                                                                        console.log("data saved successfully");
+                                                                                    }
+                                                                                });
                                                                             } else {
-                                                                                console.log(tag)
-                                                                                console.log("data saved successfully");
+                                                                                console.log("data already saved");
                                                                             }
                                                                         });
                                                                     });
