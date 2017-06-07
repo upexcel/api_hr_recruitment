@@ -48,11 +48,20 @@ export class ImapController extends BaseAPIController {
                     }
                 })
                 .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                    if (docs) {
+                        req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
+                            .then((data) => {
+                                this.handleSuccessResponse(res, null);
+                            })
+                            .catch(this.handleErrorResponse.bind(null, res));
+                    } else {
+                        next(res.status(400).send({ message: "Invalid tagId" }));
+                    }
                 }).catch(this.handleErrorResponse.bind(null, res));
         } else {
             next(new Error("Invalid Type"));
         }
+
     }
 
     /* Get Imap data */

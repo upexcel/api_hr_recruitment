@@ -19,7 +19,12 @@ const save = (model, type, validate, body, validationResult) => {
                 reject(result.array()[0].msg);
             } else {
                 body.type = type;
-                resolve(body);
+                if (body.template_id == "") {
+                    delete body.template_id;
+                    resolve(body)
+                } else {
+                    resolve(body);
+                }
             }
         });
     });
