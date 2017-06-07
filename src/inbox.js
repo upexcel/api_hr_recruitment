@@ -95,7 +95,6 @@ module.exports = {
                                                                         subject = headers.subject.toString(),
                                                                         unread = !(in_array('\\Seen', flag)),
                                                                         answered = in_array("\\Answered", flag);
-
                                                                     parser.once("end", function() {
                                                                         automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
                                                                             .then((tag) => {
@@ -245,7 +244,6 @@ module.exports = {
                                                                     email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
                                                                     email_timestamp = new Date(date).getTime(),
                                                                     subject = headers.subject.toString();
-                                                                console.log(flag)
                                                                 var unread = !(in_array('\\Seen', flag)),
                                                                     answered = in_array("\\Answered", flag);
                                                                 parser.once("end", function() {

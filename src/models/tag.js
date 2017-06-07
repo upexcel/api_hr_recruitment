@@ -12,7 +12,7 @@ export default function(sequelize, DataTypes) {
         },
         to: DataTypes.DATE,
         from: DataTypes.DATE,
-        template_id: { type: DataTypes.INTEGER, defaultValue: 0 },
+        template_id: { type: DataTypes.INTEGER },
     }, {
         hooks: {
             beforeCreate: function(TAG, options) {
@@ -58,6 +58,9 @@ export default function(sequelize, DataTypes) {
                         });
                 });
             }
+        },
+        associate: (models) => {
+            Tag.belongsTo(models.Template, { foreignKey: 'template_id' })
         }
     });
 
