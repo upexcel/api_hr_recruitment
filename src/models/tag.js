@@ -3,7 +3,10 @@ export default function(sequelize, DataTypes) {
         email: {
             type: DataTypes.STRING,
         },
-        title: DataTypes.STRING,
+        title: {
+            type: DataTypes.STRING,
+            unique: true,
+        },
         color: DataTypes.STRING,
         subject: DataTypes.STRING,
         type: {
@@ -17,18 +20,15 @@ export default function(sequelize, DataTypes) {
         hooks: {
             beforeCreate: function(TAG, options) {
                 return new Promise((resolve, reject) => {
-                    if (TAG.type === "Automatic") {
-                        this.findOne({ where: { title: { like: "%" + TAG.title + "%" } } })
-                            .then((docs) => {
-                                if (docs) {
-                                    reject("This title Already Exists");
-                                } else {
-                                    resolve({ docs })
-                                }
-                            })
-                    } else {
-                        resolve()
-                    }
+                    this.findOne({ where: { title: { like: "%" + TAG.title + "%" } } })
+                        .then((docs) => {
+                            if (docs) {
+                                reject("This Title Already Exists");
+                            } else {
+                                resolve({ docs })
+                            }
+                        })
+
                 })
 
             }

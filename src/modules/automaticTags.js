@@ -21,7 +21,7 @@ module.exports = {
                     .then((data) => {
                         _.forEach(data, (val, key) => {
                             if ((subject.match(new RegExp(val.title, 'gi'))) || (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) {
-                                tagId.push(val.id)
+                                tagId.push((val.id).toString())
                                 template_id.push(val.template_id)
                             } else {
                                 ++count;
@@ -41,15 +41,15 @@ module.exports = {
                                         if (config.boolean === true) {
                                             mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
                                                 .then((response) => {
-                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
+                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId })
                                                 })
                                         } else {
-                                            resolve({ message: "Email Not Send ", tagId: tagId.toString() })
+                                            resolve({ message: "Email Not Send ", tagId: tagId })
                                         }
                                     });
                             } else {
                                 if (tagId.length !== 0) {
-                                    resolve({ message: "Email Not send", tagId: tagId.toString() })
+                                    resolve({ message: "Email Not send", tagId: tagId })
                                 } else {
                                     resolve({ message: "Email Not send", tagId: [] })
                                 }
