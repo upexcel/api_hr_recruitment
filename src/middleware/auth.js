@@ -53,7 +53,6 @@ export class AuthController {
                                     next();
                                 } else {
                                     res.status(400).send({ message: "You Are Not Authorized" });
-                                    next();
                                 }
                             });
                     }
