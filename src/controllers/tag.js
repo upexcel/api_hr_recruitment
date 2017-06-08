@@ -5,7 +5,6 @@ import tag from "../models/constant";
 export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
     save = (req, res) => {
-        console.log(req.params.type)
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((response) => {
                 this._db.Tag.create(response)
@@ -16,13 +15,12 @@ export class ImapController extends BaseAPIController {
                                     .then((response) => {
                                         res.json(data)
                                     }, (err) => {
-                                        console.log(err)
                                         throw new Error(res.json(400, {
                                             message: err
                                         }))
                                     });
                             } else {
-                                this.handleSuccessResponse(res, null);
+                                res.json(data)
                             }
                         } else {
                             res.status(500).send({ message: "Tag is not Added" })
