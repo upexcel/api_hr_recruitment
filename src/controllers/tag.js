@@ -14,7 +14,7 @@ export class ImapController extends BaseAPIController {
                             if (data.type == tag().tagType.automatic) {
                                 this._db.Tag.assignTag(data, req.email)
                                     .then((response) => {
-                                        this.handleSuccessResponse(res, null);
+                                        res.json(data)
                                     }, (err) => {
                                         console.log(err)
                                         throw new Error(res.json(400, {
@@ -25,7 +25,7 @@ export class ImapController extends BaseAPIController {
                                 this.handleSuccessResponse(res, null);
                             }
                         } else {
-                            res.status(500).send({ message: "Invalid User Token" })
+                            res.status(500).send({ message: "Tag is not Added" })
                         }
                     }, (err) => {
                         res.status(500).json(err)

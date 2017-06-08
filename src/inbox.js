@@ -97,7 +97,7 @@ module.exports = {
                                                                         unread = !(in_array('\\Seen', flag)),
                                                                         answered = in_array("\\Answered", flag);
                                                                     parser.once("end", function() {
-                                                                        automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
+                                                                        automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
                                                                             .then((tag) => {
                                                                                 email.findOne({
                                                                                     uid: uid,
@@ -249,7 +249,7 @@ module.exports = {
                                                                 var unread = !(in_array('\\Seen', flag)),
                                                                     answered = in_array("\\Answered", flag);
                                                                 parser.once("end", function() {
-                                                                    automaticTag.tags(subject, email_date, from, sender_mail, val.dataValues.email)
+                                                                    automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
                                                                         .then((tag) => {
                                                                             email.findOne({
                                                                                 uid: uid,

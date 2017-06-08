@@ -4,7 +4,7 @@ export class InboxController extends BaseAPIController {
     /* Get INBOX data*/
     getInbox = (req, res, next) => {
         req.email.find().skip((req.params.page - 1) * parseInt(req.params.limit)).limit(parseInt(req.params.limit)).sort({
-            email_date: -1
+            date: -1
         }).exec((err, data) => {
             if (err) {
                 next(new Error("invalid page"));
@@ -25,7 +25,7 @@ export class InboxController extends BaseAPIController {
             where = { _id: req.params.emailid }
         }
         req.email.find(where).sort({
-            email_date: -1
+            date: -1
         }).exec((err, data) => {
             if (err) {
                 next(new Error(err));

@@ -1,7 +1,7 @@
 {
 	"variables": [],
 	"info": {
-		"name": "hr_recruitment copy",
+		"name": "hr_recruitment",
 		"_postman_id": "95ed1ec8-2001-b807-7452-024eb41edeae",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
@@ -549,6 +549,76 @@
 					"response": []
 				},
 				{
+					"name": "Email Delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status == 1) {",
+									"    tests[\"status exist\"] = true;",
+									"} else {",
+									"    tests[\"status exist\"] = false;",
+									"}",
+									"if (jsonData.message == \"success\") {",
+									"    tests[\"Success message exist\"] = true;",
+									"} else {",
+									"    tests[\"Success message exist\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/deleteEmail/1?accessToken={{token}}",
+							"auth": {},
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"deleteEmail",
+								"1"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "mongo_id[0]",
+									"value": "{{mongo_id}}",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Delete Tag",
 					"event": [
 						{
@@ -597,75 +667,6 @@
 							"variable": []
 						},
 						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "mongo_id[0]",
-									"value": "{{mongo_id}}",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Email Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/deleteEmail?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"deleteEmail"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -1878,23 +1879,16 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.data) {",
-									"    tests[\"data exists\"] = true;",
-									"    if (jsonData.data.id) {",
-									"        postman.setEnvironmentVariable(\"tagId\", jsonData.data.id);",
-									"        tests[\"id exists\"] = true;",
-									"    } else {",
-									"        tests[\"id exists\"] = false;",
-									"    }",
-									"    if (jsonData.data.email) {",
-									"        tests[\"email exists\"] = true;",
-									"    } else {",
-									"        tests[\"email exists\"] = false;",
-									"    }",
-									"} else {",
-									"    tests[\"data exists\"] = false;",
-									"}"
+									"if(jsonData.id){",
+									"    tests[\"success message\"]= true;",
+									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"",
+									""
 								]
 							}
 						},

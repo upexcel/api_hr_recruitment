@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ email_date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -164,7 +164,8 @@ export class FetchController extends BaseAPIController {
                                 }, {
                                     "$addToSet": {
                                         "tag_id": tag_id
-                                    }
+                                    },
+                                    "email_date": new Date()
                                 }).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
