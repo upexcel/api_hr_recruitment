@@ -99,6 +99,9 @@ module.exports = {
                                                                     parser.once("end", function() {
                                                                         automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
                                                                             .then((tag) => {
+                                                                                if (tag.tagId.length) {
+                                                                                    email_timestamp = new Date().getTime()
+                                                                                }
                                                                                 email.findOne({
                                                                                     uid: uid,
                                                                                     imap_email: val.dataValues.email
@@ -251,6 +254,9 @@ module.exports = {
                                                                 parser.once("end", function() {
                                                                     automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
                                                                         .then((tag) => {
+                                                                            if (tag.tagId.length) {
+                                                                                email_timestamp = new Date().getTime()
+                                                                            }
                                                                             email.findOne({
                                                                                 uid: uid,
                                                                                 imap_email: val.dataValues.email
