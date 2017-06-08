@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ email_date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -44,7 +44,8 @@ export class FetchController extends BaseAPIController {
                     }, {
                         "$addToSet": {
                             "tag_id": tag_id
-                        }
+                        },
+                        email_timestamp: new Date().getTime()
                     }).exec((err, data) => {
                         if (err) {
                             next(new Error(err));
@@ -157,14 +158,12 @@ export class FetchController extends BaseAPIController {
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                req.email.findOneAndUpdate({
-                                    "_id": val
-                                }, {
-                                    "$addToSet": {
-                                        "tag_id": tag_id
-                                    },
-                                    "email_date": new Date()
-                                }).exec((err) => {
+                                if (data.type == "Default" && data.title !== "Genuine Applicant") {
+                                    var where = { "tag_id": [tag_id], "email_timestamp": new Date().getTime() };
+                                } else {
+                                    where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                                }
+                                req.email.findOneAndUpdate({ "_id": val }, where).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
                                     } else {

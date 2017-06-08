@@ -20,14 +20,13 @@ export class ImapController extends BaseAPIController {
                                         }))
                                     });
                             } else {
-                                this.handleSuccessResponse(res, null);
+                                res.json(data)
                             }
                         } else {
                             res.status(500).send({ message: "Tag is not Added" })
                         }
                     }, (err) => {
                         res.status(500).json(err)
-
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
 
