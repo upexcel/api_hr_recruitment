@@ -6,18 +6,31 @@ export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
     save = (req, res) => {
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
-            .then((tag) => {
-                this._db.Tag.create(tag)
+            .then((response) => {
+                this._db.Tag.create(response)
                     .then((data) => {
-                        res.json({
-                            data
-                        })
+                        if (data) {
+                            if (data.type == tag().tagType.automatic) {
+                                this._db.Tag.assignTag(data, req.email)
+                                    .then((response) => {
+                                        res.json({ data })
+                                    }, (err) => {
+                                        throw new Error(res.json(400, {
+                                            message: err
+                                        }))
+                                    });
+                            } else {
+                                this.handleSuccessResponse(res, null);
+                            }
+                        } else {
+                            res.status(500).send({ message: " Tag is Not Created " })
+                        }
                     }, (err) => {
-                        throw new Error(res.json(400, {
-                            message: err
-                        }));
+                        res.status(500).json(err)
+
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
+
     }
 
 

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 export default function(sequelize, DataTypes) {
     const Tag = sequelize.define("TAG", {
         email: {
@@ -54,6 +55,35 @@ export default function(sequelize, DataTypes) {
                             }
                         });
                 });
+            },
+            assignTag(tag, email) {
+                return new Promise((resolve, reject) => {
+                    email.find({})
+                        .then((data) => {
+                            _.map(data, (val, key) => {
+                                if ((val.subject.match(new RegExp(tag.title, 'gi'))) || (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime())) {
+                                    email.findOneAndUpdate({
+                                            "_id": val._id
+                                        }, {
+                                            "$addToSet": {
+                                                "tag_id": tag.id.toString()
+                                            }
+                                        })
+                                        .then((data1) => {
+                                            if (key == (_.size(data) - 1)) {
+                                                resolve('tag assigned Successfully');
+                                            }
+                                        })
+                                } else {
+                                    if (key == (_.size(data) - 1)) {
+                                        resolve('tag assigned Successfully');
+                                    }
+                                }
+                            })
+                        }, (err) => {
+                            reject(err)
+                        })
+                })
             }
         },
         associate: (models) => {
