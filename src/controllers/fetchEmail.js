@@ -195,8 +195,7 @@ export class FetchController extends BaseAPIController {
                         where: {
                             id: req.params.tag_id
                         }
-                    })
-                    .then((data) => {
+                    }).then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
                                 req.email.findOneAndUpdate({
@@ -265,36 +264,26 @@ export class FetchController extends BaseAPIController {
             .then(() => {
                 var size = _.size(req.body.mongo_id);
                 _.forEach(req.body.mongo_id, (val, key) => {
-                    req.email.findOne({
-                        _id: val
-                    }, (err, data) => {
+                    req.email.findOneAndUpdate({
+                        "_id": val
+                    }, {
+                        "$pull": {
+                            "tag_id": req.params.tag_id
+                        }
+                    }, { new: true }).exec((err, data) => {
                         if (err) {
-                            response.push({
-                                status: 0,
-                                message: err,
-                                array_length: key
-                            });
+                            response.push({ status: 0, message: err, array_length: key });
                         }
                         if (!data) {
-                            response.push({
-                                status: 0,
-                                msg: "not found",
-                                array_length: key
-                            });
+                            response.push({ status: 0, msg: "not found", array_length: key });
                         } else {
-                            data.remove();
-                            response.push({
-                                status: 1,
-                                msg: "delete success",
-                                array_length: key
-                            });
+                            if (!_.size(data.tag_id)) {
+                                data.remove();
+                            }
+                            response.push({ status: 1, msg: "delete success", array_length: key });
                         }
                         if (key == (size - 1)) {
-                            res.json({
-                                status: 1,
-                                message: "success",
-                                data: response
-                            });
+                            res.json({ status: 1, message: "success", data: response });
                         }
                     });
                 });

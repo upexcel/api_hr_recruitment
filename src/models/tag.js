@@ -28,15 +28,12 @@ export default function(sequelize, DataTypes) {
                                 resolve({ docs })
                             }
                         })
-
                 })
-
             }
         },
         timestamps: true,
         freezeTableName: true,
         allowNull: true,
-
         classMethods: {
             // login.....
             tag(tag_id) {
@@ -63,6 +60,5 @@ export default function(sequelize, DataTypes) {
             Tag.belongsTo(models.Template, { foreignKey: 'template_id' })
         }
     });
-
     return Tag;
 }
