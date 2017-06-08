@@ -7,7 +7,7 @@ import * as _ from "lodash";
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
-        let { page, tag_id, limit } = parseInt(req.params);
+        let { page, tag_id, limit } = req.params;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ email_date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -164,7 +164,8 @@ export class FetchController extends BaseAPIController {
                                 }, {
                                     "$addToSet": {
                                         "tag_id": tag_id
-                                    }
+                                    },
+                                    "email_date": new Date()
                                 }).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
@@ -195,7 +196,8 @@ export class FetchController extends BaseAPIController {
                         where: {
                             id: req.params.tag_id
                         }
-                    }).then((data) => {
+                    })
+                    .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
                                 req.email.findOneAndUpdate({

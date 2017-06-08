@@ -41,7 +41,7 @@ module.exports = {
                                         if (config.boolean === true) {
                                             mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
                                                 .then((response) => {
-                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId })
+                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
                                                 })
                                         } else {
                                             resolve({ message: "Email Not Send ", tagId: tagId })

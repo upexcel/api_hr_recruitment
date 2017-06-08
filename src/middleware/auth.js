@@ -23,7 +23,7 @@ export class AuthController {
                                     req.user = user;
                                     next();
                                 } else {
-                                    next(res.status(400).send({ message: "You Are Not Authorized" }));
+                                    next(res.status(400).send({ message: "Invalid User Token" }));
                                 }
                             });
                     }
@@ -85,7 +85,9 @@ export class AuthController {
                                         req.user = user;
                                         next();
                                     } else {
-                                        next(res.status(400).send({ message: "You Are Not Authorized" }));
+                                        next(res.status(400).send({
+                                            message: "You Are Not Authorized"
+                                        }));
                                     }
                                 });
                         }
