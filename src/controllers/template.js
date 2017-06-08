@@ -3,12 +3,13 @@ import TemplateProvider from "../providers/TemplateProvider.js";
 import replace from "../modules/replaceVariable";
 import constant from "../models/constant";
 import mail from "../modules/mail";
+import db from "../db";
+
 
 export class TemplateController extends BaseAPIController {
 
     /* Controller for User Register  */
     create = (req, res) => {
-
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
@@ -35,13 +36,20 @@ export class TemplateController extends BaseAPIController {
 
     /* Template delete */
     deleteTemplate = (req, res) => {
-        this._db.Template.destroy({
-                where: {
-                    id: req.params.templateId
+        db.Tag.findOne({ where: { template_id: req.params.templateId } })
+            .then((data) => {
+                if (!data) {
+                    this._db.Template.destroy({
+                            where: {
+                                id: req.params.templateId
+                            }
+                        })
+                        .then((docs) => {
+                            this.handleSuccessResponse(res, null);
+                        }).catch(this.handleErrorResponse.bind(null, res));
+                } else {
+                    throw new Error("Template is Assigned to Tag")
                 }
-            })
-            .then((docs) => {
-                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 

@@ -148,9 +148,7 @@ export class FetchController extends BaseAPIController {
     assignMultiple = (req, res, next) => {
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                let {
-                    tag_id
-                } = req.params;
+                let { tag_id } = req.params;
                 this._db.Tag.findOne({
                         where: {
                             id: tag_id
