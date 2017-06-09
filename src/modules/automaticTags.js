@@ -19,7 +19,6 @@ module.exports = {
             } else {
                 db.Tag.findAll({ where: { type: constant().tagType.automatic } })
                     .then((data) => {
-                        console.log(data)
                         if (data) {
                             _.forEach(data, (val, key) => {
                                 if ((subject.match(new RegExp(val.title, 'gi'))) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) {
