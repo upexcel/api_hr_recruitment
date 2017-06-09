@@ -26,7 +26,7 @@ export class ImapController extends BaseAPIController {
                             res.status(500).send({ message: "Tag is not Added" })
                         }
                     }, (err) => {
-                        res.status(500).json(err)
+                        res.status(500).json({ message: err })
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
 
