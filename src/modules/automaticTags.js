@@ -19,42 +19,47 @@ module.exports = {
             } else {
                 db.Tag.findAll({ where: { type: constant().tagType.automatic } })
                     .then((data) => {
-                        _.forEach(data, (val, key) => {
-                            if ((subject.match(new RegExp(val.title, 'gi'))) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) {
-                                tagId.push(val.id.toString())
-                                template_id.push(val.template_id)
-                            } else {
-                                ++count;
-                                if (count == _.size(data)) {
-                                    resolve({ tagId: [] });
-                                }
-                            }
-                        })
-                        db.Template.findOne({
-                            where: {
-                                id: template_id[0]
-                            }
-                        }).then((data) => {
-                            if (data != null) {
-                                replace.filter(data.body, from)
-                                    .then((html) => {
-                                        if (config.boolean === true) {
-                                            mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
-                                                .then((response) => {
-                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
-                                                })
-                                        } else {
-                                            resolve({ message: "Email Not Send ", tagId: tagId })
-                                        }
-                                    });
-                            } else {
-                                if (tagId.length !== 0) {
-                                    resolve({ message: "Email Not send", tagId: tagId })
+                        console.log(data)
+                        if (data) {
+                            _.forEach(data, (val, key) => {
+                                if ((subject.match(new RegExp(val.title, 'gi'))) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) {
+                                    tagId.push(val.id.toString())
+                                    template_id.push(val.template_id)
                                 } else {
-                                    resolve({ message: "Email Not send", tagId: [] })
+                                    ++count;
+                                    if (count == _.size(data)) {
+                                        resolve({ tagId: [] });
+                                    }
                                 }
-                            }
-                        })
+                            })
+                            db.Template.findOne({
+                                where: {
+                                    id: template_id[0]
+                                }
+                            }).then((data) => {
+                                if (data != null) {
+                                    replace.filter(data.body, from)
+                                        .then((html) => {
+                                            if (config.boolean === true) {
+                                                mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
+                                                    .then((response) => {
+                                                        resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
+                                                    })
+                                            } else {
+                                                resolve({ message: "Email Not Send ", tagId: tagId })
+                                            }
+                                        });
+                                } else {
+                                    if (tagId.length !== 0) {
+                                        resolve({ message: "Email Not send", tagId: tagId })
+                                    } else {
+                                        resolve({ message: "Email Not send", tagId: [] })
+                                    }
+                                }
+                            })
+                        } else {
+                            resolve({ tagid: [] })
+                        }
                     })
             }
         })

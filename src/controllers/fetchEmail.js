@@ -158,7 +158,8 @@ export class FetchController extends BaseAPIController {
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                if (data.type == "Default" && data.title !== "Genuine Applicant") {
+                                console.log(typeof data.title)
+                                if (data.type == "Default") {
                                     var where = { "tag_id": [tag_id], "email_timestamp": new Date().getTime() };
                                 } else {
                                     where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
