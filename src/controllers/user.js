@@ -9,7 +9,7 @@ export class UserController extends BaseAPIController {
     create = (req, res) => {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
-                if (user.type == constant().userType.admin || user.type == constant().userType.hr || user.type == constant().userType.guest) {
+                if (user.user_type == constant().userType.admin || user.user_type == constant().userType.hr || user.user_type == constant().userType.guest) {
                     this._db.User.create(user)
                         .then((data) => {
                             res.json({
