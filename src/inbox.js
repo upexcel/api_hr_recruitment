@@ -55,8 +55,8 @@ module.exports = {
                                                         }
                                                         if (UID_arr[0] != null) {
                                                             var f = imap.fetch(UID_arr, {
-                                                                bodies: "",
-                                                                struct: false
+                                                                bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
+                                                                struct: true
                                                             });
                                                             f.on("message", function(msg, seqno) {
                                                                 var flag = "";
@@ -209,8 +209,8 @@ module.exports = {
                                                         console.log(err)
                                                     } else if (results.length) {
                                                         var f = imap.fetch(results, {
-                                                            bodies: "",
-                                                            struct: false
+                                                            bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
+                                                            struct: true
                                                         });
                                                         f.on("message", function(msg, seqno) {
                                                             var flag = "";

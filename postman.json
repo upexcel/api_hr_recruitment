@@ -179,7 +179,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/verify?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -263,7 +262,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/fetch/null/1/10?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -320,7 +318,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/assignTag/1/{{mongo_id}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -397,7 +394,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/countEmail?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -450,7 +446,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/assignMultiple/1/?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -521,7 +516,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/changeUnreadStatus/{{mongo_id}}/false?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -576,7 +570,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/deleteEmail/1?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -646,7 +639,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/deleteTag/1/?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -723,16 +715,13 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/email/inbox/hr@excellencetechnologies.in?accessToken={{token}}",
-							"auth": {
-								"user": "{{url}}/email/inbox/hr",
-								"password": ""
-							},
 							"host": [
-								"excellencetechnologies",
-								"in"
+								"{{url}}"
 							],
 							"path": [
-								""
+								"email",
+								"inbox",
+								"hr@excellencetechnologies.in"
 							],
 							"query": [
 								{
@@ -789,7 +778,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/variable/add/?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -869,7 +857,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/variable/get/1/10/?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -919,7 +906,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/variable/update/{{variableId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -987,7 +973,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/variable/delete/{{variableId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1019,6 +1004,292 @@
 			"name": "4.IMAP",
 			"description": "",
 			"item": [
+				{
+					"name": "IMAP Save By Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"login user is admin\"] = true;",
+									"    if (jsonData.data) {",
+									"    tests[\"data saved by admin\"] = true;",
+									"    if (jsonData.data.id) {",
+									"        tests[\"id exist\"] = true;",
+									"        postman.setEnvironmentVariable(\"imapId\", jsonData.data.id);",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.data.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"    tests['Admin'] = true;",
+									"}else{",
+									"    tests['login user is admin'] = false;",
+									"}",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"imapEmail\", \"test\" + Math.floor((Math.random() * 10000) + 1) + \"@gmail.com\")"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/save?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"save"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{imapEmail}}",
+									"type": "text"
+								},
+								{
+									"key": "imap_server",
+									"value": "sasssss",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "TLS",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "server_port",
+									"value": "8091",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Save By Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"not login into hr\"] = true;",
+									"    if (!jsonData.data) {",
+									"    tests[\"data is not saved by hr\"] = true;",
+									"} else {",
+									"    tests[\"data is not saved by hr\"] = false;",
+									"}",
+									"}else{",
+									"    tests['not login into Hr'] = true;",
+									"}",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/save?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"save"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{imapEmail}}",
+									"type": "text"
+								},
+								{
+									"key": "imap_server",
+									"value": "sasssss",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "TLS",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "server_port",
+									"value": "8091",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Save By Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"not login into Guest\"] = true;",
+									"    if (!jsonData.data) {",
+									"    tests[\"data is not saved by Guest\"] = true;",
+									"} else {",
+									"    tests[\"data is not saved by Guest\"] = false;",
+									"}",
+									"}else{",
+									"    tests['not login into Guest'] = true;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/save?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"save"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{imapEmail}}",
+									"type": "text"
+								},
+								{
+									"key": "imap_server",
+									"value": "sasssss",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "TLS",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "server_port",
+									"value": "8091",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
 				{
 					"name": "IMAP Save",
 					"event": [
@@ -1056,7 +1327,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/imap/save?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1150,7 +1420,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/imap/get/1/10?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1199,7 +1468,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1282,7 +1550,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1329,16 +1596,13 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/imap/statusActive/vaibhav_pathak@excellencetechnologies.in?accessToken={{token}}",
-							"auth": {
-								"user": "{{url}}/imap/statusActive/vaibhav_pathak",
-								"password": ""
-							},
 							"host": [
-								"excellencetechnologies",
-								"in"
+								"{{url}}"
 							],
 							"path": [
-								""
+								"imap",
+								"statusActive",
+								"vaibhav_pathak@excellencetechnologies.in"
 							],
 							"query": [
 								{
@@ -1414,7 +1678,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/save/?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1503,7 +1766,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1569,7 +1831,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/testSmtp/{{email}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1644,7 +1905,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/get/1/10?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1693,7 +1953,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/update/{{smtpId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1791,7 +2050,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1839,7 +2097,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -1868,450 +2125,7 @@
 			]
 		},
 		{
-			"name": "6.Tag System",
-			"description": "",
-			"item": [
-				{
-					"name": "Save Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.id){",
-									"    tests[\"success message\"]= true;",
-									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}",
-									"",
-									""
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"title\", \"test\" + Math.floor((Math.random() * 10000) + 1));",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/add/Manual?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"add",
-								"Manual"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "{{title}}",
-									"type": "text"
-								},
-								{
-									"key": "color",
-									"value": "sdbdsf",
-									"type": "text"
-								},
-								{
-									"key": "subject",
-									"value": "nddsdj",
-									"type": "text"
-								},
-								{
-									"key": "to",
-									"value": "2017-05-13",
-									"type": "text"
-								},
-								{
-									"key": "from",
-									"value": "2017-08-13",
-									"type": "text"
-								},
-								{
-									"key": "template_id",
-									"value": "28",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Tag get By Type",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData) {",
-									"    tests[\"data exist\"] = true;",
-									"    for (i = 0; i < jsonData.length; i++) {",
-									"        if (jsonData[i].id) {",
-									"            tests[\"id exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"id exist \" + i] = false;",
-									"        }",
-									"        if (jsonData[i].type) {",
-									"            tests[\"type exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"type exist \" + i] = false;",
-									"        }",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/get/?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"get",
-								""
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Tag Update",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/update/Manual/{{tagId}}?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"update",
-								"Manual",
-								"{{tagId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text",
-									"description": ""
-								},
-								{
-									"key": "title",
-									"value": "{{title}}",
-									"type": "text",
-									"description": ""
-								},
-								{
-									"key": "color",
-									"value": "sdbdsf",
-									"type": "text",
-									"description": ""
-								},
-								{
-									"key": "subject",
-									"value": "nddsdj",
-									"type": "text",
-									"description": ""
-								},
-								{
-									"key": "to",
-									"value": "2017-05-13",
-									"type": "text",
-									"description": ""
-								},
-								{
-									"key": "from",
-									"value": "2017-08-13",
-									"type": "text",
-									"description": ""
-								},
-								{
-									"key": "template_id",
-									"value": "28",
-									"type": "text",
-									"description": ""
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "get Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData) {",
-									"    tests[\"data exist\"] = true;",
-									"    for (i = 0; i < jsonData.length; i++) {",
-									"        if (jsonData[i].id) {",
-									"            tests[\"id exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"id exist \" + i] = false;",
-									"        }",
-									"        if (jsonData[i].type) {",
-									"            tests[\"email exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"email exist \" + i] = false;",
-									"        }",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/get/Manual/1/10?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"get",
-								"Manual",
-								"1",
-								"10"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "getbyid tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData) {",
-									"    tests[\"data exist\"] = true;",
-									"    if (jsonData.id) {",
-									"        tests[\"id exist\"] = true;",
-									"    } else {",
-									"        tests[\"id exist\"] = false;",
-									"    }",
-									"    if (jsonData.email) {",
-									"        tests[\"email exist\"] = true;",
-									"    } else {",
-									"        tests[\"email exist\"] = false;",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"getbyid",
-								"Manual",
-								"{{tagId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "tag delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/delete/Manual/{{tagId}}?accessToken={{token}}",
-							"auth": {},
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"delete",
-								"Manual",
-								"{{tagId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "7.Template Page",
+			"name": "6.Template Page",
 			"description": "",
 			"item": [
 				{
@@ -2342,7 +2156,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/add?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2412,7 +2225,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2443,7 +2255,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2490,7 +2301,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2572,7 +2382,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/get/1/10?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2621,7 +2430,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/update/{{templateId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2671,9 +2479,179 @@
 						"description": ""
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "7.Tag System",
+			"description": "",
+			"item": [
+				{
+					"name": "Save Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.id){",
+									"    tests[\"success message\"]= true;",
+									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"title\", \"test\" + Math.floor((Math.random() * 10000) + 1));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/add/Manual?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"add",
+								"Manual"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text"
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text"
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
 				},
 				{
-					"name": "Template Delete",
+					"name": "Tag get By Type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].type) {",
+									"            tests[\"type exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"type exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Tag Update",
 					"event": [
 						{
 							"listen": "test",
@@ -2693,8 +2671,257 @@
 					],
 					"request": {
 						"url": {
+							"raw": "{{url}}/tag/update/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"update",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].type) {",
+									"            tests[\"email exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"email exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/Manual/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								"Manual",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "getbyid tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "tag delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/delete/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"delete",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "template delete",
+					"request": {
+						"url": {
 							"raw": "{{url}}/template/delete/{{templateId}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
@@ -2751,7 +2978,6 @@
 					"request": {
 						"url": {
 							"raw": "{{url}}/systemVariable/get/{{page}}/{{limit}}?accessToken={{token}}",
-							"auth": {},
 							"host": [
 								"{{url}}"
 							],
