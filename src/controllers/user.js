@@ -1,6 +1,5 @@
 import BaseAPIController from "./BaseAPIController";
 import UserProvider from "../providers/UserProvider.js";
-import LoginProvider from "../providers/UserProvider.js";
 import constant from "../models/constant";
 
 export class UserController extends BaseAPIController {
@@ -30,7 +29,7 @@ export class UserController extends BaseAPIController {
 
     /* Controller for User Login  */
     login = (req, res) => {
-        let login = LoginProvider.login(this._db.User, req.body);
+        let login = UserProvider.login(this._db.User, req.body);
         this._db.User.login(login)
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));

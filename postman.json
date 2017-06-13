@@ -747,7 +747,7 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Variable Add",
+					"name": "Variable Add by Admin",
 					"event": [
 						{
 							"listen": "test",
@@ -755,6 +755,8 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"if (jsonData.id) {",
 									"    postman.setEnvironmentVariable(\"variableId\", jsonData.id);",
 									"    tests[\"Variable id exist\"] = true;",
@@ -770,6 +772,9 @@
 									"    tests[\"variableCode exist\"] = true;",
 									"} else {",
 									"    tests[\"variableCode exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
 									"}"
 								]
 							}
@@ -824,15 +829,169 @@
 					"response": []
 				},
 				{
-					"name": "Variable GET",
+					"name": "Variable Add by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData.id) {",
+									"    postman.setEnvironmentVariable(\"variableId\", jsonData.id);",
+									"    tests[\"Variable id exist\"] = true;",
+									"} else {",
+									"    tests[\"Variable id exist\"] = false;",
+									"}",
+									"if (jsonData.variableValue) {",
+									"    tests[\"variableValue exist\"] = true;",
+									"} else {",
+									"    tests[\"variableValue exist\"] = false;",
+									"}",
+									"if (jsonData.variableCode) {",
+									"    tests[\"variableCode exist\"] = true;",
+									"} else {",
+									"    tests[\"variableCode exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/add/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"add",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "variableValue",
+									"value": "rvebdvfbkeh hfrkefuer",
+									"type": "text"
+								},
+								{
+									"key": "variableCode",
+									"value": "abc",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Add by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"Email Variable is not add by Guest\"] = true;",
+									"} else {",
+									"    tests[\"Email Variable is not add by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/add/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"add",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "variableValue",
+									"value": "rvebdvfbkeh hfrkefuer",
+									"type": "text"
+								},
+								{
+									"key": "variableCode",
+									"value": "abc",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable GET by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"for (var i = 0; i < jsonData.length; i++) {",
 									"    if (jsonData[i].id) {",
 									"        tests[\"id exist\" + i] = true;",
@@ -849,6 +1008,10 @@
 									"    } else {",
 									"        tests[\"variableValue exist\" + i] = false;",
 									"    }",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
+									"",
 									"}"
 								]
 							}
@@ -885,19 +1048,142 @@
 					"response": []
 				},
 				{
-					"name": "Variable Update",
+					"name": "Variable GET by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"for (var i = 0; i < jsonData.length; i++) {",
+									"    if (jsonData[i].id) {",
+									"        tests[\"id exist\" + i] = true;",
+									"    } else {",
+									"        tests[\"id exist\" + i] = false;",
+									"    }",
+									"    if (jsonData[i].variableCode) {",
+									"        tests[\"variableCode exist\" + i] = true;",
+									"    } else {",
+									"        tests[\"variableCode exist\" + i] = false;",
+									"    }",
+									"    if (jsonData[i].variableValue) {",
+									"        tests[\"variableValue exist\" + i] = true;",
+									"    } else {",
+									"        tests[\"variableValue exist\" + i] = false;",
+									"    }",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/get/1/10/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"get",
+								"1",
+								"10",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable GET by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"Email Variable is not get by Guest\"] = true;",
+									"} else {",
+									"    tests[\"Email Variable is not get by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/get/1/10/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"get",
+								"1",
+								"10",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Update by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
 									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
 									"}"
 								]
 							}
@@ -952,19 +1238,267 @@
 					"response": []
 				},
 				{
-					"name": "Variable Delete",
+					"name": "Variable Update by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
 									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/update/{{variableId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"update",
+								"{{variableId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "variableCode",
+									"value": "vedf ef",
+									"type": "text"
+								},
+								{
+									"key": "variableValue",
+									"value": "ytnjyumnkui",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Update by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"Email Variable is not update by Guest\"]= true;",
+									"}else{",
+									"    tests[\"Email Variable is not update by Guest\"]= true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/update/{{variableId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"update",
+								"{{variableId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "variableCode",
+									"value": "vedf ef",
+									"type": "text"
+								},
+								{
+									"key": "variableValue",
+									"value": "ytnjyumnkui",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Delete by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is not Admin\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/delete/{{variableId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"delete",
+								"{{variableId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Delete by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/delete/{{variableId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"delete",
+								"{{variableId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Variable Delete by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"Email Variable is not deleted by Guest\"]= true;",
+									"}else{",
+									"    tests[\"Email Variable is not deleted by Guest\"]= true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
 									"}"
 								]
 							}
@@ -1370,21 +1904,9 @@
 									"if(environment.type == \"Hr\"){",
 									"    tests[\"Login user is Hr\"] = true;",
 									"if (jsonData) {",
-									"    tests[\"data is not get by hr\"] = true;",
-									"    for (i = 0; i < jsonData.length; i++) {",
-									"        if (jsonData[i].id) {",
-									"            tests[\"id exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"id exist \" + i] = false;",
-									"        }",
-									"        if (jsonData[i].email) {",
-									"            tests[\"email exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"email exist \" + i] = false;",
-									"        }",
-									"    }",
+									"    tests[\"data is not get by Hr\"] = true;",
 									"} else {",
-									"    tests[\"data is not get by hr\"] = false;",
+									"    tests[\"data is not get by Hr\"] = false;",
 									"}    ",
 									"}else{",
 									"    tests['Login user is not Hr'] = true;",
@@ -1436,21 +1958,9 @@
 									"if(environment.type == \"Guest\"){",
 									"    tests[\"Login user is Guest\"] = true;",
 									"if (jsonData) {",
-									"    tests[\"data is not get by hr\"] = true;",
-									"    for (i = 0; i < jsonData.length; i++) {",
-									"        if (jsonData[i].id) {",
-									"            tests[\"id exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"id exist \" + i] = false;",
-									"        }",
-									"        if (jsonData[i].email) {",
-									"            tests[\"email exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"email exist \" + i] = false;",
-									"        }",
-									"    }",
+									"    tests[\"data is not get by Guest\"] = true;",
 									"} else {",
-									"    tests[\"data is not get by hr\"] = false;",
+									"    tests[\"data is not get by Guest\"] = false;",
 									"}    ",
 									"}else{",
 									"    tests['Login user is not Guest'] = true;",
@@ -1585,15 +2095,15 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
+									"    tests[\"IMAP is not updated by Hr \"]= true;",
 									"}else{",
-									"    tests[\"success message\"]= false;",
+									"      tests[\"IMAP is not updated by Hr \"]= true;",
 									"}",
 									"}else{",
-									"  tests[\"Login user is not Admin\"] = true;   ",
+									"  tests[\"Login user is not Hr\"] = true;   ",
 									"}"
 								]
 							}
@@ -1671,15 +2181,15 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
+									"    tests[\"IMAP is not updated by Guest \"]= true;",
 									"}else{",
-									"    tests[\"success message\"]= false;",
+									"      tests[\"IMAP is not updated by Guest \"]= true;",
 									"}",
 									"}else{",
-									"  tests[\"Login user is not Admin\"] = true;   ",
+									"  tests[\"Login user is not Guest\"] = true;   ",
 									"}"
 								]
 							}
@@ -1963,61 +2473,10 @@
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
-									"    tests[\"Not get success message\"]= true;",
+									"    tests[\"success message\"]= false;",
 									"}",
 									"}else{",
 									"  tests[\"Login user is not Admin\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"delete",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Delete by Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"Not get success message\"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Guest\"] = true;   ",
 									"}"
 								]
 							}
@@ -2063,12 +2522,63 @@
 									"if(environment.type == \"Hr\"){",
 									"    tests[\"Login user is Hr\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
+									"    tests[\"IMAP is not delete by Hr\"]= true;",
 									"}else{",
-									"    tests[\" Not get success message\"]= true;",
+									"    tests[\"IMAP is not delete by Hr\"]= true;",
 									"}",
 									"}else{",
-									"  tests[\"Login user is not Hr\"] = true;   ",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"delete",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Delete by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"IMAP is not delete by Guest\"]= true;",
+									"}else{",
+									"    tests[\"IMAP is not delete by Guest\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
 									"}"
 								]
 							}
@@ -2135,7 +2645,6 @@
 									"} else {",
 									"    tests[\"data exist\"] = false;",
 									"}",
-									"    tests['Admin'] = true;",
 									"}else{",
 									"    tests['Login user is not Admin'] = true;",
 									"}",
@@ -2224,20 +2733,16 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
 									"    if (!jsonData.data) {",
-									"    tests[\"data is not saved by hr\"] = true;",
+									"    tests[\"data is not saved by Guest\"] = true;",
 									"} else {",
-									"    tests[\"data is not saved by hr\"] = false;",
+									"    tests[\"data is not saved by Guest\"] = false;",
 									"}",
 									"}else{",
-									"    tests['Login user is not Hr'] = true;",
+									"    tests['Login user is not Guest'] = true;",
 									"}",
-									"",
-									"",
-									"",
-									"",
 									""
 								]
 							}
@@ -2404,143 +2909,16 @@
 					"response": []
 				},
 				{
-					"name": "SMTP change status",
+					"name": "SMTP Get by Admin",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.message == \"Status Changed Successfully\") {",
-									"    tests[\"Status Changed Successfully\"] = true;",
-									"} else {",
-									"    tests[\"Status Changed Successfully\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"changeStatus",
-								"{{email}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Smtp test",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"",
-									"",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.message == \"messsage send successfully\") {",
-									"    tests[\"message sent successfully\"] = true;",
-									"} else {",
-									"    tests[\"message sent successfully\"] = false;",
-									"}",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/testSmtp/{{email}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"testSmtp",
-								"{{email}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "SMTP List",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
 									"if (jsonData) {",
 									"    tests[\"data exist\"] = true;",
 									"    for (i = 0; i < jsonData.length; i++) {",
@@ -2557,6 +2935,9 @@
 									"    }",
 									"} else {",
 									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is admin\"] = true;",
 									"}"
 								]
 							}
@@ -2592,19 +2973,290 @@
 					"response": []
 				},
 				{
-					"name": "SMTP Update",
+					"name": "SMTP Get by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data is not get by Hr\"] = true;",
+									"} else {",
+									"    tests[\"data is not get by Hr\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/get/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"get",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Get by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data is not get by Guest\"] = true;",
+									"} else {",
+									"    tests[\"data is not get by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/get/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"get",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp GetById by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
+									"if (jsonData.id) {",
+									"    tests[\"id found\"] = true;",
+									"} else {",
+									"    tests[\"id found\"] = false;",
+									"}",
+									"if (jsonData.email) {",
+									"    tests[\"email found\"] = true;",
+									"} else {",
+									"    tests[\"email found\"] = false;",
+									"}",
+									"if (jsonData.password) {",
+									"    tests[\"password found\"] = true;",
+									"} else {",
+									"    tests[\"password found\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"getbyid",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp GetById by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data is not get by Hr\"] = true;",
+									"} else {",
+									"    tests[\"data is not get by Hr\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"getbyid",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp GetById by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data is not get by Guest\"] = true;",
+									"} else {",
+									"    tests[\"data is not get by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"getbyid",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Update by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
 									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Admin\"] = true;   ",
 									"}"
 								]
 							}
@@ -2669,7 +3321,7 @@
 								},
 								{
 									"key": "status",
-									"value": "false",
+									"value": "true",
 									"type": "text"
 								}
 							]
@@ -2679,29 +3331,23 @@
 					"response": []
 				},
 				{
-					"name": "Smtp GetById ",
+					"name": "SMTP Update by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.id) {",
-									"    tests[\"id found\"] = true;",
-									"} else {",
-									"    tests[\"id found\"] = false;",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"   tests[\"SMTP is not update by Hr\"]= true;",
+									"}else{",
+									"   tests[\"SMTP is not update by Hr\"]= true;",
 									"}",
-									"if (jsonData.email) {",
-									"    tests[\"email found\"] = true;",
-									"} else {",
-									"    tests[\"email found\"] = false;",
-									"}",
-									"if (jsonData.password) {",
-									"    tests[\"password found\"] = true;",
-									"} else {",
-									"    tests[\"password found\"] = false;",
+									"}else{",
+									"  tests[\"Login user is not Hr\"] = true;   ",
 									"}"
 								]
 							}
@@ -2709,13 +3355,13 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"raw": "{{url}}/smtp/update/{{smtpId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"smtp",
-								"getbyid",
+								"update",
 								"{{smtpId}}"
 							],
 							"query": [
@@ -2728,27 +3374,71 @@
 							],
 							"variable": []
 						},
-						"method": "GET",
-						"header": [],
-						"body": {},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12312",
+									"type": "text"
+								},
+								{
+									"key": "smtp_server",
+									"value": "smtp.gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "server_port",
+									"value": "993",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "SSL",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
 				},
 				{
-					"name": "SMTP Delete",
+					"name": "SMTP Update by Guest",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
+									"    tests[\"SMTP is not update by Guest\"]= true;",
 									"}else{",
-									"    tests[\"success message\"]= false;",
+									"   tests[\"SMTP is not update by Guest\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
 									"}"
 								]
 							}
@@ -2756,13 +3446,13 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"raw": "{{url}}/smtp/update/{{smtpId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"smtp",
-								"delete",
+								"update",
 								"{{smtpId}}"
 							],
 							"query": [
@@ -2775,9 +3465,445 @@
 							],
 							"variable": []
 						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "12312",
+									"type": "text"
+								},
+								{
+									"key": "smtp_server",
+									"value": "smtp.gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "server_port",
+									"value": "993",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "SSL",
+									"type": "text"
+								},
+								{
+									"key": "status",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp test by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if (jsonData.is_silent) {",
+									"    tests[\"message sent successfully\"] = true;",
+									"} else {",
+									"    tests[\"message not sent successfully\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/testSmtp/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"testSmtp",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp test by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData.is_silent == true) {",
+									"    tests[\"message not sent successfully\"] = true;",
+									"} else {",
+									"    tests[\"message not sent successfully\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/testSmtp/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"testSmtp",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp test by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData.is_silent == true) {",
+									"    tests[\"message not sent successfully\"] = true;",
+									"} else {",
+									"    tests[\"message not sent successfully\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/testSmtp/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"testSmtp",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP change status by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if (jsonData.message == \"Status Changed Successfully\") {",
+									"    tests[\"Status Changed Successfully\"] = true;",
+									"} else {",
+									"    tests[\"Status Changed Successfully\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"changeStatus",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP change status by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData.message == \"Status Changed Successfully\") {",
+									"    tests[\"Status not Changed by Hr\"] = true;",
+									"} else {",
+									"    tests[\"Status not Changed by Hr\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"changeStatus",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP change status by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData.message == \"Status Changed Successfully\") {",
+									"    tests[\"Status not Changed by Guest\"] = true;",
+									"} else {",
+									"    tests[\"Status not Changed by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"changeStatus",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
@@ -2789,15 +3915,16 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Template Add",
+					"name": "Template Add by Admin",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
 									"if (jsonData.id) {",
 									"    postman.setEnvironmentVariable(\"templateId\", jsonData.id);",
 									"    tests[\"id exists\"] = true;",
@@ -2808,6 +3935,9 @@
 									"    tests[\"body exists\"] = true;",
 									"} else {",
 									"    tests[\"body exists\"] = false;",
+									"}",
+									"}else{",
+									"   tests[\"Login user is not admin\"] = true;",
 									"}"
 								]
 							}
@@ -2881,93 +4011,43 @@
 					"response": []
 				},
 				{
-					"name": "Test Template",
-					"request": {
-						"url": {
-							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"template",
-								"test",
-								"{{templateId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "change status",
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"changeStatus",
-								"{{email}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
+					"name": "Template Add by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData.id) {",
+									"    postman.setEnvironmentVariable(\"templateId\", jsonData.id);",
+									"    tests[\"id exists\"] = true;",
+									"} else {",
+									"    tests[\"id exists\"] = false;",
+									"}",
+									"if (jsonData.body) {",
+									"    tests[\"body exists\"] = true;",
+									"} else {",
+									"    tests[\"body exists\"] = false;",
+									"}",
+									"}else{",
+									"   tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
 							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Send Template",
+						}
+					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
+							"raw": "{{url}}/template/add?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"template",
-								"email",
-								"{{email}}"
+								"add"
 							],
 							"query": [
 								{
@@ -2982,6 +4062,21 @@
 						"method": "POST",
 						"header": [
 							{
+								"key": "templateName",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "subject",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "body",
+								"value": "cdegfcvgrejfgvjehrfgre",
+								"description": ""
+							},
+							{
 								"key": "Content-Type",
 								"value": "application/x-www-form-urlencoded",
 								"description": ""
@@ -2991,15 +4086,18 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
+									"key": "templateName",
+									"value": "abc",
+									"type": "text"
+								},
+								{
 									"key": "subject",
-									"value": "abcdef",
-									"description": "",
+									"value": "cde",
 									"type": "text"
 								},
 								{
 									"key": "body",
-									"value": "defgh",
-									"description": "",
+									"value": "efcjkjvdf",
 									"type": "text"
 								}
 							]
@@ -3009,15 +4107,106 @@
 					"response": []
 				},
 				{
-					"name": "Template List",
+					"name": "Template Add by Guest",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"   tests[\"data is not saved by Guest\"] = true;",
+									"} else {",
+									"   tests[\"data is not saved by Guest\"] = true;",
+									"}",
+									"}else{",
+									"   tests[\"Login user is not Guset\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/add?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"add"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "templateName",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "subject",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "body",
+								"value": "cdegfcvgrejfgvjehrfgre",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "templateName",
+									"value": "abc",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "cde",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "efcjkjvdf",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Template Get by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"     tests[\"Login user is admin\"] = true;",
 									"if (jsonData) {",
 									"    tests[\"data exist\"] = true;",
 									"    for (i = 0; i < jsonData.length; i++) {",
@@ -3034,6 +4223,9 @@
 									"    }",
 									"} else {",
 									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"     tests[\"Login user is not admin\"] = true;",
 									"}"
 								]
 							}
@@ -3069,19 +4261,139 @@
 					"response": []
 				},
 				{
-					"name": "Template Update",
+					"name": "Template Get by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"     tests[\"Login user is Hr\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].templateName) {",
+									"            tests[\"templateName exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"templateName exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"     tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/get/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"get",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Template Get by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"     tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"   tests[\"data is not fetch by Guest\"] = true;",
+									"} else {",
+									"    tests[\"data is not fetch by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/get/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"get",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Template Update by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"      tests[\"Login user is admin\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
 									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"     tests[\"Login user is not admin\"] = true;",
 									"}"
 								]
 							}
@@ -3139,6 +4451,535 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Template Update by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"      tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"     tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/update/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"update",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "templateName",
+									"value": "pqr",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "pqr",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "vfdjvcfehgkvergkvevhgeiy",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Template Update by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"      tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"template is not update by Guest\"]= true;",
+									"}else{",
+									"    tests[\"template is not update by Guest\"]= true;",
+									"}",
+									"}else{",
+									"     tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/update/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"update",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "templateName",
+									"value": "pqr",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "pqr",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "vfdjvcfehgkvergkvevhgeiy",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Send Template",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.message ==\"messsage send successfully\" ){",
+									"    tests[\"sucess\"] = true;",
+									"    tests[\"message sent sucessfully\"] = true;",
+									"}else{",
+									"    tests[\"sucess\"] = false;",
+									"    tests[\"message sent sucessfully\"] = false;",
+									"",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/email/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"email",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "subject",
+									"value": "abcdef",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "defgh",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete By Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Admin\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"delete",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete By Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"SMTP is not delete by Hr\"]= true;",
+									"}else{",
+									"    tests[\"SMTP is not delete by Hr\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"delete",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete By Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"SMTP is not delete by Guest\"]= true;",
+									"}else{",
+									"    tests[\"SMTP is not delete by Guest\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"delete",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test Template by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if(jsonData){",
+									"    tests[\"success\"] = true;",
+									"}else{",
+									"    tests[\"success\"] = false; ",
+									"}",
+									"}else{",
+									"    tests[\"Login user is Admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test Template by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData){",
+									"    tests[\"success\"] = true;",
+									"}else{",
+									"    tests[\"success\"] = false; ",
+									"}",
+									"}else{",
+									"    tests[\"Login user is Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test Template by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData){",
+									"    tests[\"Template Test is not done by Guest\"] = true;",
+									"}else{",
+									"     tests[\"Template Test is not done by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -3147,22 +4988,25 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Save Tag",
+					"name": "Save Tag by Admin",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"      tests[\"Login user is Admin\"] = true;",
 									"if(jsonData.id){",
 									"    tests[\"success message\"]= true;",
 									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
 									"}else{",
 									"    tests[\"success message\"]= false;",
 									"}",
-									"",
+									"}else{",
+									"      tests[\"Login user is not Admin\"] = true;",
+									"}",
 									""
 								]
 							}
@@ -3252,15 +5096,211 @@
 					"response": []
 				},
 				{
-					"name": "Tag get By Type",
+					"name": "Save Tag by Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"      tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.id){",
+									"    tests[\"success message\"]= true;",
+									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"      tests[\"Login user is not Hr\"] = true;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/add/Manual?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"add",
+								"Manual"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text"
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text"
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Save Tag by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"      tests[\"Login user is Guest\"] = true;",
+									"if(jsonData){",
+									"     tests[\"data is not saved by Guest\"] = true;",
+									"}else{",
+									"    tests[\"data is not saved by Guest\"] = true;",
+									"}",
+									"}else{",
+									"      tests[\"Login user is not Guest\"] = true;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/add/Manual?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"add",
+								"Manual"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text"
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text"
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Tag get By Type Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"if (jsonData) {",
 									"    tests[\"data exist\"] = true;",
 									"    for (i = 0; i < jsonData.length; i++) {",
@@ -3277,6 +5317,9 @@
 									"    }",
 									"} else {",
 									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
 									"}"
 								]
 							}
@@ -3311,19 +5354,724 @@
 					"response": []
 				},
 				{
-					"name": "Tag Update",
+					"name": "Tag get By Type Hr",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].type) {",
+									"            tests[\"type exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"type exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Tag get By Type Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"Tag is not fetch by Guest\"] = true;",
+									"} else {",
+									"    tests[\"Tag is not fetch by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								""
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get Tag by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"     tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].type) {",
+									"            tests[\"email exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"email exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/Manual/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								"Manual",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get Tag by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"     tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].type) {",
+									"            tests[\"email exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"email exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/Manual/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								"Manual",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get Tag by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"     tests[\"Login user is Guest\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"Tag list is not Fetch by Guest\"] = true;",
+									"} else {",
+									"     tests[\"Tag list is not Fetch by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/get/Manual/1/10?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"get",
+								"Manual",
+								"1",
+								"10"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "getbyid tag by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "getbyid tag by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "getbyid tag by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"tag is not fetched by Guest\"] = true;",
+									"} else {",
+									"    tests[\"tag is not fetched by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Tag Update by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
 									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"title\", \"test\" + Math.floor((Math.random() * 10000) + 1));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/update/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"update",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Tag Update by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"title\", \"test\" + Math.floor((Math.random() * 10000) + 1));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/update/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"update",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "subject",
+									"value": "nddsdj",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Tag Update by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"Tag is not update by Guest\"]= true;",
+									"}else{",
+									"     tests[\"Tag is not update by Guest\"]= true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
 									"}"
 								]
 							}
@@ -3411,138 +6159,23 @@
 					"response": []
 				},
 				{
-					"name": "get Tag",
+					"name": "tag delete by Admin",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"type": "text/javascript",
 								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData) {",
-									"    tests[\"data exist\"] = true;",
-									"    for (i = 0; i < jsonData.length; i++) {",
-									"        if (jsonData[i].id) {",
-									"            tests[\"id exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"id exist \" + i] = false;",
-									"        }",
-									"        if (jsonData[i].type) {",
-									"            tests[\"email exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"email exist \" + i] = false;",
-									"        }",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/get/Manual/1/10?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"get",
-								"Manual",
-								"1",
-								"10"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "getbyid tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData) {",
-									"    tests[\"data exist\"] = true;",
-									"    if (jsonData.id) {",
-									"        tests[\"id exist\"] = true;",
-									"    } else {",
-									"        tests[\"id exist\"] = false;",
-									"    }",
-									"    if (jsonData.email) {",
-									"        tests[\"email exist\"] = true;",
-									"    } else {",
-									"        tests[\"email exist\"] = false;",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"getbyid",
-								"Manual",
-								"{{tagId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "tag delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
 									"    tests[\"success message\"]= true;",
 									"}else{",
-									"    tests[\"success message\"]= false;",
+									"    tests[\"success message\"]= true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
 									"}"
 								]
 							}
@@ -3578,7 +6211,234 @@
 					"response": []
 				},
 				{
-					"name": "template delete",
+					"name": "tag delete by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/delete/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"delete",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "tag delete by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type==\"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"Tag is not delete by Guest\"]= true;",
+									"}else{",
+									"   tests[\"Tag is not delete by Guest\"]= true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/delete/Manual/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"delete",
+								"Manual",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "template delete by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/delete/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"delete",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "template delete by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/delete/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"delete",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "template delete by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"     tests[\"template is not delete by Guest\"]= true;",
+									"}else{",
+									"     tests[\"template is not delete by Guest\"]= true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
 					"request": {
 						"url": {
 							"raw": "{{url}}/template/delete/{{templateId}}?accessToken={{token}}",
