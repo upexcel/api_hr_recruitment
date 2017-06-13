@@ -300,13 +300,13 @@ export class FetchController extends BaseAPIController {
                     let to = data.get("imap_email");
                     let uid = data.get("uid");
                     if (to && uid) {
-                        this._db.Imap.findOne({ email: to })
+                        this._db.Imap.findOne({ where: { email: to } })
                             .then((data) => {
                                 imap.imapCredential(data)
                                     .then((imap) => {
                                         Attachment.getAttachment(imap, uid)
                                             .then((response) => {
-                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
+                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, { new: true }, (err, response) => {
                                                     if (err) {
                                                         res.json({ status: 0, message: err });
                                                     } else {

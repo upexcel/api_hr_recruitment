@@ -1,6 +1,7 @@
 import BaseAPIController from "./BaseAPIController";
 import UserProvider from "../providers/UserProvider.js";
 import LoginProvider from "../providers/UserProvider.js";
+import constant from "../models/constant";
 
 export class UserController extends BaseAPIController {
 
@@ -8,17 +9,22 @@ export class UserController extends BaseAPIController {
     create = (req, res) => {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
-                this._db.User.create(user)
-                    .then((data) => {
-                        res.json({
-                            data
+                if (user.user_type == constant().userType.admin || user.user_type == constant().userType.hr || user.user_type == constant().userType.guest) {
+                    this._db.User.create(user)
+                        .then((data) => {
+                            res.json({
+                                data
+                            })
+                        }, (err) => {
+                            throw new Error(res.json(400, {
+                                meesage: err
+                            }));
                         })
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            meesage: err
-                        }));
-                    })
-            }).catch(this.handleErrorResponse.bind(null, res));
+                } else {
+                    throw new Error("Invalid User Type")
+                }
+            })
+            .catch(this.handleErrorResponse.bind(null, res));
     }
 
 

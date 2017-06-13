@@ -18,7 +18,7 @@ module.exports = {
                 if (res) {
                     mailer.sendMail({
                         from: from,
-                        to: /*email*/"satinder@excellencetechnologies.in",
+                        to: /*email*/ "manish@excellencetechnologies.in",
                         subject: subject,
                         template: text,
                         html: html
