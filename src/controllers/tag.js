@@ -5,12 +5,13 @@ import tag from "../models/constant";
 export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
     save = (req, res) => {
+        var assign = req.body.assign;
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((response) => {
                 this._db.Tag.create(response)
                     .then((data) => {
                         if (data) {
-                            if (data.type == tag().tagType.automatic) {
+                            if (data.type == tag().tagType.automatic && assign == true) {
                                 this._db.Tag.assignTag(data, req.email)
                                     .then((response) => {
                                         res.json(data)

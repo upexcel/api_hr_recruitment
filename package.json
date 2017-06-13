@@ -24,6 +24,7 @@
     "express": "^4.13.3",
     "express-jwt": "^5.3.0",
     "express-validator": "^3.2.0",
+    "google-drive": "0.0.7",
     "googleapis": "^19.0.0",
     "in_array": "^1.1.0",
     "mailparser": "^2.0.5",
