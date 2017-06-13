@@ -23,17 +23,12 @@ export class FetchController extends BaseAPIController {
             if (err) {
                 next(err);
             } else {
-                req.email.find({ tag_id: where }).count()
-                    .then((count) => {
-                        res.json({
-                            data: data,
-                            status: 1,
-                            count: count,
-                            message: "success"
-                        });
-                    }, (err) => {
-                        next(new Error(err))
-                    })
+                res.json({
+                    data: data,
+                    status: 1,
+                    count: req.count,
+                    message: "success"
+                });
             }
         });
     };
@@ -335,6 +330,16 @@ export class FetchController extends BaseAPIController {
                 }
             }
         });
+    }
+
+    findByTagId = (req, res, next, tag_id) => {
+        var where;
+        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+            var where = { $size: 0 }
+        } else {
+            where = { $in: [tag_id] }
+        }
+        this.getCount(req, res, next, where)
     }
 }
 
