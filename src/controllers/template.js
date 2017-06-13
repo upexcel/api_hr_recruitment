@@ -10,7 +10,6 @@ export class TemplateController extends BaseAPIController {
 
     /* Controller for User Register  */
     create = (req, res) => {
-
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
