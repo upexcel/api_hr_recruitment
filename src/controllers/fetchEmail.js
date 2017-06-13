@@ -23,11 +23,17 @@ export class FetchController extends BaseAPIController {
             if (err) {
                 next(err);
             } else {
-                res.json({
-                    data: data,
-                    status: 1,
-                    message: "success"
-                });
+                req.email.find({ tag_id: where }).count()
+                    .then((count) => {
+                        res.json({
+                            data: data,
+                            status: 1,
+                            count: count,
+                            message: "success"
+                        });
+                    }, (err) => {
+                        next(new Error(err))
+                    })
             }
         });
     };
