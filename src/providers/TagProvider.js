@@ -16,10 +16,16 @@ const save = (model, type, validate, body, validationResult) => {
         }
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
-                reject(util.inspect(result.array()));
+                reject(result.array()[0].msg);
             } else {
                 body.type = type;
-                resolve(body);
+                delete body.assign;
+                if (body.template_id == "") {
+                    delete body.template_id;
+                    resolve(body)
+                } else {
+                    resolve(body);
+                }
             }
         });
     });

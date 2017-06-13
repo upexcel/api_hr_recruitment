@@ -19,13 +19,14 @@ export class FetchController extends BaseAPIController {
         }
         req.email.find({
             tag_id: where
-        }).sort({ email_date: -1 }).skip((page - 1) * limit).limit(parseInt(limit)).exec((err, data) => {
+        }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
                 res.json({
                     data: data,
                     status: 1,
+                    count: req.count,
                     message: "success"
                 });
             }
@@ -44,7 +45,8 @@ export class FetchController extends BaseAPIController {
                     }, {
                         "$addToSet": {
                             "tag_id": tag_id
-                        }
+                        },
+                        email_timestamp: new Date().getTime()
                     }).exec((err, data) => {
                         if (err) {
                             next(new Error(err));
@@ -148,9 +150,7 @@ export class FetchController extends BaseAPIController {
     assignMultiple = (req, res, next) => {
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                let {
-                    tag_id
-                } = req.params;
+                let { tag_id } = req.params;
                 this._db.Tag.findOne({
                         where: {
                             id: tag_id
@@ -159,13 +159,13 @@ export class FetchController extends BaseAPIController {
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                req.email.findOneAndUpdate({
-                                    "_id": val
-                                }, {
-                                    "$addToSet": {
-                                        "tag_id": tag_id
-                                    }
-                                }).exec((err) => {
+                                console.log(typeof data.title)
+                                if (data.type == "Default") {
+                                    var where = { "tag_id": [tag_id], "email_timestamp": new Date().getTime() };
+                                } else {
+                                    where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                                }
+                                req.email.findOneAndUpdate({ "_id": val }, where).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
                                     } else {
@@ -229,13 +229,13 @@ export class FetchController extends BaseAPIController {
 
     changeUnreadStatus = (req, res, next) => {
         let { mongo_id } = req.params;
-        let status = Boolean(req.params.status);
+        let status = (req.params.status + '').toLowerCase() === 'true'
         req.email.find({
             _id: mongo_id
         }, (err) => {
             if (err) {
                 next(new Error(err));
-            } else if (status == true) {
+            } else if (status == false) {
                 req.email.update({
                     _id: mongo_id
                 }, {
@@ -265,36 +265,26 @@ export class FetchController extends BaseAPIController {
             .then(() => {
                 var size = _.size(req.body.mongo_id);
                 _.forEach(req.body.mongo_id, (val, key) => {
-                    req.email.findOne({
-                        _id: val
-                    }, (err, data) => {
+                    req.email.findOneAndUpdate({
+                        "_id": val
+                    }, {
+                        "$pull": {
+                            "tag_id": req.params.tag_id
+                        }
+                    }, { new: true }).exec((err, data) => {
                         if (err) {
-                            response.push({
-                                status: 0,
-                                message: err,
-                                array_length: key
-                            });
+                            response.push({ status: 0, message: err, array_length: key });
                         }
                         if (!data) {
-                            response.push({
-                                status: 0,
-                                msg: "not found",
-                                array_length: key
-                            });
+                            response.push({ status: 0, msg: "not found", array_length: key });
                         } else {
-                            data.remove();
-                            response.push({
-                                status: 1,
-                                msg: "delete success",
-                                array_length: key
-                            });
+                            if (!_.size(data.tag_id)) {
+                                data.remove();
+                            }
+                            response.push({ status: 1, msg: "delete success", array_length: key });
                         }
                         if (key == (size - 1)) {
-                            res.json({
-                                status: 1,
-                                message: "success",
-                                data: response
-                            });
+                            res.json({ status: 1, message: "success", data: response });
                         }
                     });
                 });
@@ -308,16 +298,16 @@ export class FetchController extends BaseAPIController {
                 next(new Error(error));
             } else {
                 if (data) {
-                    let to = data.get("to");
+                    let to = data.get("imap_email");
                     let uid = data.get("uid");
                     if (to && uid) {
-                        this._db.Imap.findOne({ email: to })
+                        this._db.Imap.findOne({ where: { email: to } })
                             .then((data) => {
                                 imap.imapCredential(data)
                                     .then((imap) => {
                                         Attachment.getAttachment(imap, uid)
                                             .then((response) => {
-                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, (err, response) => {
+                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, { new: true }, (err, response) => {
                                                     if (err) {
                                                         res.json({ status: 0, message: err });
                                                     } else {
@@ -338,6 +328,16 @@ export class FetchController extends BaseAPIController {
                 }
             }
         });
+    }
+
+    findByTagId = (req, res, next, tag_id) => {
+        var where;
+        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+            var where = { $size: 0 }
+        } else {
+            where = { $in: [tag_id] }
+        }
+        this.getCount(req, res, next, where)
     }
 }
 

@@ -5,19 +5,32 @@ import tag from "../models/constant";
 export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
     save = (req, res) => {
+        var assign = req.body.assign;
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
-            .then((tag) => {
-                this._db.Tag.create(tag)
+            .then((response) => {
+                this._db.Tag.create(response)
                     .then((data) => {
-                        res.json({
-                            data
-                        })
+                        if (data) {
+                            if (data.type == tag().tagType.automatic && assign == true) {
+                                this._db.Tag.assignTag(data, req.email)
+                                    .then((response) => {
+                                        res.json(data)
+                                    }, (err) => {
+                                        throw new Error(res.json(400, {
+                                            message: err
+                                        }))
+                                    });
+                            } else {
+                                res.json(data)
+                            }
+                        } else {
+                            res.status(500).send({ message: "Tag is not Added" })
+                        }
                     }, (err) => {
-                        throw new Error(res.json(400, {
-                            error: err
-                        }));
+                        res.status(500).json({ message: err })
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
+
     }
 
 
@@ -48,11 +61,20 @@ export class ImapController extends BaseAPIController {
                     }
                 })
                 .then((docs) => {
-                    this.handleSuccessResponse(res, null);
+                    if (docs) {
+                        req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
+                            .then((data) => {
+                                this.handleSuccessResponse(res, null);
+                            })
+                            .catch(this.handleErrorResponse.bind(null, res));
+                    } else {
+                        next(res.status(400).send({ message: "Invalid tagId" }));
+                    }
                 }).catch(this.handleErrorResponse.bind(null, res));
         } else {
             next(new Error("Invalid Type"));
         }
+
     }
 
     /* Get Imap data */
@@ -63,7 +85,8 @@ export class ImapController extends BaseAPIController {
                     limit: parseInt(req.params.limit),
                     where: {
                         type: req.params.type
-                    }
+                    },
+                    order: '`id` DESC'
                 })
                 .then(res.json.bind(res))
                 .catch(this.handleErrorResponse.bind(null, res));
@@ -74,7 +97,7 @@ export class ImapController extends BaseAPIController {
 
     /* Get all tag */
     getAllTag = (req, res) => {
-        this._db.Tag.findAll()
+        this._db.Tag.findAll({ order: '`id` DESC' })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }

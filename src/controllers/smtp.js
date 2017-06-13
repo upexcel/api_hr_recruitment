@@ -18,7 +18,7 @@ export class SmtpController extends BaseAPIController {
                         })
                     }, (err) => {
                         throw new Error(res.json(400, {
-                            error: err
+                            message: "Data Already Saved"
                         }));
                     })
             })
@@ -59,7 +59,8 @@ export class SmtpController extends BaseAPIController {
     getSmtp = (req, res) => {
         this._db.Smtp.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
-                limit: parseInt(req.params.limit)
+                limit: parseInt(req.params.limit),
+                order: '`id` DESC'
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
@@ -73,7 +74,7 @@ export class SmtpController extends BaseAPIController {
 
     /* test smtp by email*/
     testSmtp = (req, res) => {
-        mail.sendMail(req.params.email, constant().smtp.subject, constant().smtp.text, constant().smtp.from, constant().smtp.html)
+        this._db.Smtp.testSmtp(req.params.email)
             .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -81,7 +82,7 @@ export class SmtpController extends BaseAPIController {
 
     /* change smtp status*/
     changeStatus = (req, res) => {
-        this._db.Smtp.smtpTest(req.params.email)
+        this._db.Smtp.changeStatus(req.params.email)
             .then((response) => { res.json(response) })
             .catch(this.handleErrorResponse.bind(null, res));
     }

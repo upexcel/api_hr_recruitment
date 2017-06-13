@@ -6,6 +6,11 @@ export default function(sequelize, DataTypes) {
     }, {
         timestamps: true,
         freezeTableName: true,
+        allowNull: true,
+
+        associate: (models) => {
+            Template.hasOne(models.Tag, { foreignKey: 'template_id' })
+        }
     });
     return Template;
 }

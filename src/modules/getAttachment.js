@@ -4,6 +4,8 @@ import fs from "fs";
 import base64 from "base64-stream";
 import config from "../config.json";
 import google from "googleapis";
+import googleDrive from 'google-drive'
+
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
 oauth2Client.setCredentials({
@@ -23,16 +25,16 @@ var self = module.exports = {
             function openInbox(cb) {
                 imap.openBox("INBOX", true, cb);
             }
-            imap.once("ready", () => {
-                openInbox(() => {
+            imap.once("ready", function() {
+                openInbox(function() {
                     var f = imap.fetch(uid, {
                         bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                         struct: true
                     });
-                    f.on("message", (msg, seqno) => {
+                    f.on("message", function(msg, seqno) {
                         var prefix = "(#" + seqno + ") ";
-                        msg.once("attributes", (attrs) => {
-                            var attachments = self.findAttachmentParts(attrs.struct);
+                        msg.once("attributes", function(attrs) {
+                            const attachments = self.findAttachmentParts(attrs.struct);
                             var len = attachments.length,
                                 uid = attrs.uid,
                                 flag = attrs.flags;
@@ -44,9 +46,9 @@ var self = module.exports = {
                                 });
                             }
                             if (attachments[0] == null) {
-                                resolve(attachments);
+                                resolve(attachments, uid, flag);
                             } else {
-                                f.on("message", self.buildAttMessageFunction(attachment, uid, flag, (err, response) => {
+                                f.on("message", self.buildAttMessage(attachment, uid, flag, (err, response) => {
                                     if (err) {
                                         reject(err);
                                     } else {
@@ -55,8 +57,8 @@ var self = module.exports = {
                                 }))
                             }
                         });
-                        msg.once("end", () => {
-                            console.log(prefix + "Finished");
+                        msg.once("end", function() {
+                            console.log("Finished");
                         });
                     });
                     f.once("error", (err) => {
@@ -78,6 +80,7 @@ var self = module.exports = {
         })
 
     },
+
     findAttachmentParts: function(struct, attachments) {
         attachments = attachments || [];
         var len = struct.length;
@@ -90,51 +93,63 @@ var self = module.exports = {
         }
         return attachments;
     },
-    buildAttMessageFunction: function(attachment, uid, flag, callback) {
-        var filename = attachment.disposition.params.filename;
+
+    buildAttMessage: function(attachment, uid, flag, callback) {
+        var filename = attachment.params.name;
         var encoding = attachment.encoding;
         var filepath = path.join(__dirname, "/uploads/", filename);
-        return (msg, seqno) => {
-            var prefix = "(#" + seqno + ") ";
-            msg.on("body", (stream) => {
+
+        return function(msg, seqno) {
+            self.filesave(msg, filepath, filename, encoding)
+                .then((fs) => {
+                    fs.readFile(filepath, {
+                        encoding: "utf8"
+                    }, function(error, data) {
+                        var fileMetadata = {
+                            title: filename,
+                        };
+                        var media = {
+                            body: data
+                        };
+                        drive.files.insert({
+                            resource: fileMetadata,
+                            media: media,
+                            fields: "id"
+                        }, function(err, file) {
+                            if (!err) {
+                                var attachment_file = [{
+                                    name: attachment.disposition.params.filename,
+                                    link: "https://drive.google.com/file/d/" + file.id + "/view"
+                                }];
+                                callback('', attachment_file);
+                            } else {
+                                console.log(err);
+                            }
+                        });
+                    });
+                })
+        }
+    },
+    filesave: function(msg, filepath, filename, encoding) {
+        return new Promise((resolve, reject) => {
+            msg.on("body", function(stream) {
                 var writeStream = fs.createWriteStream(filepath);
+                writeStream.on("finish", function() {
+                    fs.readFile(filename, {
+                        encoding: "utf8"
+                    }, function() {});
+                });
                 if (encoding === "BASE64") {
                     stream.pipe(base64.decode()).pipe(writeStream);
+                    resolve(fs);
                 } else {
                     stream.pipe(writeStream);
+                    resolve(fs)
                 }
-                fs.readFile(filepath, {
-                    encoding: "utf8"
-                }, (error, data) => {
-                    var fileMetadata = {
-                        title: filename
-                    };
-                    var media = {
-                        body: data
-                    };
-                    drive.files.insert({
-                        resource: fileMetadata,
-                        media: media,
-                        fields: "id"
-                    }, (err, file) => {
-                        if (!err) {
-                            var attachment_file = [{
-                                name: attachment.disposition.params.filename,
-                                link: "https://drive.google.com/file/d/" + file.id + "/view"
-                            }];
-                            callback('', attachment_file);
-                        } else {
-                            callback(err);
-                        }
-                    });
-                });
-                fs.unlink(filepath, () => {
-                    console.log("success");
-                });
+            })
+            msg.once("end", function() {
+                console.log("Finished ");
             });
-            msg.once("end", () => {
-                console.log(prefix + "Finished attachment %s", filename);
-            });
-        };
+        })
     }
 }

@@ -4,17 +4,19 @@ export default function() {
             default: "Default",
             manual: "Manual",
             automatic: "Automatic",
+            genuine: "Genuine Applicant"
         },
         userType: {
             admin: "Admin",
             guest: "Guest",
-            hr: "HR",
+            hr: "Hr",
         },
         smtp: {
             subject: "Smtp test",
             from: "noreply@excellencetechnologies.in",
             html: "Smtp test successfully",
-            text: "Template"
+            text: "Template",
+            passwordMessage: 'New Password Generated'
         }
     };
     return constant;

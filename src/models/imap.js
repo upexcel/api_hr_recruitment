@@ -7,11 +7,18 @@ export default function(sequelize, DataTypes) {
             unique: true,
         },
         password: DataTypes.STRING,
-        imap_server: DataTypes.STRING,
-        server_port: DataTypes.INTEGER,
+        imap_server: {
+            type: DataTypes.STRING,
+            defaultValue: "imap.gmail.com"
+        },
+        server_port: {
+            type: DataTypes.INTEGER,
+            defaultValue: 993
+        },
         type: {
             type: DataTypes.ENUM,
             values: ["SSL", "TLS"],
+            defaultValue: "TLS"
         },
         status: {
             type: DataTypes.BOOLEAN,
@@ -71,7 +78,7 @@ export default function(sequelize, DataTypes) {
                                             reject(new Error("error"));
                                         }
                                     })
-                                    .catch((error) => { reject(error) });
+                                    .catch((error) => { reject("Invalid Details Can Not Activated") });
                             } else if (result && result.active == true) {
                                 this.update({ active: false }, { where: { email: result.email } })
                                     .then((data) => {

@@ -3,12 +3,13 @@ import TemplateProvider from "../providers/TemplateProvider.js";
 import replace from "../modules/replaceVariable";
 import constant from "../models/constant";
 import mail from "../modules/mail";
+import db from "../db";
+
 
 export class TemplateController extends BaseAPIController {
 
     /* Controller for User Register  */
     create = (req, res) => {
-
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
@@ -35,13 +36,20 @@ export class TemplateController extends BaseAPIController {
 
     /* Template delete */
     deleteTemplate = (req, res) => {
-        this._db.Template.destroy({
-                where: {
-                    id: req.params.templateId
+        db.Tag.findOne({ where: { template_id: req.params.templateId } })
+            .then((data) => {
+                if (!data) {
+                    this._db.Template.destroy({
+                            where: {
+                                id: req.params.templateId
+                            }
+                        })
+                        .then((docs) => {
+                            this.handleSuccessResponse(res, null);
+                        }).catch(this.handleErrorResponse.bind(null, res));
+                } else {
+                    throw new Error("Template is Assigned to Tag")
                 }
-            })
-            .then((docs) => {
-                this.handleSuccessResponse(res, null);
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -49,7 +57,8 @@ export class TemplateController extends BaseAPIController {
     templateList = (req, res) => {
         this._db.Template.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
-                limit: parseInt(req.params.limit)
+                limit: parseInt(req.params.limit),
+                order: '`id` DESC'
             })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
@@ -60,7 +69,7 @@ export class TemplateController extends BaseAPIController {
     templateTest = (req, res) => {
         this._db.Template.findById(req.params.templateId)
             .then((data) => {
-                replace.filter(data.body)
+                replace.templateTest(data.body)
                     .then(res.json.bind(res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -70,8 +79,16 @@ export class TemplateController extends BaseAPIController {
     templateEmail = (req, res) => {
         TemplateProvider.templateEmail(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
-                mail.sendMail(req.params.email, template.subject, constant().smtp.text, constant().smtp.from, template.body)
-                    .then((response) => { res.json(response) })
+                this._db.Smtp.findOne({ where: { status: true } })
+                    .then((data) => {
+                        if (data) {
+                            mail.sendMail(req.params.email, template.subject, constant().smtp.text, data.email, template.body)
+                                .then((response) => { res.json(response) })
+                        } else {
+                            throw new Error("Not Active Smtp Email is found")
+                        }
+                    })
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
