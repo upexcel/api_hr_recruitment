@@ -15,7 +15,8 @@ export default function() {
             subject: "Smtp test",
             from: "noreply@excellencetechnologies.in",
             html: "Smtp test successfully",
-            text: "Template"
+            text: "Template",
+            passwordMessage: 'New Password Generated'
         }
     };
     return constant;

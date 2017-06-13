@@ -4676,159 +4676,6 @@
 					"response": []
 				},
 				{
-					"name": "Test Template by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
-									"if(jsonData){",
-									"    tests[\"success\"] = true;",
-									"}else{",
-									"    tests[\"success\"] = false; ",
-									"}",
-									"}else{",
-									"    tests[\"Login user is Admin\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"template",
-								"test",
-								"{{templateId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Test Template by Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"if(jsonData){",
-									"    tests[\"success\"] = true;",
-									"}else{",
-									"    tests[\"success\"] = false; ",
-									"}",
-									"}else{",
-									"    tests[\"Login user is Hr\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"template",
-								"test",
-								"{{templateId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Test Template by Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if(jsonData){",
-									"    tests[\"Template Test is not done by Guest\"] = true;",
-									"}else{",
-									"     tests[\"Template Test is not done by Guest\"] = true;",
-									"}",
-									"}else{",
-									"    tests[\"Login user is Guest\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"template",
-								"test",
-								"{{templateId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "SMTP Delete By Admin",
 					"event": [
 						{
@@ -4975,6 +4822,159 @@
 							"variable": []
 						},
 						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test Template by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if(jsonData){",
+									"    tests[\"success\"] = true;",
+									"}else{",
+									"    tests[\"success\"] = false; ",
+									"}",
+									"}else{",
+									"    tests[\"Login user is Admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test Template by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData){",
+									"    tests[\"success\"] = true;",
+									"}else{",
+									"    tests[\"success\"] = false; ",
+									"}",
+									"}else{",
+									"    tests[\"Login user is Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Test Template by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData){",
+									"    tests[\"Template Test is not done by Guest\"] = true;",
+									"}else{",
+									"     tests[\"Template Test is not done by Guest\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/test/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"test",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
 						"header": [],
 						"body": {},
 						"description": ""

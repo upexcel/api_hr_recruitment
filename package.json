@@ -39,6 +39,7 @@
     "nodemailer-express-handlebars": "^2.0.0",
     "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^1.11.0",
+    "password-generator": "^2.1.0",
     "resource-router-middleware": "^0.6.0",
     "sequelize": "^3.30.2",
     "util": "^0.10.3"
