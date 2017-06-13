@@ -1,4 +1,8 @@
 import jwt from "jsonwebtoken";
+import generatePassword from "password-generator";
+import constant from "../models/constant";
+import mail from "../modules/mail";
+import crypto from "crypto";
 
 export default function(sequelize, DataTypes) {
     const User = sequelize.define("USER", {
@@ -61,8 +65,25 @@ export default function(sequelize, DataTypes) {
                             }
                         });
                 });
+            },
+            forgotPassword(email) {
+                return new Promise((resolve, reject) => {
+                    var new_password = generatePassword();
+                    var new_pass = crypto.createHash("sha256").update(new_password).digest("base64");
+                    this.update({ password: new_pass }, { where: { email: email } })
+                        .then((docs) => {
+                            if (docs && docs[0]) {
+                                new_password = `your new password is : ${new_password}`;
+                                mail.sendMail(email, constant().smtp.passwordMessage, constant().smtp.text, constant().smtp.from, new_password)
+                                    .then((response) => {
+                                        resolve({ message: "Password Updated. Check your email for new password." })
+                                    }).catch((error) => { reject(error) });
+                            } else {
+                                reject("update failed");
+                            }
+                        }, (err) => { reject(err) })
+                })
             }
-
         },
     });
     return User;
