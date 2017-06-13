@@ -85,6 +85,7 @@ module.exports = {
                                                                 });
                                                                 msg.once("end", function() {
                                                                     parser.end()
+                                                                    console.log(headers)
                                                                     var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
                                                                         from = hash1.substring(0, hash1.lastIndexOf("<"));
                                                                     var to = headers.to;
