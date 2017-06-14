@@ -8,17 +8,17 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { keyword, tag_Name } = req.body;
+        let { email, subject, tag_Name } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
-        } else if (keyword && tag_Name) {
-            where = { $or: [{ 'sender_mail': req.body.keyword.toLowerCase(), 'tag_id': req.body.tag_Name }, { "subject": { '$regex': req.body.keyword }, 'tag_id': req.body.tag_Name }] }
-        } else if (keyword) {
-            where = { $or: [{ 'sender_mail': req.body.keyword.toLowerCase() }, { "subject": { '$regex': req.body.keyword } }] }
+        } else if ((email && tag_Name) || (subject && tag_Name)) {
+            where = { $or: [{ 'sender_mail': req.body.email.toLowerCase(), 'tag_id': req.body.tag_Name }, { "subject": { '$regex': req.body.subject }, 'tag_id': req.body.tag_Name }] }
+        } else if (email || subject) {
+            where = { $or: [{ 'sender_mail': req.body.email.toLowerCase() }, { "subject": { '$regex': req.body.subject } }] }
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
