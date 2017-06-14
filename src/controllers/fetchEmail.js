@@ -8,18 +8,21 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
+        let { email, subject, tag_Name } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            where = { $size: 0 }
+            where = { tag_id: { $size: 0 } };
+        } else if ((subject && tag_Name) || (email && tag_Name)) {
+            where = { $or: [{ 'sender_mail': email, 'tag_id': tag_Name }, { "subject": new RegExp('^' + subject + '$', "i"), 'tag_id': tag_Name }] }
+        } else if (subject || email) {
+            where = { $or: [{ 'sender_mail': email }, { 'subject': new RegExp('^' + subject + '$', "i") }] }
         } else {
-            where = { $in: [tag_id] }
+            where = { tag_id: { $in: [tag_id] } }
         }
-        req.email.find({
-            tag_id: where
-        }, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        req.email.find(where, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -31,7 +34,7 @@ export class FetchController extends BaseAPIController {
                 });
             }
         });
-    };
+    }
 
     assignTag = (req, res, next) => {
         let { tag_id, mongo_id } = req.params;
@@ -159,7 +162,6 @@ export class FetchController extends BaseAPIController {
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                console.log(typeof data.title)
                                 if (data.type == "Default") {
                                     var where = { "tag_id": [tag_id], "email_timestamp": new Date().getTime() };
                                 } else {
@@ -339,6 +341,7 @@ export class FetchController extends BaseAPIController {
         }
         this.getCount(req, res, next, where)
     }
+
 }
 
 const controller = new FetchController();
