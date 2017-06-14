@@ -61,7 +61,7 @@ export default function(sequelize, DataTypes) {
                     email.find({})
                         .then((data) => {
                             _.map(data, (val, key) => {
-                                if ((val.subject.match(new RegExp(tag.title, 'gi'))) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime())) {
+                                if ((val.subject.match(new RegExp(tag.title, 'gi'))) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime()) || (email.match(new RegExp(val.email, 'gi')))) {
                                     email.findOneAndUpdate({
                                             "_id": val._id
                                         }, {
