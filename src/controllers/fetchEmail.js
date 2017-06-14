@@ -8,18 +8,21 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
+        let { keyword, tag_Name } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            where = { $size: 0 }
+            where = { tag_id: { $size: 0 } };
+        } else if (keyword && tag_Name) {
+            where = { $or: [{ 'sender_mail': req.body.keyword.toLowerCase(), 'tag_id': req.body.tag_Name }, { "subject": { '$regex': req.body.keyword }, 'tag_id': req.body.tag_Name }] }
+        } else if (keyword) {
+            where = { $or: [{ 'sender_mail': req.body.keyword.toLowerCase() }, { "subject": { '$regex': req.body.keyword } }] }
         } else {
-            where = { $in: [tag_id] }
+            where = { tag_id: { $in: [tag_id] } }
         }
-        req.email.find({
-            tag_id: where
-        }, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        req.email.find(where, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
@@ -31,7 +34,7 @@ export class FetchController extends BaseAPIController {
                 });
             }
         });
-    };
+    }
 
     assignTag = (req, res, next) => {
         let { tag_id, mongo_id } = req.params;
@@ -337,34 +340,6 @@ export class FetchController extends BaseAPIController {
             where = { $in: [tag_id] }
         }
         this.getCount(req, res, next, where)
-    }
-
-
-    // search ...
-    search = (req, res, next) => {
-        if (req.body.tag) {
-            req.email.find({
-                    $or: [{ 'sender_mail': req.body.keyword.toLowerCase(), 'tag_id': tag_id }, { "subject": { '$regex': req.body.keyword }, 'tag_id': tag_id }]
-                })
-                .then((data) => {
-                    if (data[0]) {
-                        res.json(data)
-                    } else {
-                        next(res.status(400).send({ message: "Invalid Details" }));
-                    }
-                }).catch(this.handleErrorResponse.bind(null, res));
-        } else {
-            req.email.find({
-                    $or: [{ 'sender_mail': req.body.keyword.toLowerCase() }, { "subject": { '$regex': req.body.keyword } }]
-                })
-                .then((data) => {
-                    if (data[0]) {
-                        res.json(data)
-                    } else {
-                        next(res.status(400).send({ message: "Invalid Details" }));
-                    }
-                }).catch(this.handleErrorResponse.bind(null, res));
-        }
     }
 
 }
