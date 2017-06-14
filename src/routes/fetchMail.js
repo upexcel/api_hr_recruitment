@@ -26,6 +26,9 @@ export default (app) => {
     /* Route for save email attachment  */
     app.route("/email/mailAttachment/:mongo_id").put(auth.requiresLogin, fetch_email.mailAttachment);
 
+    /* route of searching*/
+    app.route("/email/search").post(auth.requiresLogin, fetch_email.search);
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 
