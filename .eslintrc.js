@@ -1,13 +1,13 @@
 module.exports = {
     "env": {
         "browser": true,
-        // "commonjs": true,
+        "commonjs": true,
         "es6": true,
         "node": true,
         "jquery": true
     },
     "extends": "eslint:recommended",
-     "parser": "babel-eslint",
+    "parser": "babel-eslint",
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true

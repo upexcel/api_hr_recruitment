@@ -1,24 +1,23 @@
 import imap from "../controllers/imap";
 import auth from "../middleware/auth";
-// import baseController from '../controllers/BaseAPIController'
 
 export default (app) => {
     /* Route for imap save  */
-	app.route("/imap/save").post(auth.requiresAdmin, imap.save);
+    app.route("/imap/save").post(auth.requiresAdmin, imap.save);
 
     /* Route for imap update  */
-	app.route("/imap/update/:id").put(auth.requiresAdmin, imap.update);
+    app.route("/imap/update/:imapId").put(auth.requiresAdmin, imap.update);
 
     /* Route for imap Delete */
-	app.route("/imap/delete/:id").delete(auth.requiresAdmin, imap.deleteImap);
+    app.route("/imap/delete/:imapId").delete(auth.requiresAdmin, imap.deleteImap);
 
     /* Route for fetch Imap Data */
-	app.route("/imap/get/:page").get(auth.requiresAdmin, imap.getImap);
+    app.route("/imap/get/:page/:limit").get(auth.requiresAdmin, imap.getImap);
 
-	/* Route for fetch Imap Data */
-	app.route("/imap/statusActive").post(auth.requiresAdmin, imap.statusActive);
+    /* Route for fetch Imap Data */
+    app.route("/imap/statusActive/:email").put(auth.requiresAdmin, imap.statusActive);
 
-	app.param("id", imap.idResult);
+    app.param("imapId", imap.idResult);
 
-	return app;
+    return app;
 };

@@ -1,23 +1,36 @@
-var mongoose = require("mongoose");
-var conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
-var DB = require("../inbox");
-var CronJob = require("cron").CronJob;
+import mongoose from "mongoose";
+let conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
+import cronService from "../service/cron.js";
 // the middleware function
 module.exports = function() {
 
-	// create schema
-	var emailSchema = mongoose.Schema({	}, {
-		collection: "emailStored",
-		strict: false,
-	});
-	var email = conn.model("EMAIL", emailSchema);
+    // create schema
+    let emailSchema = mongoose.Schema({
+        email_id: { type: Number },
+        from: { type: String },
+        to: { type: String },
+        sender_mail: { type: String },
+        date: { type: Date },
+        email_date: { type: Date },
+        email_timestamp: { type: String },
+        subject: { type: String },
+        unread: { type: Boolean },
+        answered: { type: Boolean },
+        uid: { type: Number },
+        body: { type: String },
+        tag_id: { type: Array },
+        imap_email: { type: String },
+        genuine_applicant: { type: String },
+        attachment: { type: Array }
+    }, {
+        collection: "emailStored",
+        strict: true,
+    });
+    let email = conn.model("EMAIL", emailSchema);
 
-	new CronJob("*/15 * * * *", function() {
-		DB.get_schema(email); // running this function every 15 min
-	}, null, true);
-
-	return function(req, res, next) {
-		req.email = email;
-		next();
-	};
+    cronService.cron(email)
+    return function(req, res, next) {
+        req.email = email;
+        next();
+    };
 };
