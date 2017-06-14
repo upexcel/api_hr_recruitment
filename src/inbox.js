@@ -89,16 +89,32 @@ module.exports = {
                                                                 });
                                                                 msg.once("end", function() {
                                                                     parser.end()
-                                                                    var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
+                                                                    var hash1;
+                                                                    var from;
+                                                                    var to;
+                                                                    var hash;
+                                                                    var sender_mail;
+                                                                    var date;
+                                                                    var email_date;
+                                                                    var email_timestamp;
+                                                                    var subject;
+                                                                    if (headers.from) {
+                                                                        hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\""));
                                                                         from = hash1.substring(0, hash1.lastIndexOf("<"));
-                                                                    var to = headers.to;
-                                                                    var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
+                                                                        to = headers.to;
+                                                                        hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1);
                                                                         sender_mail = hash.substring(0, hash.lastIndexOf(">"));
-                                                                    var date = headers.date.toString(),
-                                                                        email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
-                                                                        email_timestamp = new Date(date).getTime(),
-                                                                        subject = headers.subject.toString(),
-                                                                        unread = !(in_array('\\Seen', flag)),
+
+                                                                    }
+                                                                    if (headers.date) {
+                                                                        date = headers.date.toString();
+                                                                        email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
+                                                                        email_timestamp = new Date(date).getTime();
+                                                                    }
+                                                                    if (headers.subject) {
+                                                                        subject = headers.subject.toString();
+                                                                    }
+                                                                    var unread = !(in_array('\\Seen', flag)),
                                                                         answered = in_array("\\Answered", flag);
                                                                     parser.once("end", function() {
                                                                         automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
@@ -199,16 +215,21 @@ module.exports = {
                                             uid: 1
                                         }).limit(1).exec(function(err, resp) {
                                             let date = '';
+                                            let dateFrom = '';
                                             if (err) {
                                                 console.log(err)
                                             } else {
                                                 var row = resp[0];
-                                                if (row && row.get("email_date")) {
-                                                    date = moment(new Date(row.get("email_date"))).format("MMM DD, YYYY");
+                                                if (row && row.get("date")) {
+                                                    date = moment(new Date(row.get("date"))).format("MMM DD, YYYY");
+                                                    dateFrom = moment(date).subtract(1, 'months').format('MMM DD, YYYY');
                                                 } else {
                                                     date = moment(new Date()).format("MMM DD, YYYY");
+                                                    dateFrom = moment(date).subtract(1, 'months').format('MMM DD, YYYY');
                                                 }
-                                                imap.search(["ALL", ["BEFORE", date]], function(err, results) {
+                                                imap.search(['ALL', ['SINCE', dateFrom],
+                                                    ['BEFORE', date]
+                                                ], function(err, results) {
                                                     if (err) {
                                                         console.log(err)
                                                     } else if (results.length) {
@@ -248,15 +269,31 @@ module.exports = {
                                                             });
                                                             msg.once("end", function() {
                                                                 parser.end()
-                                                                var hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\"")),
+                                                                var hash1;
+                                                                var from;
+                                                                var to;
+                                                                var hash;
+                                                                var sender_mail;
+                                                                var date;
+                                                                var email_date;
+                                                                var email_timestamp;
+                                                                var subject;
+                                                                if (headers.from) {
+                                                                    hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\""));
                                                                     from = hash1.substring(0, hash1.lastIndexOf("<"));
-                                                                var to = headers.to;
-                                                                var hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1),
+                                                                    to = headers.to;
+                                                                    hash = headers.from.toString().substring(headers.from.toString().indexOf("<") + 1);
                                                                     sender_mail = hash.substring(0, hash.lastIndexOf(">"));
-                                                                var date = headers.date.toString(),
-                                                                    email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate(),
-                                                                    email_timestamp = new Date(date).getTime(),
+
+                                                                }
+                                                                if (headers.date) {
+                                                                    date = headers.date.toString();
+                                                                    email_date = new Date(date).getFullYear() + "-" + (new Date(date).getMonth() + 1) + "-" + new Date(date).getDate();
+                                                                    email_timestamp = new Date(date).getTime();
+                                                                }
+                                                                if (headers.subject) {
                                                                     subject = headers.subject.toString();
+                                                                }
                                                                 var unread = !(in_array('\\Seen', flag)),
                                                                     answered = in_array("\\Answered", flag);
                                                                 parser.once("end", function() {
