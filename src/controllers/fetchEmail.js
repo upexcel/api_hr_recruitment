@@ -159,7 +159,6 @@ export class FetchController extends BaseAPIController {
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                console.log(typeof data.title)
                                 if (data.type == "Default") {
                                     var where = { "tag_id": [tag_id], "email_timestamp": new Date().getTime() };
                                 } else {
@@ -342,20 +341,28 @@ export class FetchController extends BaseAPIController {
 
 
     // search ...
-    search = (req, res) => {
+    search = (req, res, next) => {
         if (req.body.tag) {
             req.email.find({
-                    $or: [{ 'from': { '$regex': req.body.keyword }, 'tag_id': tag_id }, { "subject": { '$regex': req.body.keyword }, 'tag_id': tag_id }]
+                    $or: [{ 'sender_mail': req.body.keyword.toLowerCase(), 'tag_id': tag_id }, { "subject": { '$regex': req.body.keyword }, 'tag_id': tag_id }]
                 })
                 .then((data) => {
-                    res.json(data)
+                    if (data[0]) {
+                        res.json(data)
+                    } else {
+                        next(res.status(400).send({ message: "Invalid Details" }));
+                    }
                 }).catch(this.handleErrorResponse.bind(null, res));
         } else {
             req.email.find({
-                    $or: [{ 'from': { '$regex': req.body.keyword } }, { "subject": { '$regex': req.body.keyword } }]
+                    $or: [{ 'sender_mail': req.body.keyword.toLowerCase() }, { "subject": { '$regex': req.body.keyword } }]
                 })
                 .then((data) => {
-                    res.json(data)
+                    if (data[0]) {
+                        res.json(data)
+                    } else {
+                        next(res.status(400).send({ message: "Invalid Details" }));
+                    }
                 }).catch(this.handleErrorResponse.bind(null, res));
         }
     }
