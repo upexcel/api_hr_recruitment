@@ -15,10 +15,10 @@ export class FetchController extends BaseAPIController {
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
-        } else if ((email && tag_Name) || (subject && tag_Name)) {
-            where = { $or: [{ 'sender_mail': req.body.email.toLowerCase(), 'tag_id': req.body.tag_Name }, { "subject": { '$regex': req.body.subject }, 'tag_id': req.body.tag_Name }] }
-        } else if (email || subject) {
-            where = { $or: [{ 'sender_mail': req.body.email.toLowerCase() }, { "subject": { '$regex': req.body.subject } }] }
+        } else if ((subject && tag_Name) || (email && tag_Name)) {
+            where = { $or: [{ 'sender_mail': email, 'tag_id': tag_Name }, { "subject": new RegExp('^' + subject + '$', "i"), 'tag_id': tag_Name }] }
+        } else if (subject || email) {
+            where = { $or: [{ 'sender_mail': email }, { 'subject': new RegExp('^' + subject + '$', "i") }] }
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
