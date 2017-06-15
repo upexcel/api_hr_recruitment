@@ -31,7 +31,7 @@ export class FetchController extends BaseAPIController {
                 res.json({
                     data: data,
                     status: 1,
-                    count: req.count,
+                    count: data.length,
                     message: "success"
                 });
             }
