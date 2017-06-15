@@ -10,15 +10,15 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { type, keyword, tag_Name } = req.body;
+        let { type, keyword } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (type == "email") {
-            where = { $or: [{ 'sender_mail': keyword }, { 'sender_mail': keyword, 'tag_id': tag_Name }] }
+            where = { $or: [{ 'sender_mail': { $regex: keyword, '$options': 'i' } }, { 'sender_mail': { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }] }
         } else if (type == "subject") {
-            where = { $or: [{ 'subject': new RegExp('^' + keyword + '$', "i") }, { "subject": new RegExp('^' + keyword + '$', "i"), 'tag_id': tag_Name }] }
+            where = { $or: [{ 'subject': { $regex: keyword, '$options': 'i' } }, { "subject": { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }] }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
         } else {
@@ -350,8 +350,7 @@ export class FetchController extends BaseAPIController {
         } else {
             where = { $in: [tag_id] }
         }
-        this.getCount
-(req, res, next, where)
+        this.getCount(req, res, next, where)
     }
 
     fetchByButton = (req, res) => {
