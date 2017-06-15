@@ -8,17 +8,17 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { email, subject, tag_Name } = req.body;
+        let { type, keyword, tag_Name } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
         if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
-        } else if ((subject && tag_Name) || (email && tag_Name)) {
-            where = { $or: [{ 'sender_mail': email, 'tag_id': tag_Name }, { "subject": new RegExp('^' + subject + '$', "i"), 'tag_id': tag_Name }] }
-        } else if (subject || email) {
-            where = { $or: [{ 'sender_mail': email }, { 'subject': new RegExp('^' + subject + '$', "i") }] }
+        } else if (type == "email") {
+            where = { $or: [{ 'sender_mail': keyword }, { 'sender_mail': keyword, 'tag_id': tag_Name }] }
+        } else if (type == "subject") {
+            where = { $or: [{ 'subject': new RegExp('^' + keyword + '$', "i") }, { "subject": new RegExp('^' + keyword + '$', "i"), 'tag_id': tag_Name }] }
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
