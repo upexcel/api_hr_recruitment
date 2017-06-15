@@ -18,7 +18,7 @@ var drive = google.drive({
     version: "v2",
     auth: oauth2Client
 });
-
+var filepath = "";
 var self = module.exports = {
     getAttachment: function(imap, uid) {
         return new Promise((resolve, reject) => {
@@ -52,6 +52,9 @@ var self = module.exports = {
                                     if (err) {
                                         reject(err);
                                     } else {
+                                        fs.unlink(filepath, function() {
+                                            console.log("success");
+                                        })
                                         resolve(response);
                                     }
                                 }))
@@ -95,15 +98,14 @@ var self = module.exports = {
     },
 
     buildAttMessage: function(attachment, uid, flag, callback) {
-        var filename = attachment.params.name;
+        var filename = attachment.disposition.params.filename;
         var encoding = attachment.encoding;
-        var filepath = path.join(__dirname, "/uploads/", filename);
-
+        filepath = path.join(__dirname, "/uploads/", filename);
         return function(msg, seqno) {
             self.filesave(msg, filepath, filename, encoding)
                 .then((fs) => {
                     fs.readFile(filepath, {
-                        encoding: "utf8"
+                        encoding: encoding
                     }, function(error, data) {
                         var fileMetadata = {
                             title: filename,
@@ -136,7 +138,7 @@ var self = module.exports = {
                 var writeStream = fs.createWriteStream(filepath);
                 writeStream.on("finish", function() {
                     fs.readFile(filename, {
-                        encoding: "utf8"
+                        encoding: encoding
                     }, function() {});
                 });
                 if (encoding === "BASE64") {
