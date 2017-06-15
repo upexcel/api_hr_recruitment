@@ -3,6 +3,8 @@ import MailProvider from "../providers/MailProvider";
 import Attachment from "../modules/getAttachment";
 import imap from "../service/imap";
 import * as _ from "lodash";
+import inbox from "../inbox";
+
 
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
@@ -13,12 +15,12 @@ export class FetchController extends BaseAPIController {
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            where = { tag_id: { $size: 0 } };
-        } else if (type == "email") {
+        if (type == "email") {
             where = { $or: [{ 'sender_mail': keyword }, { 'sender_mail': keyword, 'tag_id': tag_Name }] }
         } else if (type == "subject") {
             where = { $or: [{ 'subject': new RegExp('^' + keyword + '$', "i") }, { "subject": new RegExp('^' + keyword + '$', "i"), 'tag_id': tag_Name }] }
+        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+            where = { tag_id: { $size: 0 } };
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
@@ -342,6 +344,18 @@ export class FetchController extends BaseAPIController {
         this.getCount(req, res, next, where)
     }
 
+    fetchByButton = (req, res) => {
+        inbox.fetchEmail(req.email, 'apiCall')
+            .then((data) => {
+                req.email.find({}, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).exec((err, response) => {
+                    if (err) {
+                        next(err);
+                    } else {
+                        res.json({ data: response, status: 1, count: req.count, message: "success" });
+                    }
+                })
+            });
+    }
 }
 
 const controller = new FetchController();

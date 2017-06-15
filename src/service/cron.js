@@ -3,10 +3,11 @@ var CronJob = require("cron").CronJob;
 
 export class CronController {
     cron(email) {
-        new CronJob("*/5 * * * *", function() {
-            inbox.fetchEmail(email); // running this function every 15 min
+        new CronJob("*/5 * * * *", function() { // running Cron every 30 min
+            inbox.fetchEmail(email);
             inbox.beforeDateEmail(email);
         }, null, true);
+
     }
 }
 const controller = new CronController();
