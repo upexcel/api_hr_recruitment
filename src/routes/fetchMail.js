@@ -3,7 +3,7 @@ import auth from "../middleware/auth";
 
 export default (app) => {
     /* Route for fetch email from mongoDb  */
-    app.route("/email/fetch/:tag_id/:page/:limit").get(auth.requiresLogin, fetch_email.fetch);
+    app.route("/email/fetch/:tag_id/:page/:limit").put(auth.requiresLogin, fetch_email.fetch);
 
     /* Route for add tag  */
     app.route("/email/assignTag/:tag_id/:mongo_id").put(auth.requiresLogin, fetch_email.assignTag);
