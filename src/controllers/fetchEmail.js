@@ -28,12 +28,21 @@ export class FetchController extends BaseAPIController {
             if (err) {
                 next(err);
             } else {
-                res.json({
-                    data: data,
-                    status: 1,
-                    count: data.length,
-                    message: "success"
-                });
+                if (type) {
+                    res.json({
+                        data: data,
+                        status: 1,
+                        count: data.length,
+                        message: "success"
+                    });
+                } else {
+                    res.json({
+                        data: data,
+                        status: 1,
+                        count: req.count,
+                        message: "success"
+                    });
+                }
             }
         });
     }
@@ -341,7 +350,8 @@ export class FetchController extends BaseAPIController {
         } else {
             where = { $in: [tag_id] }
         }
-        this.getCount(req, res, next, where)
+        this.getCount
+(req, res, next, where)
     }
 
     fetchByButton = (req, res) => {
