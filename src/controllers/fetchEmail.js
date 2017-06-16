@@ -3,22 +3,28 @@ import MailProvider from "../providers/MailProvider";
 import Attachment from "../modules/getAttachment";
 import imap from "../service/imap";
 import * as _ from "lodash";
+import inbox from "../inbox";
+
 
 export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { type, keyword, tag_Name } = req.body;
+        let { type, keyword } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+        if ((type == "email") && (!isNaN(tag_id) == false)) {
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "subject") && (!isNaN(tag_id) == false)) {
+            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "email") && tag_id) {
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+        } else if ((type == "subject") && tag_id) {
+            where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
-        } else if (type == "email") {
-            where = { $or: [{ 'sender_mail': keyword }, { 'sender_mail': keyword, 'tag_id': tag_Name }] }
-        } else if (type == "subject") {
-            where = { $or: [{ 'subject': new RegExp('^' + keyword + '$', "i") }, { "subject": new RegExp('^' + keyword + '$', "i"), 'tag_id': tag_Name }] }
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
@@ -334,14 +340,35 @@ export class FetchController extends BaseAPIController {
 
     findByTagId = (req, res, next, tag_id) => {
         var where;
-        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            var where = { $size: 0 }
+        let { type, keyword } = req.body;
+        if ((type == "email") && (!isNaN(tag_id) == false)) {
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "subject") && (!isNaN(tag_id) == false)) {
+            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "email") && tag_id) {
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+        } else if ((type == "subject") && tag_id) {
+            where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+            where = { tag_id: { $size: 0 } };
         } else {
-            where = { $in: [tag_id] }
+            where = { tag_id: { $in: [tag_id] } }
         }
         this.getCount(req, res, next, where)
     }
 
+    fetchByButton = (req, res) => {
+        inbox.fetchEmail(req.email, 'apiCall')
+            .then((data) => {
+                req.email.find({}, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).exec((err, response) => {
+                    if (err) {
+                        next(err);
+                    } else {
+                        res.json({ data: response, status: 1, count: req.count, message: "success" });
+                    }
+                })
+            });
+    }
 }
 
 const controller = new FetchController();

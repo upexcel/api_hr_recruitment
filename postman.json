@@ -239,11 +239,6 @@
 									"        } else {",
 									"            tests[\"id Found \" + i] = false;",
 									"        }",
-									"        if (jsonData.data[i].email_id) {",
-									"            tests[\"email_id Found \" + i] = true;",
-									"        } else {",
-									"            tests[\"email_id Found \" + i] = false;",
-									"        }",
 									"        if (jsonData.data[i].email_date) {",
 									"            tests[\"email_date Found \" + i] = true;",
 									"        } else {",
@@ -282,7 +277,7 @@
 							],
 							"variable": []
 						},
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"body": {},
 						"description": ""
@@ -4676,159 +4671,6 @@
 					"response": []
 				},
 				{
-					"name": "SMTP Delete By Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Admin\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"delete",
-								"{{smtpId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "SMTP Delete By Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"SMTP is not delete by Hr\"]= true;",
-									"}else{",
-									"    tests[\"SMTP is not delete by Hr\"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Guest\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"delete",
-								"{{smtpId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "SMTP Delete By Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"SMTP is not delete by Guest\"]= true;",
-									"}else{",
-									"    tests[\"SMTP is not delete by Guest\"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Guest\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"delete",
-								"{{smtpId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Test Template by Admin",
 					"event": [
 						{
@@ -4975,6 +4817,159 @@
 							"variable": []
 						},
 						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete By Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Admin\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"delete",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete By Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"SMTP is not delete by Hr\"]= true;",
+									"}else{",
+									"    tests[\"SMTP is not delete by Hr\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"delete",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP Delete By Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"SMTP is not delete by Guest\"]= true;",
+									"}else{",
+									"    tests[\"SMTP is not delete by Guest\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/delete/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"delete",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
 						"header": [],
 						"body": {},
 						"description": ""
