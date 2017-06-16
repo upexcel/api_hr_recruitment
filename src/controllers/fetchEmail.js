@@ -17,15 +17,15 @@ export class FetchController extends BaseAPIController {
         }
         if (!isNaN(tag_id) == false) {
             if (type == "email") {
-                where = { 'sender_mail': { $regex: keyword, '$options': 'i' } }
+                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
             } else {
-                where = { 'subject': { $regex: keyword, '$options': 'i' } }
+                where = { 'subject': { "$regex": keyword, '$options': 'i' } }
             }
         } else if (tag_id) {
             if (type == "email") {
-                where = { 'sender_mail': { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
             } else {
-                where = { "subject": { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
             }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
@@ -347,15 +347,15 @@ export class FetchController extends BaseAPIController {
         let { type, keyword } = req.body;
         if (!isNaN(tag_id) == false) {
             if (type == "email") {
-                where = { 'sender_mail': { $regex: keyword, '$options': 'i' } }
+                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
             } else {
-                where = { 'subject': { $regex: keyword, '$options': 'i' } }
+                where = { 'subject': { "$regex": keyword, '$options': 'i' } }
             }
         } else if (tag_id) {
             if (type == "email") {
-                where = { 'sender_mail': { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
             } else {
-                where = { "subject": { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
             }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
