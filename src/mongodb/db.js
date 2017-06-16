@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import cronService from "../service/cron.js";
 let conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
+import cronService from "../service/cron.js";
 
 // the middleware function
 module.exports = function() {
