@@ -129,15 +129,16 @@ var self = module.exports = {
                 writeStream.on("finish", function() {
                     fs.readFile(filename, {
                         encoding: encoding
-                    }, function() {});
+                    }, function() {
+                        resolve(fs);
+                    });
                 });
                 if (encoding === "BASE64") {
                     stream.pipe(base64.decode()).pipe(writeStream);
-                    resolve(fs);
                 } else {
                     stream.pipe(writeStream);
-                    resolve(fs)
                 }
+
             })
             msg.once("end", function() {
                 console.log("Finished ");
@@ -145,20 +146,17 @@ var self = module.exports = {
         })
     },
     driveUpload: function(filepath, filename) {
-        console.log("========================")
-        console.log(filepath, filename)
-        console.log("========================")
         return new Promise((resolve, reject) => {
-            console.log(mime.lookup(filepath))
-                // var drive = google.drive({ version: 'v3', auth: oauth2Client });
-            let readStream = fs.createReadStream(filepath)
-            readStream.on('data', function(doc) {
-                var req = drive.files.insert({
+            var drive = google.drive({ version: 'v3', auth: oauth2Client });
+            fs.readFile(filepath, (err, result) => {
+                var req = drive.files.create({
                     resource: {
-                        'title': filename,
+                        'name': filename,
+                        mimeType: mime.lookup(filepath)
                     },
                     media: {
-                        body: fs.createReadStream(filepath)
+                        mimeType: mime.lookup(filepath),
+                        body: result
                     },
                     fields: 'id'
                 }, function(err, result) {
@@ -171,11 +169,11 @@ var self = module.exports = {
                         }]
                         fs.unlink(filepath, function() {
                             console.log("success");
-                        })
+                        });
                         resolve(attachment_file)
                     }
                 });
-            });
+            })
         })
     }
 }
