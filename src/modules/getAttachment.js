@@ -103,40 +103,21 @@ var self = module.exports = {
         return function(msg, seqno) {
             self.filesave(msg, filepath, filename, encoding)
                 .then((data) => {
-
                     if (path.extname(filepath) == ".docx") {
                         fs.rename(filepath, replaceExt(filepath, '.doc'), function(err) {
                             if (err) console.log('ERROR: ' + err);
                             filepath = replaceExt(filepath, '.doc');
                             filename = replaceExt(filename, '.doc');
-                            var drive = google.drive({ version: 'v3', auth: oauth2Client });
-                            let readStream = fs.createReadStream(filepath)
-                            readStream.on('data', function(doc) {
-                                var req = drive.files.create({
-                                    resource: {
-                                        name: filename,
-                                        mimeType: mime.lookup(filepath)
-                                    },
-                                    media: {
-                                        mimeType: mime.lookup(filepath),
-                                        body: doc
-                                    }
-                                }, function(err, result) {
-                                    if (err) {
-                                        reject(err)
-                                    } else {
-                                        var attachment_file = [{
-                                            name: attachment.disposition.params.filename,
-                                            link: "https://drive.google.com/file/d/" + result.id + "/view"
-                                        }]
-                                        fs.unlink(filepath, function() {
-                                            console.log("success");
-                                        })
-                                        callback("", attachment_file)
-                                    }
-                                });
-                            });
+                            self.driveUpload(filepath, filename)
+                                .then((data) => {
+                                    callback("", data)
+                                })
                         })
+                    } else {
+                        self.driveUpload(filepath, filename)
+                            .then((data) => {
+                                callback("", data)
+                            })
                     }
                 })
         }
@@ -155,12 +136,45 @@ var self = module.exports = {
                     resolve(fs);
                 } else {
                     stream.pipe(writeStream);
-
                     resolve(fs)
                 }
             })
             msg.once("end", function() {
                 console.log("Finished ");
+            });
+        })
+    },
+    driveUpload: function(filepath, filename) {
+        console.log("========================")
+        console.log(filepath, filename)
+        console.log("========================")
+        return new Promise((resolve, reject) => {
+            console.log(mime.lookup(filepath))
+                // var drive = google.drive({ version: 'v3', auth: oauth2Client });
+            let readStream = fs.createReadStream(filepath)
+            readStream.on('data', function(doc) {
+                var req = drive.files.insert({
+                    resource: {
+                        'title': filename,
+                    },
+                    media: {
+                        body: fs.createReadStream(filepath)
+                    },
+                    fields: 'id'
+                }, function(err, result) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        var attachment_file = [{
+                            name: filename,
+                            link: "https://drive.google.com/file/d/" + result.id + "/view"
+                        }]
+                        fs.unlink(filepath, function() {
+                            console.log("success");
+                        })
+                        resolve(attachment_file)
+                    }
+                });
             });
         })
     }
