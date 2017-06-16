@@ -336,11 +336,11 @@ export class FetchController extends BaseAPIController {
 
     findByTagId = (req, res, next, tag_id) => {
         var where;
-        let { type } = req.body;
+        let { type, keyword } = req.body;
         if (type && (!isNaN(tag_id) == false)) {
-            where = { tag_id: { $size: 0 } };
+            where = { $or: [{ 'sender_mail': { $regex: keyword, '$options': 'i' } }, { 'subject': { $regex: keyword, '$options': 'i' } }] }
         } else if (type && tag_id) {
-            where = { tag_id: tag_id }
+            where = { $or: [{ 'sender_mail': { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }, { "subject": { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }] }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
         } else {
