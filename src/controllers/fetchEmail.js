@@ -15,13 +15,13 @@ export class FetchController extends BaseAPIController {
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if (!isNaN(tag_id) == false) {
+        if (type && (!isNaN(tag_id) == false)) {
             if (type == "email") {
                 where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
             } else {
                 where = { 'subject': { "$regex": keyword, '$options': 'i' } }
             }
-        } else if (tag_id) {
+        } else if (type && tag_id) {
             if (type == "email") {
                 where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
             } else {
@@ -346,6 +346,7 @@ export class FetchController extends BaseAPIController {
         var where;
         let { type, keyword } = req.body;
         if (!isNaN(tag_id) == false) {
+
             if (type == "email") {
                 where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
             } else {
