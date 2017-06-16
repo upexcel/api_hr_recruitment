@@ -7,7 +7,6 @@ export class CronController {
             inbox.fetchEmail(email); // running this function every 15 min
             inbox.beforeDateEmail(email);
         }, null, true);
-
     }
 }
 const controller = new CronController();
