@@ -277,7 +277,7 @@
 							],
 							"variable": []
 						},
-						"method": "GET",
+						"method": "PUT",
 						"header": [],
 						"body": {},
 						"description": ""
