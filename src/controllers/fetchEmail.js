@@ -15,10 +15,10 @@ export class FetchController extends BaseAPIController {
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if (type == "email") {
-            where = { $or: [{ 'sender_mail': { $regex: keyword, '$options': 'i' } }, { 'sender_mail': { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }] }
-        } else if (type == "subject") {
-            where = { $or: [{ 'subject': { $regex: keyword, '$options': 'i' } }, { "subject": { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }] }
+        if (type && (!isNaN(tag_id) == false)) {
+            where = { $or: [{ 'sender_mail': { $regex: keyword, '$options': 'i' } }, { 'subject': { $regex: keyword, '$options': 'i' } }] }
+        } else if (type && tag_id) {
+            where = { $or: [{ 'sender_mail': { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }, { "subject": { $regex: keyword, '$options': 'i' }, 'tag_id': tag_id }] }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
             where = { tag_id: { $size: 0 } };
         } else {
@@ -28,21 +28,12 @@ export class FetchController extends BaseAPIController {
             if (err) {
                 next(err);
             } else {
-                if (type) {
-                    res.json({
-                        data: data,
-                        status: 1,
-                        count: data.length,
-                        message: "success"
-                    });
-                } else {
-                    res.json({
-                        data: data,
-                        status: 1,
-                        count: req.count,
-                        message: "success"
-                    });
-                }
+                res.json({
+                    data: data,
+                    status: 1,
+                    count: req.count,
+                    message: "success"
+                });
             }
         });
     }
@@ -345,10 +336,15 @@ export class FetchController extends BaseAPIController {
 
     findByTagId = (req, res, next, tag_id) => {
         var where;
-        if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-            var where = { $size: 0 }
+        let { type } = req.body;
+        if (type && (!isNaN(tag_id) == false)) {
+            where = { tag_id: { $size: 0 } };
+        } else if (type && tag_id) {
+            where = { tag_id: tag_id }
+        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+            where = { tag_id: { $size: 0 } };
         } else {
-            where = { $in: [tag_id] }
+            where = { tag_id: { $in: [tag_id] } }
         }
         this.getCount(req, res, next, where)
     }

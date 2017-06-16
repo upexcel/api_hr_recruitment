@@ -29,9 +29,7 @@ export default class BaseAPIController {
     }
 
     getCount(req, res, next, where) {
-        req.email.find({
-            tag_id: where
-        }).count().exec((err, data) => {
+        req.email.find(where).count().exec((err, data) => {
             if (err) {
                 next(err);
             } else {
