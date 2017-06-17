@@ -357,16 +357,10 @@ export class FetchController extends BaseAPIController {
         this.getCount(req, res, next, where)
     }
 
-    fetchByButton = (req, res) => {
+    fetchByButton = (req, res, next) => {
         inbox.fetchEmail(req.email, 'apiCall')
             .then((data) => {
-                req.email.find({}, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).exec((err, response) => {
-                    if (err) {
-                        next(err);
-                    } else {
-                        res.json({ data: response, status: 1, count: req.count, message: "success" });
-                    }
-                })
+                res.json({ status: 1, message: "success" });
             });
     }
 }
