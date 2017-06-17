@@ -11,10 +11,22 @@ export class ImapController extends BaseAPIController {
                 this._db.Tag.create(response)
                     .then((data) => {
                         if (data) {
-                            if (data.type == tag().tagType.automatic && assign == true) {
+                            if ((data.type == tag().tagType.automatic) && (assign === true)) {
                                 this._db.Tag.assignTag(data, req.email)
                                     .then((response) => {
-                                        res.json(data)
+                                        req.email.update({
+                                                _id: { $in: response }
+                                            }, {
+                                                "$addToSet": {
+                                                    "tag_id": data.id.toString()
+                                                },
+                                                "email_timestamp": new Date().getTime()
+                                            }, {
+                                                multi: true
+                                            })
+                                            .then((data1) => {
+                                                res.json({ message: "tag assigned sucessfully", data: data })
+                                            })
                                     }, (err) => {
                                         throw new Error(res.json(400, {
                                             message: err
