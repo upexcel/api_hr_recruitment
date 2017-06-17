@@ -15,10 +15,10 @@ export class ImapController extends BaseAPIController {
                             if ((data.type == tag().tagType.automatic) && (assign === "true")) {
                                 this._db.Tag.assignTag(data, req.email)
                                     .then((response) => {
-                                        while (response.length) {
-                                            var id = response.splice(0, 100)
+                                        function assignTag(id) {
+                                            var mongoId = id.splice(0, 100)
                                             req.email.update({
-                                                    _id: { $in: id }
+                                                    _id: { $in: mongoId }
                                                 }, {
                                                     "$addToSet": {
                                                         "tag_id": data.id.toString()
@@ -28,10 +28,14 @@ export class ImapController extends BaseAPIController {
                                                     multi: true
                                                 })
                                                 .then((data1) => {
-                                                    if (!response.length)
+                                                    if (!id.length) {
                                                         res.json({ message: "tag assigned sucessfully", data: data })
+                                                    } else {
+                                                        assignTag(id)
+                                                    }
                                                 })
                                         }
+                                        assignTag(response)
                                     }, (err) => {
                                         throw new Error(res.json(400, {
                                             message: err
