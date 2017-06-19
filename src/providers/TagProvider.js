@@ -22,8 +22,16 @@ const save = (model, type, validate, body, validationResult) => {
                 delete body.assign;
                 if (body.template_id == "") {
                     delete body.template_id;
+                    if ((body.to == "" && body.from == "")) {
+                        delete body.to;
+                        delete body.from;
+                    }
                     resolve(body)
                 } else {
+                    if ((body.to == "" && body.from == "")) {
+                        delete body.to;
+                        delete body.from;
+                    }
                     resolve(body);
                 }
             }
