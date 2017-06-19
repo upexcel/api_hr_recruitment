@@ -220,7 +220,7 @@
 									"",
 									"",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.message && jsonData.message == \"success\") {",
+									"if (jsonData.message && (jsonData.message == \"success\"||jsonData.message == \"No search Found\")) {",
 									"    tests[\"message success\"] = true;",
 									"} else {",
 									"    tests[\"message success\"] = false;",
