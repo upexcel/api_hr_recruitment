@@ -1,6 +1,7 @@
 import BaseAPIController from "./BaseAPIController";
 import TagProvider from "../providers/TagProvider";
 import tag from "../models/constant";
+import _ from 'lodash';
 
 export class ImapController extends BaseAPIController {
     /* Controller for Save Imap Data  */
@@ -11,10 +12,30 @@ export class ImapController extends BaseAPIController {
                 this._db.Tag.create(response)
                     .then((data) => {
                         if (data) {
-                            if (data.type == tag().tagType.automatic && assign == true) {
+                            if ((data.type == tag().tagType.automatic) && (assign === true)) {
                                 this._db.Tag.assignTag(data, req.email)
                                     .then((response) => {
-                                        res.json(data)
+                                        function assignTag(id) {
+                                            var mongoId = id.splice(0, 100)
+                                            req.email.update({
+                                                    _id: { $in: mongoId }
+                                                }, {
+                                                    "$addToSet": {
+                                                        "tag_id": data.id.toString()
+                                                    },
+                                                    "email_timestamp": new Date().getTime()
+                                                }, {
+                                                    multi: true
+                                                })
+                                                .then((data1) => {
+                                                    if (!id.length) {
+                                                        res.json({ message: "tag assigned sucessfully", data: data })
+                                                    } else {
+                                                        assignTag(id)
+                                                    }
+                                                })
+                                        }
+                                        assignTag(response)
                                     }, (err) => {
                                         throw new Error(res.json(400, {
                                             message: err

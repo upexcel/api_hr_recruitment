@@ -60,26 +60,19 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     email.find({})
                         .then((data) => {
+                            var id = []
                             _.map(data, (val, key) => {
-                                if ((val.subject.match(new RegExp(tag.title, 'gi'))) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime()) || (email.match(new RegExp(val.email, 'gi')))) {
-                                    email.findOneAndUpdate({
-                                            "_id": val._id
-                                        }, {
-                                            "$addToSet": {
-                                                "tag_id": tag.id.toString()
-                                            },
-                                            "email_timestamp": new Date().getTime()
-                                        })
-                                        .then((data1) => {
-                                            if (key == (_.size(data) - 1)) {
-                                                resolve('tag assigned Successfully');
-                                            }
-                                        })
+                                if ((val.subject.match(new RegExp(tag.title[0], 'gi'))) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime()) || (val.sender_mail.match(new RegExp(tag.email, 'gi')))) {
+                                    id.push(val._id);
+                                    if (key == (_.size(data) - 1)) {
+                                        resolve(id)
+                                    }
                                 } else {
                                     if (key == (_.size(data) - 1)) {
-                                        resolve('tag assigned Successfully');
+                                        resolve(id)
                                     }
                                 }
+
                             })
                         }, (err) => {
                             reject(err)
