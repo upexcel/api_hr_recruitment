@@ -62,7 +62,7 @@ export default function(sequelize, DataTypes) {
                         .then((data) => {
                             var id = []
                             _.map(data, (val, key) => {
-                                if ((val.subject.match(new RegExp(tag.title, 'gi'))) || (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime()) || (val.sender_mail.match(new RegExp(tag.email, 'gi')))) {
+                                if ((val.subject.match(new RegExp(tag.title, 'gi'))) || ((tag.to && tag.from) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime())) || (val.sender_mail.match(new RegExp(tag.email, 'gi')))) {
                                     id.push(val._id);
                                     if (key == (_.size(data) - 1)) {
                                         resolve(id)
