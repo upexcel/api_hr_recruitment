@@ -60,6 +60,7 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     email.find({})
                         .then((data) => {
+                            console.log(tag)
                             var id = []
                             _.map(data, (val, key) => {
                                 if ((val.subject.match(new RegExp(tag.title, 'gi'))) || ((tag.to.getTime() > 0 && tag.from.getTime() > 0) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime())) || (val.sender_mail.match(new RegExp(tag.email, 'gi')))) {
