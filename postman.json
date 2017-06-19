@@ -1860,15 +1860,13 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/imap/get/1/10?accessToken={{token}}",
+							"raw": "{{url}}/imap/get?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"imap",
-								"get",
-								"1",
-								"10"
+								"get"
 							],
 							"query": [
 								{
@@ -1914,15 +1912,13 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/imap/get/1/10?accessToken={{token}}",
+							"raw": "{{url}}/imap/get?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"imap",
-								"get",
-								"1",
-								"10"
+								"get"
 							],
 							"query": [
 								{
@@ -1968,15 +1964,13 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/imap/get/1/10?accessToken={{token}}",
+							"raw": "{{url}}/imap/get?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"imap",
-								"get",
-								"1",
-								"10"
+								"get"
 							],
 							"query": [
 								{
