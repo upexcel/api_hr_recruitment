@@ -33,14 +33,20 @@ export class FetchController extends BaseAPIController {
                 next(err);
             } else {
                 if (data[0] == null) {
-                    data = "No search Found"
+                    res.json({
+                        data: data,
+                        status: 1,
+                        count: req.count,
+                        message: "No search Found"
+                    });
+                } else {
+                    res.json({
+                        data: data,
+                        status: 1,
+                        count: req.count,
+                        message: "success"
+                    });
                 }
-                res.json({
-                    data: data,
-                    status: 1,
-                    count: req.count,
-                    message: "success"
-                });
             }
         });
     }
