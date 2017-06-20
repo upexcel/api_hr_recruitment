@@ -165,7 +165,7 @@ var self = module.exports = {
                     } else {
                         var attachment_file = [{
                             name: filename,
-                            link: "https://drive.google.com/file/d/" + result.id + "/view"
+                            link: "https://drive.google.com/file/d/" + result.id + "/preview?usp=drivesdk"
                         }]
                         fs.unlink(filepath, function() {
                             console.log("success");
