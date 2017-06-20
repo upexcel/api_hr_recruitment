@@ -147,11 +147,13 @@ var self = module.exports = {
     },
     driveUpload: function(filepath, filename) {
         return new Promise((resolve, reject) => {
+            var folderId = config.folderid;
             var drive = google.drive({ version: 'v3', auth: oauth2Client });
             fs.readFile(filepath, (err, result) => {
                 var req = drive.files.create({
                     resource: {
                         'name': filename,
+                        parents: [folderId],
                         mimeType: mime.lookup(filepath)
                     },
                     media: {
