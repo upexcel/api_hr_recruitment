@@ -22,7 +22,7 @@ module.exports = {
                     .then((data) => {
                         if (data) {
                             _.forEach(data, (val, key) => {
-                                if ((subject.match(new RegExp(val.title, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (email.match(new RegExp(val.email, 'gi'))))) {
+                                if ((subject.match(new RegExp(val.title, 'gi'))) || ((new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (email.match(new RegExp(val.email, 'gi'))))) {
                                     tagId.push(val.id.toString())
                                     template_id.push(val.template_id)
                                     count++
