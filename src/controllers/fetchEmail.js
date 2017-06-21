@@ -33,13 +33,12 @@ export class FetchController extends BaseAPIController {
                 next(err);
             } else {
                 if (data[0] == null) {
-                    var countt = 1;
                     var message = "No Result Found"
                 }
                 res.json({
                     data: data,
                     status: 1,
-                    count: req.count || countt,
+                    count: req.count,
                     message: message || "success"
                 });
             }
