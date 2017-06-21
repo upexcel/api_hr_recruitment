@@ -54,7 +54,7 @@ var self = module.exports = {
                                     if (err) {
                                         reject(err);
                                     } else {
-                                        resolve(response);
+                                        resolve(response)
                                     }
                                 }))
                             }
