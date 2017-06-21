@@ -22,15 +22,9 @@ module.exports = {
                     .then((data) => {
                         if (data) {
                             _.forEach(data, (val, key) => {
-                                if ((subject.match(new RegExp(val.title, 'gi'))) || ((new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (email.match(new RegExp(val.email, 'gi'))))) {
+                                if ((subject.match(new RegExp(val.title, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (email.match(new RegExp(val.email, 'gi'))))) {
                                     tagId.push(val.id.toString())
                                     template_id.push(val.template_id)
-                                    count++
-                                } else {
-                                    ++count;
-                                    if (count == _.size(data) - 1) {
-                                        resolve({ tagId: [] });
-                                    }
                                 }
                             })
                             db.Template.findOne({
@@ -44,7 +38,7 @@ module.exports = {
                                             if (config.boolean === true) {
                                                 mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
                                                     .then((response) => {
-                                                        resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
+                                                        resolve({ message: "Tempate Send Successfully", tagId: tagId })
                                                     })
                                             } else {
                                                 resolve({ message: "Email Not Send ", tagId: tagId })
