@@ -4,6 +4,7 @@ import constant from "../models/constant";
 import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
 import config from "../config"
+
 module.exports = {
     tags: function(subject, email_date, from, email, sender_mail) {
         return new Promise((resolve, reject) => {
@@ -24,12 +25,6 @@ module.exports = {
                                 if ((subject.match(new RegExp(val.title, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (email.match(new RegExp(val.email, 'gi'))))) {
                                     tagId.push(val.id.toString())
                                     template_id.push(val.template_id)
-                                    count++
-                                } else {
-                                    ++count;
-                                    if (count == _.size(data) - 1) {
-                                        resolve({ tagId: [] });
-                                    }
                                 }
                             })
                             db.Template.findOne({
@@ -43,7 +38,7 @@ module.exports = {
                                             if (config.boolean === true) {
                                                 mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
                                                     .then((response) => {
-                                                        resolve({ message: "Tempate Send Successfully", tagId: tagId.toString() })
+                                                        resolve({ message: "Tempate Send Successfully", tagId: tagId })
                                                     })
                                             } else {
                                                 resolve({ message: "Email Not Send ", tagId: tagId })
