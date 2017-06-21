@@ -4,6 +4,7 @@ import constant from "../models/constant";
 import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
 import config from "../config"
+
 module.exports = {
     tags: function(subject, email_date, from, email, sender_mail) {
         return new Promise((resolve, reject) => {
