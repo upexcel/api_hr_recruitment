@@ -69,7 +69,7 @@ module.exports = {
                                                                     var body;
                                                                     parser.on("data", data => {
                                                                         if (data.text) {
-                                                                            var html = data.text.substr(data.text.indexOf("<html>") - 7).substr(7, data.text.substr(data.text.indexOf("<html>") - 7).indexOf('</html>'))
+                                                                            var html = data.text.substr((data.text.indexOf("<html>") - 7) || (data.text.indexOf("<!DOCTYPE html>" - 16) - 7)).substr(7, data.text.substr(data.text.indexOf("<html>") - 7).indexOf('</html>'))
                                                                             var div = data.text.substr(data.text.indexOf("<div") - 5).substr(5, data.text.substr(data.text.indexOf("<div") - 6).indexOf('</div>'));
                                                                         }
                                                                         body = html || div || data.html || data.text;
