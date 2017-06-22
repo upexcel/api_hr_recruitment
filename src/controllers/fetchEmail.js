@@ -10,16 +10,21 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { type, keyword } = req.body;
+        let { type, keyword, selected } = req.body;
         var where = '';
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if ((type == "email") && (!isNaN(tag_id) == false)) {
+        if ((type == "email") && (selected == "") && (!isNaN(tag_id) == false)) {
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "subject") && (selected == "") && (!isNaN(tag_id) == false)) {
+            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "subject") && (!isNaN(tag_id) == false)) {
+        } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "email") && tag_id) {
+        } else
+        if ((type == "email") && tag_id) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
         } else if ((type == "subject") && tag_id) {
             where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
@@ -343,12 +348,17 @@ export class FetchController extends BaseAPIController {
 
     findByTagId = (req, res, next, tag_id) => {
         var where;
-        let { type, keyword } = req.body;
-        if ((type == "email") && (!isNaN(tag_id) == false)) {
+        let { type, keyword, selected } = req.body;
+        if ((type == "email") && (selected == "") && (!isNaN(tag_id) == false)) {
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "subject") && (selected == "") && (!isNaN(tag_id) == false)) {
+            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+        } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "subject") && (!isNaN(tag_id) == false)) {
+        } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "email") && tag_id) {
+        } else
+        if ((type == "email") && tag_id) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
         } else if ((type == "subject") && tag_id) {
             where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
