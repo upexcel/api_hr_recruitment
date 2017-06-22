@@ -15,9 +15,9 @@ export class FetchController extends BaseAPIController {
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if ((type == "email") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
+        if ((type == "email") && (selected == false) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
+        } else if ((type == "subject") && (selected == false) && (!isNaN(tag_id) == false)) {
             where = { 'subject': { "$regex": keyword, '$options': 'i' } }
         } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
@@ -350,9 +350,9 @@ export class FetchController extends BaseAPIController {
     findByTagId = (req, res, next, tag_id) => {
         var where;
         let { type, keyword, selected } = req.body;
-        if ((type == "email") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
+        if ((type == "email") && (selected == false) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
+        } else if ((type == "subject") && (selected == false) && (!isNaN(tag_id) == false)) {
             where = { 'subject': { "$regex": keyword, '$options': 'i' } }
         } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
