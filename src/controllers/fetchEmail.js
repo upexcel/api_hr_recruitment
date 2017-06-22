@@ -33,7 +33,7 @@ export class FetchController extends BaseAPIController {
                 next(err);
             } else {
                 if (data[0] == null) {
-                    var message = "No search Found"
+                    var message = "No Result Found"
                 }
                 res.json({
                     data: data,
