@@ -318,7 +318,7 @@ export class FetchController extends BaseAPIController {
                                     .then((imap) => {
                                         Attachment.getAttachment(imap, uid)
                                             .then((response) => {
-                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $push: { attachment: response } }, { new: true }, (err, response) => {
+                                                req.email.findOneAndUpdate({ _id: req.params.mongo_id }, { $set: { attachment: response } }, { new: true }, (err, response) => {
                                                     if (err) {
                                                         res.json({ status: 0, message: err });
                                                     } else {
