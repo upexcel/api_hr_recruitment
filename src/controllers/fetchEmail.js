@@ -15,9 +15,9 @@ export class FetchController extends BaseAPIController {
         if (!page || !isNaN(page) == false || page <= 0) {
             page = 1;
         }
-        if ((type == "email") && (selected == "") && (!isNaN(tag_id) == false)) {
+        if ((type == "email") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (selected == "") && (!isNaN(tag_id) == false)) {
+        } else if ((type == "subject") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
             where = { 'subject': { "$regex": keyword, '$options': 'i' } }
         } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
@@ -33,6 +33,7 @@ export class FetchController extends BaseAPIController {
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
+
         req.email.find(where, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
@@ -349,9 +350,9 @@ export class FetchController extends BaseAPIController {
     findByTagId = (req, res, next, tag_id) => {
         var where;
         let { type, keyword, selected } = req.body;
-        if ((type == "email") && (selected == "") && (!isNaN(tag_id) == false)) {
+        if ((type == "email") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (selected == "") && (!isNaN(tag_id) == false)) {
+        } else if ((type == "subject") && (selected == "" || null) && (!isNaN(tag_id) == false)) {
             where = { 'subject': { "$regex": keyword, '$options': 'i' } }
         } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
