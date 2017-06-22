@@ -21,6 +21,7 @@ var drive = google.drive({
     auth: oauth2Client
 });
 var filepath = "";
+var attach = [];
 var self = module.exports = {
     getAttachment: function(imap, uid) {
         return new Promise((resolve, reject) => {
@@ -29,6 +30,8 @@ var self = module.exports = {
             }
             imap.once("ready", function() {
                 openInbox(function() {
+                    let a_attachments = '';
+                    let a_attrs = ''
                     var f = imap.fetch(uid, {
                         bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
                         struct: true
@@ -37,27 +40,8 @@ var self = module.exports = {
                         var prefix = "(#" + seqno + ") ";
                         msg.once("attributes", function(attrs) {
                             const attachments = self.findAttachmentParts(attrs.struct);
-                            var len = attachments.length,
-                                uid = attrs.uid,
-                                flag = attrs.flags;
-                            for (var i = 0; i < len; ++i) {
-                                var attachment = attachments[i];
-                                var f = imap.fetch(attrs.uid, {
-                                    bodies: [attachment.partID],
-                                    struct: true
-                                });
-                            }
-                            if (attachments[0] == null) {
-                                resolve(attachments, uid, flag);
-                            } else {
-                                f.on("message", self.buildAttMessage(attachment, uid, flag, (err, response) => {
-                                    if (err) {
-                                        reject(err);
-                                    } else {
-                                        resolve(response)
-                                    }
-                                }))
-                            }
+                            a_attachments = attachments;
+                            a_attrs = attrs;
                         });
                         msg.once("end", function() {
                             console.log("Finished");
@@ -66,9 +50,54 @@ var self = module.exports = {
                     f.once("error", (err) => {
                         reject("Fetch error: " + err);
                     });
+
+                    function saveData(imap, attachments, attrs) {
+                        var uid = attrs.uid;
+                        var flag = attrs.flags;
+                        var length = attachments.length
+                        if (attachments[0] == null) {
+                            resolve(attach)
+                        } else {
+                            var attachment = attachments.splice(0, 1);
+                            console.log(attachment)
+                            var f = imap.fetch(attrs.uid, {
+                                bodies: [attachment[0].partID],
+                                struct: true
+                            });
+                            f.on('message', (msg, seq) => {
+                                msg.on("body", function(stream) {
+                                    var filename = attachment[0].disposition.params.filename;
+                                    var encoding = attachment[0].encoding;
+                                    filepath = path.join(__dirname, "/uploads/", filename);
+                                    self.filesave(stream, filepath, filename, encoding)
+                                        .then((data) => {
+                                            if (path.extname(filepath) == ".docx") {
+                                                fs.rename(filepath, replaceExt(filepath, '.doc'), function(err) {
+                                                    if (err) console.log('ERROR: ' + err);
+                                                    filepath = replaceExt(filepath, '.doc');
+                                                    filename = replaceExt(filename, '.doc');
+                                                    self.driveUpload(filepath, filename)
+                                                        .then((data) => {
+                                                            attach.push(data)
+                                                            saveData(imap, attachments, attrs)
+                                                        })
+                                                })
+                                            } else {
+                                                self.driveUpload(filepath, filename)
+                                                    .then((data) => {
+                                                        attach.push(data)
+                                                        saveData(imap, attachments, attrs)
+                                                    })
+
+                                            }
+                                        })
+                                })
+                            })
+                        }
+                    }
                     f.once("end", () => {
-                        console.log("Done fetching all messages!");
-                        imap.end();
+                        console.log('arun')
+                        saveData(imap, a_attachments, a_attrs)
                     });
                 });
             });
@@ -95,54 +124,24 @@ var self = module.exports = {
         }
         return attachments;
     },
-
-    buildAttMessage: function(attachment, uid, flag, callback) {
-        var filename = attachment.disposition.params.filename;
-        var encoding = attachment.encoding;
-        filepath = path.join(__dirname, "/uploads/", filename);
-        return function(msg, seqno) {
-            self.filesave(msg, filepath, filename, encoding)
-                .then((data) => {
-                    if (path.extname(filepath) == ".docx") {
-                        fs.rename(filepath, replaceExt(filepath, '.doc'), function(err) {
-                            if (err) console.log('ERROR: ' + err);
-                            filepath = replaceExt(filepath, '.doc');
-                            filename = replaceExt(filename, '.doc');
-                            self.driveUpload(filepath, filename)
-                                .then((data) => {
-                                    callback("", data)
-                                })
-                        })
-                    } else {
-                        self.driveUpload(filepath, filename)
-                            .then((data) => {
-                                callback("", data)
-                            })
-                    }
-                })
-        }
-    },
-    filesave: function(msg, filepath, filename, encoding) {
+    filesave: function(stream, filepath, filename, encoding) {
         return new Promise((resolve, reject) => {
-            msg.on("body", function(stream) {
-                var writeStream = fs.createWriteStream(filepath);
-                writeStream.on("finish", function() {
-                    fs.readFile(filename, {
-                        encoding: encoding
-                    }, function() {
-                        resolve(fs);
-                    });
+            // msg.on("body", function(stream) {
+            var writeStream = fs.createWriteStream(filepath);
+            writeStream.on("finish", function() {
+                fs.readFile(filename, {
+                    encoding: encoding
+                }, function() {
+                    resolve(fs);
                 });
-                if (encoding === "BASE64") {
-                    stream.pipe(base64.decode()).pipe(writeStream);
-                } else {
-                    stream.pipe(writeStream);
-                }
-
-            })
-            msg.once("end", function() {
-                console.log("Finished ");
             });
+            if (encoding === "BASE64") {
+                stream.pipe(base64.decode()).pipe(writeStream);
+            } else {
+                stream.pipe(writeStream);
+            }
+
+            // })
         })
     },
     driveUpload: function(filepath, filename) {
@@ -171,8 +170,9 @@ var self = module.exports = {
                         }]
                         fs.unlink(filepath, function() {
                             console.log("success");
+                            resolve(attachment_file)
                         });
-                        resolve(attachment_file)
+
                     }
                 });
             })
