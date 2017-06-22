@@ -21,7 +21,7 @@ export default function(sequelize, DataTypes) {
         hooks: {
             beforeCreate: function(TAG, options) {
                 return new Promise((resolve, reject) => {
-                    this.findOne({ where: { title: { like: "%" + TAG.title + "%" } } })
+                    this.findOne({ where: { title: TAG.title } })
                         .then((docs) => {
                             if (docs) {
                                 reject("This Title Already Exists");

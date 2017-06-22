@@ -16,9 +16,9 @@ export class FetchController extends BaseAPIController {
             page = 1;
         }
         if ((type == "email") && (!isNaN(tag_id) == false)) {
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $size: 0 } }
         } else if ((type == "subject") && (!isNaN(tag_id) == false)) {
-            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+            where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $size: 0 } }
         } else if ((type == "email") && tag_id) {
             where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
         } else if ((type == "subject") && tag_id) {
@@ -28,7 +28,8 @@ export class FetchController extends BaseAPIController {
         } else {
             where = { tag_id: { $in: [tag_id] } }
         }
-        req.email.find(where, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        console.log(where)
+        req.email.find(where, { "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1 }).sort({ email_timestamp: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 next(err);
             } else {
