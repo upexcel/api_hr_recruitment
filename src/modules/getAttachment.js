@@ -25,6 +25,8 @@ var attach = [];
 var self = module.exports = {
     getAttachment: function(imap, uid) {
         return new Promise((resolve, reject) => {
+            attach = [];
+
             function openInbox(cb) {
                 imap.openBox("INBOX", true, cb);
             }
@@ -59,7 +61,6 @@ var self = module.exports = {
                             resolve(attach)
                         } else {
                             var attachment = attachments.splice(0, 1);
-                            console.log(attachment)
                             var f = imap.fetch(attrs.uid, {
                                 bodies: [attachment[0].partID],
                                 struct: true
@@ -96,7 +97,6 @@ var self = module.exports = {
                         }
                     }
                     f.once("end", () => {
-                        console.log('arun')
                         saveData(imap, a_attachments, a_attrs)
                     });
                 });
@@ -126,7 +126,6 @@ var self = module.exports = {
     },
     filesave: function(stream, filepath, filename, encoding) {
         return new Promise((resolve, reject) => {
-            // msg.on("body", function(stream) {
             var writeStream = fs.createWriteStream(filepath);
             writeStream.on("finish", function() {
                 fs.readFile(filename, {
@@ -140,8 +139,6 @@ var self = module.exports = {
             } else {
                 stream.pipe(writeStream);
             }
-
-            // })
         })
     },
     driveUpload: function(filepath, filename) {
@@ -164,10 +161,10 @@ var self = module.exports = {
                     if (err) {
                         reject(err)
                     } else {
-                        var attachment_file = [{
+                        var attachment_file = {
                             name: filename,
                             link: "https://drive.google.com/file/d/" + result.id + "/preview?usp=drivesdk"
-                        }]
+                        }
                         fs.unlink(filepath, function() {
                             console.log("success");
                             resolve(attachment_file)
