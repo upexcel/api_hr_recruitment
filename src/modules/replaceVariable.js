@@ -2,7 +2,7 @@ import db from "../db"
 let date = new Date().getDate() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getFullYear();
 
 module.exports = {
-    filter: function(body, from) {
+    filter: function(body, name) {
         return new Promise((resolve, reject) => {
             db.Variable.findAll({})
                 .then((data) => {
@@ -11,7 +11,7 @@ module.exports = {
                         str = body.replace(data[i].dataValues.variableCode, data[i].dataValues.variableValue)
                         body = str;
                     }
-                    let res = body.replace("#candidate_name", from).replace("#date|MMM Do YY|", date);
+                    let res = body.replace("#candidate_name", name).replace("#date|MMM Do YY|", date);
                     resolve(res);
                 })
         })
