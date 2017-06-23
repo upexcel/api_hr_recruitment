@@ -74,6 +74,12 @@ sequelize.sync().then(() => {
                 db.SystemVariable.create({ variableCode: "#logo" });
             }
         });
+    db.SystemVariable.findOne({ where: { variableCode: "#tag_name" } })
+        .then((id) => {
+            if (!id) {
+                db.SystemVariable.create({ variableCode: "#tag_name" });
+            }
+        });
 });
 
 export default Object.assign({}, db, {

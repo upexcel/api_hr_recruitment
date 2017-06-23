@@ -6,7 +6,7 @@ import replace from "../modules/replaceVariable";
 import config from "../config"
 
 module.exports = {
-    tags: function(subject, email_date, from, email, sender_mail) {
+    tags: function(subject, email_date, name, to, from) {
         return new Promise((resolve, reject) => {
             let count = 0;
             let tagId = [];
@@ -22,7 +22,7 @@ module.exports = {
                     .then((data) => {
                         if (data) {
                             _.forEach(data, (val, key) => {
-                                if ((subject.match(new RegExp(val.title, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (email.match(new RegExp(val.email, 'gi'))))) {
+                                if ((subject.match(new RegExp(val.subject, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (to.match(new RegExp(val.email, 'gi'))))) {
                                     tagId.push(val.id.toString())
                                     template_id.push(val.template_id)
                                 }
@@ -33,10 +33,11 @@ module.exports = {
                                 }
                             }).then((data) => {
                                 if (data != null) {
-                                    replace.filter(data.body, from)
+                                    replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
                                             if (config.boolean === true) {
-                                                mail.sendMail(email, data.subject, constant().smtp.text, sender_mail, html)
+                                                // function(email, subject, text, from, html) 
+                                                mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {
                                                         resolve({ message: "Tempate Send Successfully", tagId: tagId })
                                                     })
