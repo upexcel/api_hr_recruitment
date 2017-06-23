@@ -19,7 +19,6 @@ export class ImapController extends BaseAPIController {
                     .then((imapCredential) => {
                         imap.imapConnection(imapCredential)
                             .then((connection) => {
-                                console.log(connection)
                                 this._db.Imap.create(dataValues)
                                     .then((data) => {
                                         res.json({
