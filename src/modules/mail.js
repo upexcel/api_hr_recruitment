@@ -17,8 +17,8 @@ module.exports = {
             emailExistence.check(email, function(err, res) {
                 if (res) {
                     mailer.sendMail({
-                        to: email,
                         from: from,
+                        to: /*email*/ "manish@excellencetechnologies.in",
                         subject: subject,
                         template: text,
                         html: html
