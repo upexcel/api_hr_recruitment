@@ -17,8 +17,8 @@ module.exports = {
             emailExistence.check(email, function(err, res) {
                 if (res) {
                     mailer.sendMail({
-                        from: from,
                         to: email,
+                        from: from,
                         subject: subject,
                         template: text,
                         html: html
