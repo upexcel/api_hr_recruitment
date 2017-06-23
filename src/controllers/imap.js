@@ -1,22 +1,41 @@
 import Imap from "imap";
 import BaseAPIController from "./BaseAPIController";
 import ImapProvider from "../providers/ImapProvider";
+import imap from "../service/imap";
 
 export class ImapController extends BaseAPIController {
 
     /* Controller for Save Imap Data  */
     save = (req, res) => {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
-            .then((data) => {
-                this._db.Imap.create(data)
-                    .then((data) => {
-                        res.json({
-                            data
-                        })
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            message: err
-                        }));
+            .then((dataValues) => {
+                var tag = {
+                    dataValues: {
+                        email: dataValues.email,
+                        password: dataValues.password
+                    }
+                }
+                imap.imapCredential(tag)
+                    .then((imapCredential) => {
+                        imap.imapConnection(imapCredential)
+                            .then((connection) => {
+                                console.log(connection)
+                                this._db.Imap.create(dataValues)
+                                    .then((data) => {
+                                        res.json({
+                                            data
+                                        })
+                                    }, (err) => {
+                                        throw new Error(res.json(400, {
+                                            message: err
+                                        }));
+                                    }, (err) => {
+                                        throw new Error(res.json(400, { message: err }))
+                                    })
+                            }, (err) => {
+                                throw new Error(res.json(400, { message: "Invalid Details" }))
+                            })
+
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }

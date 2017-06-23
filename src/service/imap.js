@@ -30,9 +30,9 @@ export class imapConnection {
             var imap = new Imap({
                 user: data.dataValues.email,
                 password: data.dataValues.password,
-                host: data.dataValues.imap_server,
-                port: data.dataValues.server_port,
-                tls: data.dataValues.type,
+                host: "imap.gmail.com",
+                port: 993,
+                tls: "TLS",
             });
             resolve(imap);
         });
