@@ -9,13 +9,17 @@ module.exports = {
                     if (tag) {
                         db.Variable.findAll({})
                             .then((data) => {
-                                let str = "";
                                 for (let i = 0; i < data.length; i++) {
-                                    str = body.replace(data[i].dataValues.variableCode, data[i].dataValues.variableValue)
-                                    body = str;
+                                    function replaceAll(body, find, replace) {
+                                        return body.replace(new RegExp(find, 'g'), replace);
+                                    }
+                                    body = replaceAll(body, data[i].dataValues.variableCode, data[i].dataValues.variableValue)
+                                    if (i == data.length - 1) {
+                                        let res = body.replace("#candidate_name", name).replace("#date|MMM Do YY|", date).replace("#tag_name", tag.title);
+                                        resolve(res);
+                                    }
                                 }
-                                let res = body.replace("#candidate_name", name).replace("#date|MMM Do YY|", date).replace("#tag_name", tag.title);
-                                resolve(res);
+
                             })
                     }
                 })
@@ -25,13 +29,17 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.Variable.findAll({})
                 .then((data) => {
-                    let str = "";
                     for (let i = 0; i < data.length; i++) {
-                        str = body.replace(data[i].dataValues.variableCode, data[i].dataValues.variableValue)
-                        body = str;
+                        function replaceAll(body, find, replace) {
+                            return body.replace(new RegExp(find, 'g'), replace);
+                        }
+                        body = replaceAll(body, data[i].dataValues.variableCode, data[i].dataValues.variableValue)
+                        if (i == data.length - 1) {
+                            let res = body.replace("#date|MMM Do YY|", date);
+                            resolve(res);
+                        }
                     }
-                    let res = body.replace("#date|MMM Do YY|", date);
-                    resolve(res);
+
                 })
         })
 
