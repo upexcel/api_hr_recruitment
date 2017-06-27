@@ -35,8 +35,7 @@ module.exports = {
                                 if (data != null) {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
-                                            if (config.boolean === true) {
-                                                // function(email, subject, text, from, html) 
+                                            if (config.boolean == true) {
                                                 mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {
                                                         resolve({ message: "Tempate Send Successfully", tagId: tagId })
