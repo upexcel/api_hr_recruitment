@@ -67,6 +67,7 @@ module.exports = {
                                                                     var prefix = "(#" + seqno + ") ";
                                                                     var parser = new MailParser();
                                                                     var body;
+                                                                    var attach;
                                                                     parser.on("data", data => {
                                                                         if (data.text) {
                                                                             var html = data.text.substr((data.text.indexOf("<html>") - 7) || (data.text.indexOf("<!DOCTYPE html>" - 16))).substr(7, data.text.substr(data.text.indexOf("<html>") - 7).indexOf('</html>'))
@@ -88,6 +89,9 @@ module.exports = {
                                                                     msg.once("attributes", function(attrs) {
                                                                         flag = attrs.flags;
                                                                         uid = attrs.uid;
+                                                                        if (attrs.struct[0].type == "mixed") {
+                                                                            attach = true;
+                                                                        }
                                                                     });
                                                                     msg.once("end", function() {
                                                                         parser.end()
@@ -142,6 +146,7 @@ module.exports = {
                                                                                                 uid: uid,
                                                                                                 body: body,
                                                                                                 tag_id: tag.tagId,
+                                                                                                attachment: [attach],
                                                                                                 imap_email: val.dataValues.email,
                                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                                             });
@@ -271,6 +276,9 @@ module.exports = {
                                                             msg.once("attributes", function(attrs) {
                                                                 flag = attrs.flags;
                                                                 uid = attrs.uid;
+                                                                if (attrs.struct[0].type == "mixed") {
+                                                                    attach = true;
+                                                                }
                                                             });
                                                             msg.once("end", function() {
                                                                 parser.end()
@@ -283,6 +291,7 @@ module.exports = {
                                                                 var email_date;
                                                                 var email_timestamp;
                                                                 var subject;
+                                                                var attach;
                                                                 if (headers.from) {
                                                                     hash1 = headers.from.toString().substring(headers.from.toString().indexOf("\""));
                                                                     from = hash1.substring(0, hash1.lastIndexOf("<"));
@@ -329,6 +338,7 @@ module.exports = {
                                                                                         uid: uid,
                                                                                         body: body,
                                                                                         tag_id: tag.tagId,
+                                                                                        attachment: [attach],
                                                                                         imap_email: val.dataValues.email,
                                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                                     });
