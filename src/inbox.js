@@ -254,6 +254,7 @@ module.exports = {
                                                             var prefix = "(#" + seqno + ") ";
                                                             var parser = new MailParser();
                                                             var body;
+                                                            var attach;
                                                             parser.on("data", data => {
                                                                 if (data.text) {
                                                                     var html = data.text.substr(data.text.indexOf("<html>") - 7).substr(7, data.text.substr(data.text.indexOf("<html>") - 7).indexOf('</html>'))
