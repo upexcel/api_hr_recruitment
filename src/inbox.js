@@ -146,7 +146,7 @@ module.exports = {
                                                                                                 uid: uid,
                                                                                                 body: body,
                                                                                                 tag_id: tag.tagId,
-                                                                                                attachment: [attach],
+                                                                                                is_attachment: attach,
                                                                                                 imap_email: val.dataValues.email,
                                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                                             });
@@ -338,7 +338,7 @@ module.exports = {
                                                                                         uid: uid,
                                                                                         body: body,
                                                                                         tag_id: tag.tagId,
-                                                                                        attachment: [attach],
+                                                                                        is_attachment: attach,
                                                                                         imap_email: val.dataValues.email,
                                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)
                                                                                     });

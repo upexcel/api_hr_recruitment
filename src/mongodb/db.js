@@ -21,7 +21,8 @@ module.exports = function() {
         tag_id: { type: Array },
         imap_email: { type: String },
         genuine_applicant: { type: String },
-        attachment: { type: Array }
+        attachment: { type: Array },
+        is_attachment: { type: Boolean }
     }, {
         collection: "emailStored",
         strict: true,
