@@ -1,4 +1,5 @@
-import db from "../db"
+import db from "../db";
+import _ from "lodash";
 let date = new Date().getDate() + "-" + (new Date().getMonth() + 1) + "-" + new Date().getFullYear();
 
 module.exports = {
@@ -9,16 +10,19 @@ module.exports = {
                     if (tag) {
                         db.Variable.findAll({})
                             .then((data) => {
-                                for (let i = 0; i < data.length; i++) {
+                                _.forEach(data, (val, key) => {
                                     function replaceAll(body, find, replace) {
-                                        return body.replace(new RegExp(find, 'g'), replace);
+                                        return body.replace(new RegExp(find, 'gi'), replace);
                                     }
-                                    body = replaceAll(body, data[i].dataValues.variableCode, data[i].dataValues.variableValue)
-                                    if (i == data.length - 1) {
-                                        let res = body.replace("#candidate_name", name).replace("#date|MMM Do YY|", date).replace("#tag_name", tag.title);
-                                        resolve(res);
-                                    }
+                                    body = replaceAll(body, val.variableCode, val.variableValue)
+                                })
+
+                                function replaceAll(body, find, replace) {
+                                    return body.replace(new RegExp(find, 'gi'), replace);
                                 }
+                                body = replaceAll(body, "#tag_name", tag.title);
+                                let res = body.replace("#candidate_name", name).replace("#date", date);
+                                resolve(res);
 
                             })
                     }
@@ -29,16 +33,14 @@ module.exports = {
         return new Promise((resolve, reject) => {
             db.Variable.findAll({})
                 .then((data) => {
-                    for (let i = 0; i < data.length; i++) {
+                    _.forEach(data, (val, key) => {
                         function replaceAll(body, find, replace) {
-                            return body.replace(new RegExp(find, 'g'), replace);
+                            return body.replace(new RegExp(find, 'gi'), replace);
                         }
-                        body = replaceAll(body, data[i].dataValues.variableCode, data[i].dataValues.variableValue)
-                        if (i == data.length - 1) {
-                            let res = body.replace("#date|MMM Do YY|", date);
-                            resolve(res);
-                        }
-                    }
+                        body = replaceAll(body, val.variableCode, val.variableValue)
+                    })
+                    let res = body.replace("#date", date);
+                    resolve(res);
 
                 })
         })
