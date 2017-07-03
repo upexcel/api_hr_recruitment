@@ -352,6 +352,7 @@ export class FetchController extends BaseAPIController {
         });
     }
 
+
     findByTagId = (req, res, next, tag_id) => {
         var where;
         let { type, keyword, selected } = req.body;
