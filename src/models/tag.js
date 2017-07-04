@@ -6,10 +6,12 @@ export default function(sequelize, DataTypes) {
         },
         title: {
             type: DataTypes.STRING,
-            unique: true,
         },
         color: DataTypes.STRING,
-        subject: DataTypes.STRING,
+        subject: {
+            type: DataTypes.STRING,
+            unique: true,
+        },
         type: {
             type: DataTypes.ENUM,
             values: ["Default", "Manual", "Automatic"],
@@ -21,10 +23,10 @@ export default function(sequelize, DataTypes) {
         hooks: {
             beforeCreate: function(TAG, options) {
                 return new Promise((resolve, reject) => {
-                    this.findOne({ where: { title: TAG.title } })
+                    this.findOne({ where: { subject: TAG.subject } })
                         .then((docs) => {
                             if (docs) {
-                                reject("This Title Already Exists");
+                                reject("Subject Already Exists");
                             } else {
                                 resolve({ docs })
                             }
