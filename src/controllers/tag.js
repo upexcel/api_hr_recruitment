@@ -107,7 +107,7 @@ export class ImapController extends BaseAPIController {
                     where: {
                         type: req.params.type
                     },
-                    order: '`id` DESC'
+                    order: '`id` ASC'
                 })
                 .then(res.json.bind(res))
                 .catch(this.handleErrorResponse.bind(null, res));

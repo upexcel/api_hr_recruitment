@@ -4,7 +4,7 @@ import replace from "../modules/replaceVariable";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import db from "../db";
-
+import config from "../config.json";
 
 export class TemplateController extends BaseAPIController {
 
@@ -82,8 +82,15 @@ export class TemplateController extends BaseAPIController {
                 this._db.Smtp.findOne({ where: { status: true } })
                     .then((data) => {
                         if (data) {
-                            mail.sendMail(req.params.email, template.subject, constant().smtp.text, data.email, template.body)
-                                .then((response) => { res.json(response) })
+                            if (config.is_silent) {
+                                mail.sendMail(req.params.email, template.subject, constant().smtp.text, data.email, template.body)
+                                    .then((response) => {
+                                        res.json(response)
+                                    })
+                            } else {
+                                res.json({ message: "Tempelte Tested" })
+                            }
+
                         } else {
                             throw new Error("Not Active Smtp Email is found")
                         }
