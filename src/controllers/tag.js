@@ -118,7 +118,7 @@ export class ImapController extends BaseAPIController {
 
     /* Get all tag */
     getAllTag = (req, res) => {
-        this._db.Tag.findAll({ order: '`id` DESC' })
+        this._db.Tag.findAll({ order: '`id` ASC' })
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
