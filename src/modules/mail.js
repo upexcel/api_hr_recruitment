@@ -1,27 +1,40 @@
-var nodemailer = require("nodemailer");
-var smtpTransport = require("nodemailer-smtp-transport");
+import nodemailer from "nodemailer";
+import smtpTransport from "nodemailer-smtp-transport";
+import config from "../config.json";
+import emailExistence from "email-existence";
+
 module.exports = {
-	mail_alert: function (email, subject, template, from, html, callback) {
-		var mailer = nodemailer.createTransport(smtpTransport({
-			host: "smtp.sendgrid.net",
-			port: 25,
-			auth: {
-				user: "apikey",
-				pass: "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"
-			}
-		}));
-		mailer.sendMail({
-			from: from,
-			to: email,
-			subject: subject,
-			template: "template",
-			html: html
-		}, function (error, response) {
-			if (error) {
-				callback("1", "messsage not send successfully");
-			}
-			callback("0", "messsage send successfully", response);
-			mailer.close();
-		});
-	}
+    sendMail: function(email, subject, text, from, html) {
+        return new Promise((resolve, reject) => {
+            var mailer = nodemailer.createTransport(smtpTransport({
+                host: config.SMTP_HOST,
+                port: config.SMTP_PORT,
+                auth: {
+                    user: config.SMTP_USER,
+                    pass: config.SMTP_PASS
+                }
+            }));
+            emailExistence.check(email, function(err, res) {
+                if (res) {
+                    mailer.sendMail({
+                        from: from,
+                        to: email,
+                        subject: subject,
+                        template: text,
+                        html: html
+                    }, (error, response) => {
+                        if (error) {
+                            reject("messsage not send successfully");
+                        } else {
+                            resolve({ message: "messsage send successfully" });
+                        }
+                        mailer.close();
+                    });
+                } else {
+                    reject("Invalid Email Details");
+                }
+            });
+
+        })
+    }
 };

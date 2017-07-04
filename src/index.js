@@ -42,11 +42,11 @@ const initRoutes = (app) => {
         routes.forEach((routePath) => {
             require(routePath).default(app); // eslint-disable-line
         });
-        console.log(chalk.green("included ${routes.length} route files"));
+        console.log(chalk.green("included " + routes.length + " route files"));
     });
 };
 
 initRoutes(app);
 app.server.listen(process.env.PORT || config.port);
-console.log("Started on port ${app.server.address().port}");
+console.log("Started on port " + app.server.address().port);
 export default app;

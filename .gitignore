@@ -6,3 +6,5 @@
 /.eslintrc.js
 /nbproject/private/
 /nbproject
+/src/config.json
+/nano.save
