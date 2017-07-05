@@ -16,6 +16,10 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.ENUM,
             values: ["Default", "Manual", "Automatic"],
         },
+        is_job_profile_tag: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false
+        },
         to: DataTypes.DATE,
         from: DataTypes.DATE,
         template_id: { type: DataTypes.INTEGER },
