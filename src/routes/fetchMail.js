@@ -9,7 +9,7 @@ export default (app) => {
     app.route("/email/assignTag/:tag_id/:mongo_id").put(auth.requiresLogin, fetch_email.assignTag);
 
     /* Route for count emails on the basis of tag */
-    app.route("/email/countEmail").get( /*auth.requiresLogin,*/ fetch_email.countEmail);
+    app.route("/email/countEmail").get(auth.requiresLogin, fetch_email.countEmail);
 
     /* Route for assign Multiple Tag  */
     app.route("/email/assignMultiple/:tag_id").put(auth.requiresLogin, fetch_email.assignMultiple);
@@ -31,6 +31,7 @@ export default (app) => {
 
     /*send mails to a list of emails*/
     app.route("/email/sendtomany").post(auth.requiresLogin, fetch_email.sendToMany);
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

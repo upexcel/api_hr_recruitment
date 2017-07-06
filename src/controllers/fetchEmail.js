@@ -13,49 +13,60 @@ export class FetchController extends BaseAPIController {
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
         let { type, keyword, selected } = req.body;
-        var where = '';
-        if (!page || !isNaN(page) == false || page <= 0) {
-            page = 1;
-        }
-        if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
-
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
-
-            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
-
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
-
-            where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else
-        if ((type == "email") && tag_id) {
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
-        } else if ((type == "subject") && tag_id) {
-
-            where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
-        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-
-            where = { tag_id: { $size: 0 } };
-        } else {
-            where = { tag_id: { $in: [tag_id] } }
-        }
-        req.email.find(where, { "_id": 1, "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
-            if (err) {
-                next(err);
-            } else {
-                if (data[0] == null) {
-                    var message = "No Result Found"
+        this._db.Tag.findAll({ where: { type: "Default" } })
+            .then((default_tag) => {
+                var default_tag_id = []
+                _.forEach(default_tag, (val, key) => {
+                    default_tag_id.push(val.id.toString())
+                })
+                var where = '';
+                if (!page || !isNaN(page) == false || page <= 0) {
+                    page = 1;
                 }
-                res.json({
-                    data: data,
-                    status: 1,
-                    count: req.count,
-                    message: message || "success"
+                if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else
+                if ((type == "email") && tag_id) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                } else if ((type == "subject") && tag_id) {
+
+                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+
+                    where = { tag_id: { $size: 0 } };
+                } else {
+                    if (default_tag_id.indexOf(tag_id) > 0) {
+                        where = { default_tag: tag_id }
+                    } else {
+                        where = { tag_id: { $in: [tag_id] } }
+                    }
+                }
+                req.email.find(where, { "_id": 1, "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+                    if (err) {
+                        next(err);
+                    } else {
+                        if (data[0] == null) {
+                            var message = "No Result Found"
+                        }
+                        res.json({
+                            data: data,
+                            status: 1,
+                            count: req.count,
+                            message: message || "success"
+                        });
+                    }
                 });
-            }
-        });
+            })
     }
 
     assignTag = (req, res, next) => {
@@ -434,6 +445,7 @@ export class FetchController extends BaseAPIController {
                         callback({ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" })
                     }
                 })
+                .catch(this.handleErrorResponse.bind(null, res));
         }
     }
     fetchByButton = (req, res, next) => {
