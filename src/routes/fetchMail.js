@@ -29,6 +29,8 @@ export default (app) => {
     /* fetch email by button */
     app.route("/email/fetchByButton").get(auth.requiresLogin, fetch_email.fetchByButton);
 
+    /*send mails to a list of emails*/
+    app.route("/email/sendtomany").post(auth.requiresLogin, fetch_email.sendToMany);
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

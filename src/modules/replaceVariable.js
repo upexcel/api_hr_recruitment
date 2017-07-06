@@ -45,5 +45,26 @@ module.exports = {
                 })
         })
 
+    },
+    replace: function(body, name) {
+        return new Promise((resolve, reject) => {
+            db.Variable.findAll({})
+                .then((data) => {
+                    _.forEach(data, (val, key) => {
+                        function replaceAll(body, find, replace) {
+                            return body.replace(new RegExp(find, 'gi'), replace);
+                        }
+                        body = replaceAll(body, val.variableCode, val.variableValue)
+                    })
+
+                    function replaceAll(body, find, replace) {
+                        return body.replace(new RegExp(find, 'gi'), replace);
+                    }
+                    body = replaceAll(body, "#tag_name", tag.title);
+                    let res = body.replace("#candidate_name", name).replace("#date", date);
+                    resolve(res);
+
+                })
+        })
     }
 };

@@ -5,6 +5,7 @@ import imap from "../service/imap";
 import * as _ from "lodash";
 import inbox from "../inbox";
 import db from "../db";
+import mail from "../modules/mail"
 
 
 export class FetchController extends BaseAPIController {
@@ -406,6 +407,35 @@ export class FetchController extends BaseAPIController {
         this.getCount(req, res, next, where)
     }
 
+    sendToMany = (req, res, next) => {
+        var { emails, subject, body } = req.body;
+        var email_send_success_list = [];
+        var email_send_fail_list = [];
+        var result = []
+        db.Smtp.findOne({ where: { status: 1 } })
+            .then((data) => {
+                sendmail(data.email, function(response) {
+                    res.json(response)
+                })
+            })
+
+        function sendmail(from, callback) {
+            var to_email = emails.splice(0, 1);
+            mail.sendMail(to_email[0], subject, "", from, body)
+                .then((resp) => {
+                    if (resp.status) {
+                        email_send_success_list.push(to_email[0])
+                    } else {
+                        email_send_fail_list.push(to_email[0])
+                    }
+                    if (emails.length) {
+                        sendmail(emails, callback)
+                    } else {
+                        callback({ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" })
+                    }
+                })
+        }
+    }
     fetchByButton = (req, res, next) => {
         inbox.fetchEmail(req.email, 'apiCall')
             .then((data) => {
