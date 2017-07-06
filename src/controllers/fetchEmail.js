@@ -442,7 +442,7 @@ export class FetchController extends BaseAPIController {
                     if (emails.length) {
                         sendmail(emails, callback)
                     } else {
-                        callback({ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" })
+                        callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
                     }
                 })
                 .catch(this.handleErrorResponse.bind(null, res));
