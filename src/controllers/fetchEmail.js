@@ -164,7 +164,7 @@ export class FetchController extends BaseAPIController {
                             response.color = tagId.color;
                             response.count = result.length;
                             response.unread = unread;
-                            response.subchild.unshift({ id: 0, title: "All", color: tagId.color, count: result.length, unread: unread })
+                            response.subchild.unshift({ id: tagId.id, title: "All", color: tagId.color, count: result.length, unread: unread })
                             count1.push(response)
                             if (tag_id.length) {
                                 findCount(tag_id, callback)
