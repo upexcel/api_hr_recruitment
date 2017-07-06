@@ -20,18 +20,18 @@ module.exports = {
                         from: from,
                         to: email,
                         subject: subject,
-                        template: text,
+                        template: text || "",
                         html: html
                     }, (error, response) => {
                         if (error) {
                             reject("messsage not send successfully");
                         } else {
-                            resolve({ message: "messsage send successfully" });
+                            resolve({ message: "messsage send successfully", status: 1 });
                         }
                         mailer.close();
                     });
                 } else {
-                    reject("Invalid Email Details");
+                    resolve({ message: "Invalid Email Details", status: 0 });
                 }
             });
 
