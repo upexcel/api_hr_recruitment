@@ -132,8 +132,13 @@ export class FetchController extends BaseAPIController {
                     count1 = []
                     var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
                     data.push(mails)
+                    var final_data = []
+                    _.forEach(data, (val, key) => {
+                        delete val.subchild
+                        final_data.push(val)
+                    })
                     findCount(candidate_list, function(data1) {
-                        var array = [{ title: "inbox", data: data }, { title: "candidate", data: data1 }]
+                        var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }]
                         res.json({ data: array })
                     })
                 })
@@ -159,6 +164,7 @@ export class FetchController extends BaseAPIController {
                             response.color = tagId.color;
                             response.count = result.length;
                             response.unread = unread;
+                            response.subchild.unshift({ id: 0, title: "All", color: tagId.color, count: result.length, unread: unread })
                             count1.push(response)
                             if (tag_id.length) {
                                 findCount(tag_id, callback)
@@ -173,7 +179,7 @@ export class FetchController extends BaseAPIController {
 
         function find_child_count(tagId, default_tag_list, callback) {
             var default_tag_id = default_tag_list.splice(0, 1)[0]
-            req.email.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: default_tag_id.id }).exec(function(err, default_tag_mail) {
+            req.email.find({ default_tag: default_tag_id.id }).exec(function(err, default_tag_mail) {
                 var child = {
                     id: default_tag_id.id,
                     color: default_tag_id.color,
