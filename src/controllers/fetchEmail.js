@@ -45,7 +45,7 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    if (default_tag_id.indexOf(tag_id) > 0) {
+                    if (default_tag_id.indexOf(tag_id) >= 0) {
                         where = { default_tag: tag_id }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
@@ -427,13 +427,13 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    if (default_tag_id.indexOf(tag_id) > 0) {
+                    console.log(default_tag_id.indexOf(tag_id))
+                    if (default_tag_id.indexOf(tag_id) >= 0) {
                         where = { default_tag: tag_id }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
                 }
-                console.log(where)
                 this.getCount(req, res, next, where)
             })
     }
