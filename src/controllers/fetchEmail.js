@@ -4,6 +4,7 @@ import Attachment from "../modules/getAttachment";
 import imap from "../service/imap";
 import * as _ from "lodash";
 import inbox from "../inbox";
+import db from "../db";
 
 
 export class FetchController extends BaseAPIController {
@@ -89,85 +90,107 @@ export class FetchController extends BaseAPIController {
     }
 
     countEmail = (req, res, next) => {
-        var totalCount = [];
         var count1 = [];
         var tagId = [];
-        req.email.aggregate({
-            $group: {
-                _id: "$tag_id",
-                count_email: {
-                    $sum: 1
-                },
-                unread: {
-                    $sum: {
-                        $cond: [{
-                            $eq: ["$unread", false]
-                        }, 0, 1]
-                    },
-                },
-            }
-        }, (err, result) => {
-            if (err) {
-                next(new Error(err));
-            } else {
-                this._db.Tag.findAll()
-                    .then((data) => {
-                        _.forEach(data, (val2) => {
-                            tagId.push(val2.id.toString());
-                        });
-                        _.map(tagId, (val) => {
-                            var res = filter(val);
-                            totalCount.push(res);
-                        });
-                        _.forEach(result, (val) => {
-                            if (val._id.length == 0) {
-                                count1.push(_.merge(val, {
-                                    title: "Mails",
-                                    color: "#81d4fa",
-                                    type: "Main"
-                                }));
-                            }
-                        });
-
-                        function filter(tagId) {
-                            var b = _.filter(result, (o) => {
-                                if (_.includes(o._id, tagId)) {
-                                    return true;
-                                } else {
-                                    return false;
-                                }
-                            });
-                            var count_email = 0;
-                            var unread = 0;
-                            _.map(b, (val) => {
-                                count_email += val.count_email;
-                                unread += val.unread;
-                            });
-                            return {
-                                id: tagId,
-                                count_email: count_email,
-                                unread: unread
-                            };
+        var mails_unread_count = 0;
+        var mails_total_count = 0;
+        var sub_child_list = [];
+        var candidate_list = [];
+        this._db.Tag.findAll({ where: { type: "Automatic", is_job_profile_tag: 0 } })
+            .then((tags) => {
+                _.forEach(tags, (val, key) => {
+                    tagId.push(val)
+                })
+                this._db.Tag.findAll({ where: { type: "Automatic", is_job_profile_tag: 1 } })
+                    .then((candidate) => {
+                        _.forEach(candidate, (val, key) => {
+                            candidate_list.push(val)
+                        })
+                    })
+                req.email.find({ tag_id: [] }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                    mails_total_count = result.length;
+                    _.forEach(result, (val, key) => {
+                        if (val.unread === true) {
+                            mails_unread_count++;
                         }
-                        _.forEach(totalCount, (val) => {
-                            _.forEach(data, (val1) => {
-                                if (val.id == val1.id) {
-                                    count1.push(_.merge(val, {
-                                        title: val1.title,
-                                        color: val1.color,
-                                        type: val1.type
-                                    }));
-                                }
-                            });
-                        });
-                        res.json({
-                            data: count1,
-                            status: 1,
-                            message: "success"
-                        });
-                    });
-            }
-        });
+                    })
+                })
+
+                findCount(tagId, function(data) {
+                    count1 = []
+                    var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
+                    data.push(mails)
+                    findCount(candidate_list, function(data1) {
+                        var array = [{ title: "inbox", data: data }, { title: "candidate", data: data1 }]
+                        res.json({ data: array })
+                    })
+                })
+            })
+
+
+        function findCount(tag_id, callback) {
+            var tagId = tag_id.splice(0, 1)[0]
+            req.email.find({ tag_id: { "$in": [tagId.id.toString()] } }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                var unread = 0
+                _.forEach(result, (val, key) => {
+                    if (val.unread === true) {
+                        unread++;
+                    }
+                })
+                sub_child_list = []
+                db.Tag.findAll({ where: { type: "Default" } })
+                    .then((default_tag_list) => {
+                        find_child_count(tagId, default_tag_list, function(response) {
+                            response.id = tagId.id;
+                            response.title = tagId.title;
+                            response.type = tagId.type;
+                            response.color = tagId.color;
+                            response.count = result.length;
+                            response.unread = unread;
+                            count1.push(response)
+                            if (tag_id.length) {
+                                findCount(tag_id, callback)
+                            } else {
+                                callback(count1)
+                            }
+                        })
+                    })
+
+            })
+        }
+
+        function find_child_count(tagId, default_tag_list, callback) {
+            var default_tag_id = default_tag_list.splice(0, 1)[0]
+            req.email.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: default_tag_id.id }).exec(function(err, default_tag_mail) {
+                var child = {
+                    id: default_tag_id.id,
+                    color: default_tag_id.color,
+                    title: default_tag_id.title,
+                    count: 0,
+                    unread: 0
+                }
+                if (default_tag_mail.length) {
+                    child.count = default_tag_mail.length
+                    var unread = 0
+                    _.forEach(default_tag_mail, (val, key) => {
+                        if (val.unread === true) {
+                            unread++;
+                        }
+                    })
+                    child.unread = unread
+                }
+                sub_child_list.push(child)
+                if (default_tag_list.length) {
+                    find_child_count(tagId, default_tag_list, callback)
+                } else {
+                    var tagData = {
+                        subchild: sub_child_list
+                    }
+                    callback(tagData)
+                }
+
+            })
+        }
     }
 
     assignMultiple = (req, res, next) => {
@@ -183,7 +206,7 @@ export class FetchController extends BaseAPIController {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
                                 if (data.type == "Default") {
-                                    var where = { "tag_id": [tag_id], "email_timestamp": new Date().getTime() };
+                                    var where = { "default_tag": tag_id, "email_timestamp": new Date().getTime() };
                                 } else {
                                     where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                                 }
