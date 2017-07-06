@@ -224,7 +224,7 @@ export class FetchController extends BaseAPIController {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
                                 if (data.type == "Default") {
-                                    var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime() };
+                                    var where = { "default_tag": tag_id.toString(), "tag_id": [], "email_timestamp": new Date().getTime() };
                                 } else {
                                     where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                                 }
