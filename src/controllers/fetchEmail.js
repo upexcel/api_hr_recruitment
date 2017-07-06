@@ -179,7 +179,7 @@ export class FetchController extends BaseAPIController {
 
         function find_child_count(tagId, default_tag_list, callback) {
             var default_tag_id = default_tag_list.splice(0, 1)[0]
-            req.email.find({ default_tag: default_tag_id.id }).exec(function(err, default_tag_mail) {
+            req.email.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: default_tag_id.id }).exec(function(err, default_tag_mail) {
                 var child = {
                     id: default_tag_id.id,
                     color: default_tag_id.color,
