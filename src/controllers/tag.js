@@ -12,7 +12,7 @@ export class ImapController extends BaseAPIController {
                 this._db.Tag.create(response)
                     .then((data) => {
                         if (data) {
-                            if ((data.type == tag().tagType.automatic) && (assign === true)) {
+                            if ((data.type == tag().tagType.automatic) && (assign == "true")) {
                                 this._db.Tag.assignTag(data, req.email)
                                     .then((response) => {
                                         function assignTag(id) {

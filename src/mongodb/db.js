@@ -19,6 +19,7 @@ module.exports = function() {
         uid: { type: Number },
         body: { type: String },
         tag_id: { type: Array },
+        default_tag: { type: String },
         imap_email: { type: String },
         genuine_applicant: { type: String },
         attachment: { type: Array },
