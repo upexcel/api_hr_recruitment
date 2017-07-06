@@ -121,7 +121,8 @@ export class FetchController extends BaseAPIController {
                     var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
                     data.push(mails)
                     findCount(candidate_list, function(data1) {
-                        res.json({ inbox: { data: data }, candidate: { data: data1 } })
+                        var array = [{ title: "inbox", data: data }, { title: "candidate", data: data1 }]
+                        res.json({ data: array })
                     })
                 })
             })
