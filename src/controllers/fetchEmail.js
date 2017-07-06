@@ -61,7 +61,7 @@ export class FetchController extends BaseAPIController {
                         res.json({
                             data: data,
                             status: 1,
-                            count: data.length || req.count,
+                            count: req.count,
                             message: message || "success"
                         });
                     }
@@ -397,30 +397,45 @@ export class FetchController extends BaseAPIController {
     findByTagId = (req, res, next, tag_id) => {
         var where;
         let { type, keyword, selected } = req.body;
-        if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
+        this._db.Tag.findAll({ where: { type: "Default" } })
+            .then((default_tag) => {
+                var default_tag_id = []
+                _.forEach(default_tag, (val, key) => {
+                    default_tag_id.push(val.id.toString())
+                })
+                var where = '';
+                if (!page || !isNaN(page) == false || page <= 0) {
+                    page = 1;
+                }
+                if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
 
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
 
-            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
 
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
 
-            where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else
-        if ((type == "email") && tag_id) {
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
-        } else if ((type == "subject") && tag_id) {
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else
+                if ((type == "email") && tag_id) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                } else if ((type == "subject") && tag_id) {
 
-            where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
-        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
-            where = { tag_id: { $size: 0 } };
-        } else {
-            where = { tag_id: { $in: [tag_id] } }
-        }
+                    where = { tag_id: { $size: 0 } };
+                } else {
+                    if (default_tag_id.indexOf(tag_id) > 0) {
+                        where = { default_tag: tag_id }
+                    } else {
+                        where = { tag_id: { $in: [tag_id] } }
+                    }
+                }
+            })
         this.getCount(req, res, next, where)
     }
 
