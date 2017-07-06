@@ -419,7 +419,11 @@ export class FetchController extends BaseAPIController {
 
             where = { tag_id: { $size: 0 } };
         } else {
-            where = { tag_id: { $in: [tag_id] } }
+            if (default_tag_id.indexOf(tag_id) > 0) {
+                where = { default_tag: tag_id }
+            } else {
+                where = { tag_id: { $in: [tag_id] } }
+            }
         }
         this.getCount(req, res, next, where)
     }
