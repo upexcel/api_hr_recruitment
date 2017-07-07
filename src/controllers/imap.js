@@ -68,8 +68,40 @@ export class ImapController extends BaseAPIController {
 
     /* Get Imap data */
     getImap = (req, res) => {
+        var result = []
         this._db.Imap.findAll({ order: '`id` DESC' })
-            .then(res.json.bind(res))
+            .then((response) => {
+                var imap_emails = response;
+                findCount(imap_emails, function(data) {
+                    res.json(result)
+                })
+
+                function findCount(emails, callback) {
+                    var imap_data = "";
+                    var imap_email = emails.splice(0, 1)[0]
+                    req.email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
+                        imap_data = {
+                            active: imap_email.active,
+                            createdAt: imap_email.createdAt,
+                            email: imap_email.email,
+                            id: imap_email.id,
+                            imap_server: imap_email.imap_server,
+                            password: imap_email.password,
+                            server_port: imap_email.port,
+                            status: imap_email.status,
+                            type: imap_email.type,
+                            updatedAt: imap_email.updatedAt,
+                            fetched_email_count: data
+                        }
+                        result.push(imap_data)
+                        if (emails.length) {
+                            findCount(emails, callback)
+                        } else {
+                            callback(result)
+                        }
+                    })
+                }
+            })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
