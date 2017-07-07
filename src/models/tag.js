@@ -22,7 +22,7 @@ export default function(sequelize, DataTypes) {
         },
         to: DataTypes.DATE,
         from: DataTypes.DATE,
-        assign: {
+        assign_to_all_emails: {
             type: DataTypes.BOOLEAN,
             defaultValue: 0
         },
