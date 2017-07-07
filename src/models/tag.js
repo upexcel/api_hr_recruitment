@@ -18,10 +18,14 @@ export default function(sequelize, DataTypes) {
         },
         is_job_profile_tag: {
             type: DataTypes.BOOLEAN,
-            defaultValue: false
+            defaultValue: 0
         },
         to: DataTypes.DATE,
         from: DataTypes.DATE,
+        assign: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0
+        },
         template_id: { type: DataTypes.INTEGER },
     }, {
         hooks: {
