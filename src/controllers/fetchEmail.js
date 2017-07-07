@@ -12,7 +12,7 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { type, keyword, selected } = req.body;
+        let { type, keyword, selected, default_id } = req.body;
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
                 var default_tag_id = []
@@ -45,8 +45,8 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { default_tag: tag_id }
+                    if (default_tag_id.indexOf(default_id.toString()) >= 0) {
+                        where = { default_tag: default_id.toString(), tag_id: { $in: [tag_id] } }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
@@ -396,7 +396,7 @@ export class FetchController extends BaseAPIController {
 
     findByTagId = (req, res, next, tag_id) => {
         var where;
-        let { type, keyword, selected } = req.body;
+        let { type, keyword, selected, default_id } = req.body;
         console.log(type)
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
@@ -427,9 +427,8 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    console.log(default_tag_id.indexOf(tag_id))
-                    if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { default_tag: tag_id }
+                    if (default_tag_id.indexOf(default_id.toString()) >= 0) {
+                        where = { default_tag: default_id.toString(), tag_id: { $in: [tag_id] } }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
