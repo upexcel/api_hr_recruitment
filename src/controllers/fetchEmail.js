@@ -45,8 +45,8 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    if (default_tag_id.indexOf(default_id.toString()) >= 0) {
-                        where = { default_tag: default_id.toString(), tag_id: { $in: [tag_id] } }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
@@ -427,8 +427,8 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    if (default_tag_id.indexOf(default_id.toString()) >= 0) {
-                        where = { default_tag: default_id.toString(), tag_id: { $in: [tag_id] } }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
