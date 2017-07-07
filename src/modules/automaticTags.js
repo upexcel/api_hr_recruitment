@@ -3,7 +3,7 @@ import _ from "lodash";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
-import config from "../config"
+import config from "../config";
 
 module.exports = {
     tags: function(subject, email_date, name, to, from) {
@@ -11,7 +11,7 @@ module.exports = {
             let count = 0;
             let tagId = [];
             let template_id = [];
-            if (subject.match(/Re:/g)) {
+            if (subject.match(new RegExp(constant().automatic_mail_subject_match, 'gi'))) {
                 db.Tag.findOne({ where: { title: constant().tagType.genuine } })
                     .then((data) => {
                         resolve({ tagId: data.id.toString() })
@@ -36,6 +36,7 @@ module.exports = {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
                                             if (config.boolean == true) {
+                                                data.subject = config.automatic_mail_subject + " " + data.subject;
                                                 mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {
                                                         resolve({ message: "Tempate Send Successfully", tagId: tagId })

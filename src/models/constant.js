@@ -17,7 +17,9 @@ export default function() {
             html: "Smtp test successfully",
             text: "Template",
             passwordMessage: 'New Password Generated'
-        }
+        },
+        automatic_mail_subject: "Revert Information",
+        automatic_mail_subject_match: "Re: Revert Information"
     };
     return constant;
 }
