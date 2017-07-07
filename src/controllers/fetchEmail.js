@@ -12,7 +12,7 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { type, keyword, selected } = req.body;
+        let { type, keyword, selected, default_id } = req.body;
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
                 var default_tag_id = []
@@ -45,8 +45,8 @@ export class FetchController extends BaseAPIController {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
-                    if (default_tag_id.indexOf(tag_id) > 0) {
-                        where = { default_tag: tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
@@ -132,8 +132,13 @@ export class FetchController extends BaseAPIController {
                     count1 = []
                     var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
                     data.push(mails)
+                    var final_data = []
+                    _.forEach(data, (val, key) => {
+                        delete val.subchild
+                        final_data.push(val)
+                    })
                     findCount(candidate_list, function(data1) {
-                        var array = [{ title: "inbox", data: data }, { title: "candidate", data: data1 }]
+                        var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }]
                         res.json({ data: array })
                     })
                 })
@@ -159,6 +164,7 @@ export class FetchController extends BaseAPIController {
                             response.color = tagId.color;
                             response.count = result.length;
                             response.unread = unread;
+                            response.subchild.unshift({ id: tagId.id, title: "All", color: tagId.color, count: result.length, unread: unread })
                             count1.push(response)
                             if (tag_id.length) {
                                 findCount(tag_id, callback)
@@ -208,7 +214,7 @@ export class FetchController extends BaseAPIController {
     assignMultiple = (req, res, next) => {
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                let { tag_id } = req.params;
+                let { tag_id, parent_id } = req.params;
                 this._db.Tag.findOne({
                         where: {
                             id: tag_id
@@ -218,7 +224,7 @@ export class FetchController extends BaseAPIController {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
                                 if (data.type == "Default") {
-                                    var where = { "default_tag": tag_id, "email_timestamp": new Date().getTime() };
+                                    var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime() };
                                 } else {
                                     where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                                 }
@@ -390,32 +396,45 @@ export class FetchController extends BaseAPIController {
 
     findByTagId = (req, res, next, tag_id) => {
         var where;
-        let { type, keyword, selected } = req.body;
-        if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
+        let { type, keyword, selected, default_id } = req.body;
+        console.log(type)
+        this._db.Tag.findAll({ where: { type: "Default" } })
+            .then((default_tag) => {
+                var default_tag_id = []
+                _.forEach(default_tag, (val, key) => {
+                    default_tag_id.push(val.id.toString())
+                })
+                var where = '';
+                if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
 
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
 
-            where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-        } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
 
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
 
-            where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-        } else
-        if ((type == "email") && tag_id) {
-            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
-        } else if ((type == "subject") && tag_id) {
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else
+                if ((type == "email") && tag_id) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                } else if ((type == "subject") && tag_id) {
 
-            where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
-        } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
-            where = { tag_id: { $size: 0 } };
-        } else {
-            where = { tag_id: { $in: [tag_id] } }
-        }
-        this.getCount(req, res, next, where)
+                    where = { tag_id: { $size: 0 } };
+                } else {
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
+                    } else {
+                        where = { tag_id: { $in: [tag_id] } }
+                    }
+                }
+                this.getCount(req, res, next, where)
+            })
     }
 
     sendToMany = (req, res, next) => {

@@ -19,6 +19,7 @@ const save = (model, type, validate, body, validationResult) => {
                 reject(result.array()[0].msg);
             } else {
                 body.type = type;
+                body.assign_to_all_emails = body.assign;
                 delete body.assign;
                 if (body.template_id == "") {
                     delete body.template_id;
