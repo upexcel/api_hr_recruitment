@@ -28,6 +28,7 @@ module.exports = {
                                     template_id.push(val.template_id)
                                 }
                             })
+                            console.log(template_id)
                             db.Template.findOne({
                                 where: {
                                     id: template_id[0]
