@@ -315,7 +315,7 @@ module.exports = {
                                                                 parser.once("end", function() {
                                                                     automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, "old")
                                                                         .then((tag) => {
-                                                                            if (tag.tagId.length) {
+                                                                            if (tag.tagId.length || tag.default_tag_id) {
                                                                                 email_timestamp = new Date().getTime()
                                                                             }
                                                                             email.findOne({
