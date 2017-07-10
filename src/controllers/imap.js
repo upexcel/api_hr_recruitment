@@ -97,7 +97,7 @@ export class ImapController extends BaseAPIController {
                             .then((imap) => {
                                 imapService.imapConnection(imap)
                                     .then((imapConnection) => {
-                                        imap.search(["ALL"], function(err, results) {
+                                        imap.search(["ALL", ["BEFORE", imap_email.createdAt]], function(err, results) {
                                             if (err) {
                                                 throw new Error(err)
                                             } else {
