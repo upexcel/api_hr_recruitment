@@ -43,11 +43,13 @@ module.exports = {
                                                         resolve({ message: "Tempate Send Successfully", tagId: tagId })
                                                     })
                                             } else {
+                                                console.log("111111111111")
                                                 resolve({ message: "Email Not Send ", tagId: tagId })
                                             }
                                         });
                                 } else {
                                     if (tagId.length !== 0) {
+                                        console.log("2222222222222222222")
                                         resolve({ message: "Email Not send", tagId: tagId })
                                     } else {
                                         resolve({ message: "Email Not send", tagId: [] })
