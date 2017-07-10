@@ -33,6 +33,7 @@ module.exports = {
                                     id: template_id[0]
                                 }
                             }).then((data) => {
+                                console.log(data)
                                 if (data != null) {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
@@ -48,7 +49,7 @@ module.exports = {
                                             }
                                         });
                                 } else {
-                                    if (tagId.length !== 0) {
+                                    if (tagId.length != 0) {
                                         console.log("2222222222222222222")
                                         resolve({ message: "Email Not send", tagId: tagId })
                                     } else {
