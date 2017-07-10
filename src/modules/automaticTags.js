@@ -8,6 +8,7 @@ import config from "../config";
 module.exports = {
     tags: function(subject, email_date, name, to, from, send_to) {
         return new Promise((resolve, reject) => {
+            console.log(send_to)
             let count = 0;
             let tagId = [];
             let template_id = [];
@@ -35,7 +36,7 @@ module.exports = {
                                 if (data != null) {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
-                                            if (config.boolean == true && send_to == "new") {
+                                            if (config.boolean === true && send_to == "new") {
                                                 data.subject = constant().automatic_mail_subject_match + " " + data.subject;
                                                 mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {

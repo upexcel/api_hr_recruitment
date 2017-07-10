@@ -2,6 +2,8 @@ import Imap from "imap";
 import BaseAPIController from "./BaseAPIController";
 import ImapProvider from "../providers/ImapProvider";
 import imapService from "../service/imap";
+import db from "../db";
+import moment from "moment";
 
 export class ImapController extends BaseAPIController {
 
@@ -16,21 +18,27 @@ export class ImapController extends BaseAPIController {
                     }
                 }
                 imapService.imapCredential(tag)
-                    .then((imapCredential) => {
-                        imapService.imapConnection(imapCredential)
+                    .then((imap) => {
+                        imapService.imapConnection(imap)
                             .then((connection) => {
-                                this._db.Imap.create(dataValues)
-                                    .then((data) => {
-                                        res.json({
-                                            data
+                                var date = moment.utc().format('YYYY-MM-DD HH:mm:ss');
+                                var stillUtc = moment.utc(date).toDate();
+                                var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
+                                imap.search(["ALL", ["BEFORE", local]], function(err, results) {
+                                    dataValues.total_emails = results.length;
+                                    db.Imap.create(dataValues)
+                                        .then((data) => {
+                                            res.json({
+                                                data
+                                            })
+                                        }, (err) => {
+                                            throw new Error(res.json(400, {
+                                                message: err
+                                            }));
+                                        }, (err) => {
+                                            throw new Error(res.json(400, { message: err }))
                                         })
-                                    }, (err) => {
-                                        throw new Error(res.json(400, {
-                                            message: err
-                                        }));
-                                    }, (err) => {
-                                        throw new Error(res.json(400, { message: err }))
-                                    })
+                                })
                             }, (err) => {
                                 throw new Error(res.json(400, { message: "Invalid Details" }))
                             })
@@ -91,27 +99,34 @@ export class ImapController extends BaseAPIController {
                             status: imap_email.status,
                             type: imap_email.type,
                             updatedAt: imap_email.updatedAt,
-                            fetched_email_count: data
+                            fetched_email_count: data,
+                            total_emails: imap_email.total_emails
                         }
-                        imapService.imapCredential(imap_email)
-                            .then((imap) => {
-                                imapService.imapConnection(imap)
-                                    .then((imapConnection) => {
-                                        imap.search(["ALL", ["BEFORE", imap_email.createdAt]], function(err, results) {
-                                            if (err) {
-                                                throw new Error(err)
-                                            } else {
-                                                imap_data.total_emails = results.length;
-                                            }
-                                            result.push(imap_data)
-                                            if (emails.length) {
-                                                findCount(emails, callback)
-                                            } else {
-                                                callback(result)
-                                            }
-                                        })
-                                    })
-                            })
+                        result.push(imap_data)
+                        if (emails.length) {
+                            findCount(emails, callback)
+                        } else {
+                            callback(result)
+                        }
+                        // imapService.imapCredential(imap_email)
+                        //     .then((imap) => {
+                        //         imapService.imapConnection(imap)
+                        //             .then((imapConnection) => {
+                        //                 imap.search(["ALL", ["BEFORE", imap_email.createdAt]], function(err, results) {
+                        //                     if (err) {
+                        //                         throw new Error(err)
+                        //                     } else {
+                        //                         imap_data.total_emails = results.length;
+                        //                     }
+                        //                     result.push(imap_data)
+                        //                     if (emails.length) {
+                        //                         findCount(emails, callback)
+                        //                     } else {
+                        //                         callback(result)
+                        //                     }
+                        //                 })
+                        //             })
+                        //     })
                     })
                 }
             })

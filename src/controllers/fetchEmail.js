@@ -5,7 +5,8 @@ import imap from "../service/imap";
 import * as _ from "lodash";
 import inbox from "../inbox";
 import db from "../db";
-import mail from "../modules/mail"
+import mail from "../modules/mail";
+import constant from "../models/constant";
 
 
 export class FetchController extends BaseAPIController {
@@ -146,7 +147,7 @@ export class FetchController extends BaseAPIController {
                             })
                             findDefaultCount(default_id1, function(resp) {
                                 findCount(candidate_list, function(data1) {
-                                    var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }]
+                                    var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
                                     res.json({ data: array })
                                 })
                             })
