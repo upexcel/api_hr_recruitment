@@ -143,7 +143,9 @@ export class FetchController extends BaseAPIController {
                     db.Tag.findAll({ where: { type: "Default" } })
                         .then((default_tag) => {
                             _.forEach(default_tag, (val, key) => {
-                                default_id1.push(val);
+                                if (val.title != "Genuine Applicant") {
+                                    default_id1.push(val);
+                                }
                             })
                             findDefaultCount(default_id1, function(resp) {
                                 findCount(candidate_list, function(data1) {
