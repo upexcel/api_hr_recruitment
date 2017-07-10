@@ -108,25 +108,6 @@ export class ImapController extends BaseAPIController {
                         } else {
                             callback(result)
                         }
-                        // imapService.imapCredential(imap_email)
-                        //     .then((imap) => {
-                        //         imapService.imapConnection(imap)
-                        //             .then((imapConnection) => {
-                        //                 imap.search(["ALL", ["BEFORE", imap_email.createdAt]], function(err, results) {
-                        //                     if (err) {
-                        //                         throw new Error(err)
-                        //                     } else {
-                        //                         imap_data.total_emails = results.length;
-                        //                     }
-                        //                     result.push(imap_data)
-                        //                     if (emails.length) {
-                        //                         findCount(emails, callback)
-                        //                     } else {
-                        //                         callback(result)
-                        //                     }
-                        //                 })
-                        //             })
-                        //     })
                     })
                 }
             })

@@ -120,7 +120,7 @@ module.exports = {
                                                                         parser.once("end", function() {
                                                                             automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, "new")
                                                                                 .then((tag) => {
-                                                                                    if (tag.tagId.length) {
+                                                                                    if (tag.tagId.length || tag.default_tag_id) {
                                                                                         email_timestamp = new Date().getTime()
                                                                                     }
                                                                                     email.findOne({
@@ -146,7 +146,7 @@ module.exports = {
                                                                                                 uid: uid,
                                                                                                 body: body,
                                                                                                 tag_id: tag.tagId,
-                                                                                                default_tag: "",
+                                                                                                default_tag: tag.default_tag_id || "",
                                                                                                 is_attachment: attach || false,
                                                                                                 imap_email: val.dataValues.email,
                                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
