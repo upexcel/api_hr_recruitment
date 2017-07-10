@@ -1,7 +1,7 @@
 import Imap from "imap";
 import BaseAPIController from "./BaseAPIController";
 import ImapProvider from "../providers/ImapProvider";
-import imap from "../service/imap";
+import imapService from "../service/imap";
 
 export class ImapController extends BaseAPIController {
 
@@ -15,9 +15,9 @@ export class ImapController extends BaseAPIController {
                         password: dataValues.password
                     }
                 }
-                imap.imapCredential(tag)
+                imapService.imapCredential(tag)
                     .then((imapCredential) => {
-                        imap.imapConnection(imapCredential)
+                        imapService.imapConnection(imapCredential)
                             .then((connection) => {
                                 this._db.Imap.create(dataValues)
                                     .then((data) => {
@@ -93,12 +93,25 @@ export class ImapController extends BaseAPIController {
                             updatedAt: imap_email.updatedAt,
                             fetched_email_count: data
                         }
-                        result.push(imap_data)
-                        if (emails.length) {
-                            findCount(emails, callback)
-                        } else {
-                            callback(result)
-                        }
+                        imapService.imapCredential(imap_email)
+                            .then((imap) => {
+                                imapService.imapConnection(imap)
+                                    .then((imapConnection) => {
+                                        imap.search(["ALL"], function(err, results) {
+                                            if (err) {
+                                                throw new Error(err)
+                                            } else {
+                                                imap_data.total_emails = results.length;
+                                            }
+                                            result.push(imap_data)
+                                            if (emails.length) {
+                                                findCount(emails, callback)
+                                            } else {
+                                                callback(result)
+                                            }
+                                        })
+                                    })
+                            })
                     })
                 }
             })
