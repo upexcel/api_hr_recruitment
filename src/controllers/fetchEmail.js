@@ -242,7 +242,9 @@ export class FetchController extends BaseAPIController {
                     })
                     child.unread = unread
                 }
-                sub_child_list.push(child)
+                if (child.title != constant().tagType.genuine) {
+                    sub_child_list.push(child)
+                }
                 if (default_tag_list.length) {
                     find_child_count(tagId, default_tag_list, callback)
                 } else {
