@@ -339,8 +339,8 @@ module.exports = {
                                                                                         answered: answered,
                                                                                         uid: uid,
                                                                                         body: body,
-                                                                                        tag_id: tag.tagId,
-                                                                                        default_tag: "",
+                                                                                        tag_id: tag.tagId || [],
+                                                                                        default_tag: tag.default_tag_id || "",
                                                                                         is_attachment: attach || false,
                                                                                         imap_email: val.dataValues.email,
                                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)

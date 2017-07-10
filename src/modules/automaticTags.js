@@ -14,7 +14,7 @@ module.exports = {
             if (subject.match(new RegExp(constant().automatic_mail_subject_match, 'gi'))) {
                 db.Tag.findOne({ where: { title: constant().tagType.genuine } })
                     .then((data) => {
-                        resolve({ tagId: data.id.toString() })
+                        resolve({ default_tag_id: data.id.toString() })
                     })
                     .catch((error) => { reject(error) })
             } else {
