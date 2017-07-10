@@ -118,7 +118,7 @@ module.exports = {
                                                                             answered = in_array("\\Answered", flag);
 
                                                                         parser.once("end", function() {
-                                                                            automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
+                                                                            automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, "new")
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length) {
                                                                                         email_timestamp = new Date().getTime()
@@ -313,7 +313,7 @@ module.exports = {
                                                                 var unread = !(in_array('\\Seen', flag)),
                                                                     answered = in_array("\\Answered", flag);
                                                                 parser.once("end", function() {
-                                                                    automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
+                                                                    automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, "old")
                                                                         .then((tag) => {
                                                                             if (tag.tagId.length) {
                                                                                 email_timestamp = new Date().getTime()

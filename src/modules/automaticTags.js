@@ -6,7 +6,7 @@ import replace from "../modules/replaceVariable";
 import config from "../config";
 
 module.exports = {
-    tags: function(subject, email_date, name, to, from) {
+    tags: function(subject, email_date, name, to, from, send_to) {
         return new Promise((resolve, reject) => {
             let count = 0;
             let tagId = [];
@@ -35,7 +35,7 @@ module.exports = {
                                 if (data != null) {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
-                                            if (config.boolean == true) {
+                                            if (config.boolean == true && send_to == "new") {
                                                 data.subject = config.automatic_mail_subject + " " + data.subject;
                                                 mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {

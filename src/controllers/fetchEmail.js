@@ -499,7 +499,6 @@ export class FetchController extends BaseAPIController {
             .catch(this.handleErrorResponse.bind(null, res));
 
         function sendmail(from, callback) {
-            console.log(emails)
             var to_email = emails.splice(0, 1);
             mail.sendMail(to_email[0], subject, "", from, body)
                 .then((resp) => {
