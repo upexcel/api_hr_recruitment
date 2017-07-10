@@ -130,7 +130,6 @@ export class FetchController extends BaseAPIController {
                         }
                     })
                 })
-                console.log(tagId)
                 findCount(tagId, function(data) {
                     count1 = []
                     var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
@@ -157,7 +156,6 @@ export class FetchController extends BaseAPIController {
             })
 
         function findDefaultCount(default_tag_id, callback) {
-            console.log(final_data)
             if (default_tag_id.length == 0) {
                 callback(final_data)
             } else {
@@ -443,7 +441,6 @@ export class FetchController extends BaseAPIController {
     findByTagId = (req, res, next, tag_id) => {
         var where;
         let { type, keyword, selected, default_id } = req.body;
-        console.log(type)
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
                 var default_tag_id = []

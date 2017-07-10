@@ -36,7 +36,7 @@ module.exports = {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
                                             if (config.boolean == true && send_to == "new") {
-                                                data.subject = config.automatic_mail_subject + " " + data.subject;
+                                                data.subject = constant().automatic_mail_subject_match + " " + data.subject;
                                                 mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {
                                                         resolve({ message: "Tempate Send Successfully", tagId: tagId })
