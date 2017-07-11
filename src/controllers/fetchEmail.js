@@ -137,38 +137,38 @@ export class FetchController extends BaseAPIController {
                         _.forEach(candidate, (val, key) => {
                             candidate_list.push(val)
                         })
-                    })
-                req.email.find({ tag_id: [] }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
-                    mails_total_count = result.length;
-                    _.forEach(result, (val, key) => {
-                        if (val.unread === true) {
-                            mails_unread_count++;
-                        }
-                    })
-                })
-                findCount(tagId, function(data) {
-                    count1 = []
-                    var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
-                    data.push(mails)
-                    var default_id1 = [];
-                    _.forEach(data, (val, key) => {
-                        delete val.subchild
-                        final_data.push(val)
-                    })
-                    db.Tag.findAll({ where: { type: "Default" } })
-                        .then((default_tag) => {
-                            _.forEach(default_tag, (val, key) => {
-                                default_id1.push(val);
+                        req.email.find({ tag_id: [] }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                            mails_total_count = result.length;
+                            _.forEach(result, (val, key) => {
+                                if (val.unread === true) {
+                                    mails_unread_count++;
+                                }
                             })
-                            findDefaultCount(default_id1, function(resp) {
-                                findCount(candidate_list, function(data1) {
-                                    var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
-                                    res.json({ data: array })
+                            findCount(tagId, function(data) {
+                                count1 = []
+                                var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count, type: "Automatic" }
+                                data.push(mails)
+                                var default_id1 = [];
+                                _.forEach(data, (val, key) => {
+                                    delete val.subchild
+                                    final_data.push(val)
                                 })
+                                db.Tag.findAll({ where: { type: "Default" } })
+                                    .then((default_tag) => {
+                                        _.forEach(default_tag, (val, key) => {
+                                            default_id1.push(val);
+                                        })
+                                        findDefaultCount(default_id1, function(resp) {
+                                            findCount(candidate_list, function(data1) {
+                                                var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
+                                                res.json({ data: array })
+                                            })
+                                        })
+                                    })
+
                             })
                         })
-
-                })
+                    })
             })
 
         function findDefaultCount(default_tag_id, callback) {
@@ -452,7 +452,7 @@ export class FetchController extends BaseAPIController {
                     res.json({ status: 0, message: 'mongo_id not found in database' });
                 }
             }
-        });
+        })
     }
 
 
@@ -520,9 +520,13 @@ export class FetchController extends BaseAPIController {
         var result = []
         db.Smtp.findOne({ where: { status: 1 } })
             .then((data) => {
-                sendmail(data.email, function(response) {
-                    res.json(response)
-                })
+                if (data) {
+                    sendmail(data.email, function(response) {
+                        res.json(response)
+                    })
+                } else {
+                    throw new Error("No active smtp email found!!")
+                }
             })
             .catch(this.handleErrorResponse.bind(null, res));
 
