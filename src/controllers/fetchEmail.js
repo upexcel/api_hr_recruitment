@@ -5,7 +5,8 @@ import imap from "../service/imap";
 import * as _ from "lodash";
 import inbox from "../inbox";
 import db from "../db";
-import mail from "../modules/mail"
+import mail from "../modules/mail";
+import constant from "../models/constant";
 
 
 export class FetchController extends BaseAPIController {
@@ -37,20 +38,30 @@ export class FetchController extends BaseAPIController {
                     where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if ((type == "subject") && tag_id) {
-
-                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
+                    } else {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
+                    } else if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { default_tag: tag_id }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
                 }
+                console.log(where)
                 req.email.find(where, { "_id": 1, "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
                     if (err) {
                         next(err);
@@ -108,6 +119,7 @@ export class FetchController extends BaseAPIController {
         var mails_total_count = 0;
         var sub_child_list = [];
         var candidate_list = [];
+        var final_data = [];
         this._db.Tag.findAll({ where: { type: "Automatic", is_job_profile_tag: 0 } })
             .then((tags) => {
                 _.forEach(tags, (val, key) => {
@@ -127,54 +139,95 @@ export class FetchController extends BaseAPIController {
                         }
                     })
                 })
-
                 findCount(tagId, function(data) {
                     count1 = []
                     var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
                     data.push(mails)
-                    var final_data = []
+                    var default_id1 = [];
                     _.forEach(data, (val, key) => {
                         delete val.subchild
                         final_data.push(val)
                     })
-                    findCount(candidate_list, function(data1) {
-                        var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }]
-                        res.json({ data: array })
-                    })
+                    db.Tag.findAll({ where: { type: "Default" } })
+                        .then((default_tag) => {
+                            _.forEach(default_tag, (val, key) => {
+                                default_id1.push(val);
+                            })
+                            findDefaultCount(default_id1, function(resp) {
+                                findCount(candidate_list, function(data1) {
+                                    var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
+                                    res.json({ data: array })
+                                })
+                            })
+                        })
+
                 })
             })
 
-
-        function findCount(tag_id, callback) {
-            var tagId = tag_id.splice(0, 1)[0]
-            req.email.find({ tag_id: { "$in": [tagId.id.toString()] } }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
-                var unread = 0
-                _.forEach(result, (val, key) => {
-                    if (val.unread === true) {
-                        unread++;
+        function findDefaultCount(default_tag_id, callback) {
+            if (default_tag_id.length == 0) {
+                callback(final_data)
+            } else {
+                var id1 = default_tag_id.splice(0, 1)[0];
+                req.email.find({ default_tag: id1.id }).exec(function(err, result1) {
+                    var unread = 0;
+                    _.forEach(result1, (val, key) => {
+                        if (val.unread === true) {
+                            unread++;
+                        }
+                    })
+                    var default_tag_data = {
+                        id: id1.id,
+                        color: id1.color,
+                        type: id1.type,
+                        title: id1.title,
+                        count: result1.length,
+                        unread: unread,
+                    }
+                    final_data.push(default_tag_data)
+                    if (default_tag_id.length) {
+                        findDefaultCount(default_tag_id, callback)
+                    } else {
+                        callback(final_data)
                     }
                 })
-                sub_child_list = []
-                db.Tag.findAll({ where: { type: "Default" } })
-                    .then((default_tag_list) => {
-                        find_child_count(tagId, default_tag_list, function(response) {
-                            response.id = tagId.id;
-                            response.title = tagId.title;
-                            response.type = tagId.type;
-                            response.color = tagId.color;
-                            response.count = result.length;
-                            response.unread = unread;
-                            response.subchild.unshift({ id: tagId.id, title: "All", color: tagId.color, count: result.length, unread: unread })
-                            count1.push(response)
-                            if (tag_id.length) {
-                                findCount(tag_id, callback)
-                            } else {
-                                callback(count1)
-                            }
-                        })
-                    })
+            }
+        }
 
-            })
+        function findCount(tag_id, callback) {
+            if (tag_id.length == 0) {
+                callback(count1)
+            } else {
+                var tagId = tag_id.splice(0, 1)[0]
+                req.email.find({ tag_id: { "$in": [tagId.id.toString()] } }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                    var unread = 0
+                    _.forEach(result, (val, key) => {
+                        if (val.unread === true) {
+                            unread++;
+                        }
+                    })
+                    sub_child_list = []
+                    db.Tag.findAll({ where: { type: "Default" } })
+                        .then((default_tag_list) => {
+                            find_child_count(tagId, default_tag_list, function(response) {
+                                response.id = tagId.id;
+                                response.title = tagId.title;
+                                response.type = tagId.type;
+                                response.color = tagId.color;
+                                response.count = result.length;
+                                response.unread = unread;
+                                response.subchild.unshift({ id: tagId.id, title: "All", color: tagId.color, count: result.length, unread: unread })
+                                count1.push(response)
+                                if (tag_id.length) {
+                                    findCount(tag_id, callback)
+                                } else {
+                                    callback(count1)
+                                }
+                            })
+                        })
+
+                })
+            }
         }
 
         function find_child_count(tagId, default_tag_list, callback) {
@@ -197,7 +250,9 @@ export class FetchController extends BaseAPIController {
                     })
                     child.unread = unread
                 }
-                sub_child_list.push(child)
+                if (child.title != constant().tagType.genuine) {
+                    sub_child_list.push(child)
+                }
                 if (default_tag_list.length) {
                     find_child_count(tagId, default_tag_list, callback)
                 } else {
@@ -397,7 +452,6 @@ export class FetchController extends BaseAPIController {
     findByTagId = (req, res, next, tag_id) => {
         var where;
         let { type, keyword, selected, default_id } = req.body;
-        console.log(type)
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
                 var default_tag_id = []
@@ -419,16 +473,25 @@ export class FetchController extends BaseAPIController {
                     where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if ((type == "subject") && tag_id) {
-
-                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
+                    } else {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
                     where = { tag_id: { $size: 0 } };
                 } else {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
+                    } else if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { default_tag: tag_id }
                     } else {
                         where = { tag_id: { $in: [tag_id] } }
                     }
@@ -448,6 +511,7 @@ export class FetchController extends BaseAPIController {
                     res.json(response)
                 })
             })
+            .catch(this.handleErrorResponse.bind(null, res));
 
         function sendmail(from, callback) {
             var to_email = emails.splice(0, 1);
@@ -464,7 +528,6 @@ export class FetchController extends BaseAPIController {
                         callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
                     }
                 })
-                .catch(this.handleErrorResponse.bind(null, res));
         }
     }
     fetchByButton = (req, res, next) => {

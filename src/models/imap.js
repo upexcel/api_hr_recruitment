@@ -28,6 +28,10 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.BOOLEAN,
             defaultValue: false,
         },
+        total_emails: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+        }
     }, {
         timestamps: true,
         freezeTableName: true,

@@ -118,9 +118,9 @@ module.exports = {
                                                                             answered = in_array("\\Answered", flag);
 
                                                                         parser.once("end", function() {
-                                                                            automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
+                                                                            automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, true)
                                                                                 .then((tag) => {
-                                                                                    if (tag.tagId.length) {
+                                                                                    if (tag.tagId.length || tag.default_tag_id) {
                                                                                         email_timestamp = new Date().getTime()
                                                                                     }
                                                                                     email.findOne({
@@ -146,7 +146,7 @@ module.exports = {
                                                                                                 uid: uid,
                                                                                                 body: body,
                                                                                                 tag_id: tag.tagId,
-                                                                                                default_tag: "",
+                                                                                                default_tag: tag.default_tag_id || "",
                                                                                                 is_attachment: attach || false,
                                                                                                 imap_email: val.dataValues.email,
                                                                                                 genuine_applicant: GENERIC.Genuine_Applicant(subject)
@@ -313,9 +313,9 @@ module.exports = {
                                                                 var unread = !(in_array('\\Seen', flag)),
                                                                     answered = in_array("\\Answered", flag);
                                                                 parser.once("end", function() {
-                                                                    automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email)
+                                                                    automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, false)
                                                                         .then((tag) => {
-                                                                            if (tag.tagId.length) {
+                                                                            if (tag.tagId.length || tag.default_tag_id) {
                                                                                 email_timestamp = new Date().getTime()
                                                                             }
                                                                             email.findOne({
@@ -339,8 +339,8 @@ module.exports = {
                                                                                         answered: answered,
                                                                                         uid: uid,
                                                                                         body: body,
-                                                                                        tag_id: tag.tagId,
-                                                                                        default_tag: "",
+                                                                                        tag_id: tag.tagId || [],
+                                                                                        default_tag: tag.default_tag_id || "",
                                                                                         is_attachment: attach || false,
                                                                                         imap_email: val.dataValues.email,
                                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject)

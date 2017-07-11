@@ -6,7 +6,7 @@ import replace from "../modules/replaceVariable";
 import config from "../config";
 
 module.exports = {
-    tags: function(subject, email_date, name, to, from) {
+    tags: function(subject, email_date, name, to, from, send_to) {
         return new Promise((resolve, reject) => {
             let count = 0;
             let tagId = [];
@@ -14,7 +14,7 @@ module.exports = {
             if (subject.match(new RegExp(constant().automatic_mail_subject_match, 'gi'))) {
                 db.Tag.findOne({ where: { title: constant().tagType.genuine } })
                     .then((data) => {
-                        resolve({ tagId: data.id.toString() })
+                        resolve({ tagId: [], default_tag_id: data.id.toString() })
                     })
                     .catch((error) => { reject(error) })
             } else {
@@ -35,8 +35,8 @@ module.exports = {
                                 if (data != null) {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
-                                            if (config.boolean == true) {
-                                                data.subject = config.automatic_mail_subject + " " + data.subject;
+                                            if (config.boolean === true && send_to) {
+                                                data.subject = constant().automatic_mail_subject + " " + data.subject;
                                                 mail.sendMail(to, data.subject, constant().smtp.text, from, html)
                                                     .then((response) => {
                                                         resolve({ message: "Tempate Send Successfully", tagId: tagId })
@@ -46,7 +46,7 @@ module.exports = {
                                             }
                                         });
                                 } else {
-                                    if (tagId.length !== 0) {
+                                    if (tagId.length != 0) {
                                         resolve({ message: "Email Not send", tagId: tagId })
                                     } else {
                                         resolve({ message: "Email Not send", tagId: [] })
