@@ -6,6 +6,7 @@ import config from "../config.js";
 import google from "googleapis";
 import googleDrive from 'google-drive'
 var mime = require('mime-types');
+
 var replaceExt = require('replace-ext');
 
 var OAuth2 = google.auth.OAuth2;
@@ -69,6 +70,10 @@ var self = module.exports = {
                                 msg.on("body", function(stream) {
                                     var filename = attachment[0].disposition.params.filename;
                                     var encoding = attachment[0].encoding;
+                                    var myDir = __dirname + "/uploads";
+                                    if (!fs.existsSync(myDir)) {
+                                        fs.mkdirSync(myDir);
+                                    }
                                     filepath = path.join(__dirname, "/uploads/", filename);
                                     self.filesave(stream, filepath, filename, encoding)
                                         .then((data) => {
