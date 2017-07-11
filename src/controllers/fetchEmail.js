@@ -472,14 +472,14 @@ export class FetchController extends BaseAPIController {
                     where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
-                    if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, "default_tag": default_id }
                     } else {
                         where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
                     }
                 } else if ((type == "subject") && tag_id) {
-                    if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, "default_tag": default_id }
                     } else {
                         where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
                     }
