@@ -452,7 +452,7 @@ export class FetchController extends BaseAPIController {
                     res.json({ status: 0, message: 'mongo_id not found in database' });
                 }
             }
-        });
+        })
     }
 
 

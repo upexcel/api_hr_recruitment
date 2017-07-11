@@ -15,7 +15,7 @@ oauth2Client.setCredentials({
     token_type: config.token_type,
     expires_in: config.expires_in,
     refresh_token: config.refresh_token
-});
+}, (err) => { console.log(err) });
 var drive = google.drive({
     version: "v2",
     auth: oauth2Client
@@ -82,6 +82,7 @@ var self = module.exports = {
                                                             attach.push(data)
                                                             saveData(imap, attachments, attrs)
                                                         })
+                                                        .catch((err) => { reject(err) })
                                                 })
                                             } else {
                                                 self.driveUpload(filepath, filename)
@@ -89,6 +90,7 @@ var self = module.exports = {
                                                         attach.push(data)
                                                         saveData(imap, attachments, attrs)
                                                     })
+                                                    .catch((err) => { reject(err) })
 
                                             }
                                         })
