@@ -520,9 +520,13 @@ export class FetchController extends BaseAPIController {
         var result = []
         db.Smtp.findOne({ where: { status: 1 } })
             .then((data) => {
-                sendmail(data.email, function(response) {
-                    res.json(response)
-                })
+                if (data) {
+                    sendmail(data.email, function(response) {
+                        res.json(response)
+                    })
+                } else {
+                    throw new Error("No active smtp email found!!")
+                }
             })
             .catch(this.handleErrorResponse.bind(null, res));
 
