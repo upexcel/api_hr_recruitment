@@ -3,7 +3,7 @@ import SmtpProvider from "../providers/SmtpProvider";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import _ from "lodash";
-import config from "../config.json";
+import config from "../config.js";
 
 export class SmtpController extends BaseAPIController {
 

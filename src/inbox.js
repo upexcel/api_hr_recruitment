@@ -3,7 +3,7 @@ import in_array from "in_array";
 import GENERIC from "./modules/generic";
 import _ from "lodash";
 import db from "./db";
-import config from "./config.json";
+import config from "./config.js";
 import mail from "./modules/mail";
 import replace from "./modules/replaceVariable";
 import automaticTag from "./modules/automaticTags";

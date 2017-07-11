@@ -3,7 +3,7 @@
 
 ## Install Dependencies
 ``` $ npm install ```
-### Create config.json file in /src folder 
+### need to do changes in live_config.json && dev_config.json
 
 #### for attachments to save in google drive keys to update in config.json file  
 ```
