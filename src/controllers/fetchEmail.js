@@ -30,12 +30,19 @@ export class FetchController extends BaseAPIController {
                 } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
 
                     where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
-
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else if ((type == "email") && (selected == true) && ((!isNaN(tag_id) == false))) {
+                    if (default_id) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                    }
                 } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    if (default_id) {
+                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
+                    } else {
+                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                    }
 
-                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
@@ -466,23 +473,29 @@ export class FetchController extends BaseAPIController {
 
                     where = { 'subject': { "$regex": keyword, '$options': 'i' } }
                 } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
-
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                    if (default_id) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                    }
                 } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
-
-                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                    if (default_id) {
+                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
+                    } else {
+                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                    }
                 } else
                 if ((type == "email") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, "tag_id": { $in: [tag_id] } }
                     } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
                     }
                 } else if ((type == "subject") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': { $in: [tag_id] } }
                     } else {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
                     }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
