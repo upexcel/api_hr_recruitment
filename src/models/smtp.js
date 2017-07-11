@@ -2,7 +2,7 @@ import _ from 'lodash';
 import mail from "../modules/mail";
 import constant from "../models/constant";
 import emailExistence from "email-existence";
-import config from "../config.json";
+import config from "../config.js";
 
 export default function(sequelize, DataTypes) {
     const smtp = sequelize.define("SMTP", {

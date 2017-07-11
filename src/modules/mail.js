@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
-import config from "../config.json";
+import config from "../config.js";
 import emailExistence from "email-existence";
 
 module.exports = {
