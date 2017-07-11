@@ -38,14 +38,14 @@ export class FetchController extends BaseAPIController {
                     where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
-                    if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
                     } else {
                         where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
                     }
                 } else if ((type == "subject") && tag_id) {
-                    if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
                     } else {
                         where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
                     }
@@ -61,6 +61,7 @@ export class FetchController extends BaseAPIController {
                         where = { tag_id: { $in: [tag_id] } }
                     }
                 }
+                console.log(where)
                 req.email.find(where, { "_id": 1, "date": 1, "email_date": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
                     if (err) {
                         next(err);
@@ -473,13 +474,13 @@ export class FetchController extends BaseAPIController {
                 } else
                 if ((type == "email") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, "default_tag": default_id }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
                     } else {
                         where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
                     }
                 } else if ((type == "subject") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, "default_tag": default_id }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
                     } else {
                         where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
                     }
