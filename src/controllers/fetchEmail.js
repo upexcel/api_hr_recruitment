@@ -30,18 +30,12 @@ export class FetchController extends BaseAPIController {
                 } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
 
                     where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-                } else if ((type == "email") && (selected == true) && ((!isNaN(tag_id) == false) || default_id)) {
-                    if (default_id) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_id': default_id }
-                    } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-                    }
-                } else if ((type == "subject") && (selected == true) && ((!isNaN(tag_id) == false) || default_id)) {
-                    if (default_id) {
-                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'default_id': default_id }
-                    } else {
-                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-                    }
+                } else if ((type == "email") && (selected == true) && ((!isNaN(tag_id) == false))) {
+
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
