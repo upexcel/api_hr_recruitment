@@ -148,7 +148,7 @@ export class FetchController extends BaseAPIController {
                 })
                 findCount(tagId, function(data) {
                     count1 = []
-                    var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count }
+                    var mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count, type: "Automatic" }
                     data.push(mails)
                     var default_id1 = [];
                     _.forEach(data, (val, key) => {
