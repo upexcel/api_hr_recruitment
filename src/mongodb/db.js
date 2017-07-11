@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
-let conn = mongoose.createConnection("mongodb://localhost/EMAILPANEL");
+let db = "hr_recruit_live"
+if (process.env.NODE_ENV == "dev") {
+    db = "hr_recruit_dev"
+}
+let conn = mongoose.createConnection("mongodb://localhost/" + db);
 import cronService from "../service/cron.js";
 // the middleware function
 module.exports = function() {
