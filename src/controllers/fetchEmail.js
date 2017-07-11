@@ -38,10 +38,17 @@ export class FetchController extends BaseAPIController {
                     where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if ((type == "subject") && tag_id) {
-
-                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    } else {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
                     where = { tag_id: { $size: 0 } };
@@ -465,10 +472,17 @@ export class FetchController extends BaseAPIController {
                     where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
                 } else
                 if ((type == "email") && tag_id) {
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if ((type == "subject") && tag_id) {
-
-                    where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': tag_id }
+                    } else {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                    }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
                     where = { tag_id: { $size: 0 } };
