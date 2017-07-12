@@ -20,6 +20,7 @@ module.exports = function() {
         subject: { type: String },
         unread: { type: Boolean },
         answered: { type: Boolean },
+        is_automatic_email_send: { type: Number },
         uid: { type: Number },
         body: { type: String },
         tag_id: { type: Array },
