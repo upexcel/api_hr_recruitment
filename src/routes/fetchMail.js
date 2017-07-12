@@ -32,6 +32,9 @@ export default (app) => {
     /*send mails to a list of emails*/
     app.route("/email/sendtomany").post(auth.requiresLogin, fetch_email.sendToMany);
 
+    /*send to a specified Tag*/
+    app.route("/email/send_to_selected_tag").put(auth.requiresLogin, fetch_email.sendToSelectedTag)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 
