@@ -14,7 +14,7 @@ var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.RED
 oauth2Client.setCredentials({
     access_token: config.access_token,
     token_type: config.token_type,
-    expires_in: config.expires_in,
+    expiry_date: config.expiry_date,
     refresh_token: config.refresh_token
 }, (err) => { console.log(err) });
 var drive = google.drive({
