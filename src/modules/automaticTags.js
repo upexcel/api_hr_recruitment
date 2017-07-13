@@ -6,7 +6,7 @@ import replace from "../modules/replaceVariable";
 import config from "../config";
 
 module.exports = {
-    tags: function(subject, email_date, name, to, from, send_to) {
+    tags: function(mongodb, subject, email_date, name, to, from, send_to) {
         return new Promise((resolve, reject) => {
             let count = 0;
             let tagId = [];
@@ -14,7 +14,26 @@ module.exports = {
             if (subject.match(new RegExp(constant().automatic_mail_subject_match, 'gi'))) {
                 db.Tag.findOne({ where: { title: constant().tagType.genuine } })
                     .then((data) => {
-                        resolve({ tagId: [], default_tag_id: data.id.toString() })
+                        get_email_already_save(to, function(tagId) {
+                            if (tagId.length) {
+                                resolve({ tagId: tagId, default_tag_id: data.id.toString() })
+                            } else {
+                                resolve({ tagId: [], default_tag_id: data.id.toString() })
+                            }
+                        })
+
+                        function get_email_already_save(email_id, callback) {
+                            mongodb.findOne({ sender_mail: email_id }).limit(1).sort({ date: -1 }).exec(function(err, response) {
+                                // console.log(response)
+                                if (response) {
+                                    callback(response.tag_id)
+                                } else {
+                                    callback([])
+                                }
+
+                            })
+                        }
+
                     })
                     .catch((error) => { reject(error) })
             } else {
