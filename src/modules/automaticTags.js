@@ -56,7 +56,7 @@ module.exports = {
                                         .then((html) => {
                                             if (config.send_automatic_tags_email === true && send_to) {
                                                 data.subject = constant().automatic_mail_subject + " " + data.subject;
-                                                db.tag.Smtp.findOne({ where: { status: 1 } })
+                                                db.tag.Smtp.find({ where: { status: 1 } })
                                                     .then((smtp) => {
                                                         mail.sendMail(to, data.subject, constant().smtp.text, smtp.email, html)
                                                             .then((response) => {
