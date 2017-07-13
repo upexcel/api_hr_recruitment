@@ -568,7 +568,6 @@ export class FetchController extends BaseAPIController {
                                         } else {
                                             req.email.update({ "_id": { "$in": data.id } }, { is_automatic_email_send: 1 }, { multi: true })
                                                 .then((data1) => {
-                                                    console.log(data1)
                                                     delete data.id;
                                                     res.json(data)
 
