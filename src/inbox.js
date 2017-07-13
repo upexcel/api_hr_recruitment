@@ -237,7 +237,7 @@ module.exports = {
                                                     dateFrom = moment(date).subtract(1, 'months').format('MMM DD, YYYY');
                                                 } else {
                                                     date = moment(new Date()).format("MMM DD, YYYY");
-                                                    dateFrom = moment(date).subtract(1, 'months').format('MMM DD, YYYY');
+                                                    dateFrom = moment(date).subtract(6, 'months').format('MMM DD, YYYY');
                                                 }
                                                 imap.search(['ALL', ['SINCE', dateFrom],
                                                     ['BEFORE', date]
