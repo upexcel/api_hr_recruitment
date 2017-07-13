@@ -60,7 +60,11 @@ module.exports = {
                                                     .then((smtp) => {
                                                         mail.sendMail(to, data.subject, constant().smtp.text, smtp.email, html)
                                                             .then((response) => {
-                                                                resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1 })
+                                                                if (response.status) {
+                                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1 })
+                                                                } else {
+                                                                    resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0 })
+                                                                }
                                                             })
                                                     })
                                             } else {
