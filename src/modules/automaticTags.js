@@ -54,10 +54,10 @@ module.exports = {
                                 if (data != null) {
                                     replace.filter(data.body, name, tagId[0])
                                         .then((html) => {
-                                            if (config.send_automatic_tags_email === true && send_to) {
-                                                data.subject = constant().automatic_mail_subject + " " + data.subject;
-                                                db.tag.Smtp.findOne({ where: { status: 1 } })
-                                                    .then((smtp) => {
+                                            db.Smtp.findOne({ where: { status: 1 } })
+                                                .then((smtp) => {
+                                                    if (config.send_automatic_tags_email === true && send_to) {
+                                                        data.subject = constant().automatic_mail_subject + " " + data.subject;
                                                         mail.sendMail(to, data.subject, constant().smtp.text, smtp.email, html)
                                                             .then((response) => {
                                                                 if (response.status) {
@@ -66,10 +66,11 @@ module.exports = {
                                                                     resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0 })
                                                                 }
                                                             })
-                                                    })
-                                            } else {
-                                                resolve({ message: "Email Not Send ", tagId: tagId })
-                                            }
+
+                                                    } else {
+                                                        resolve({ message: "Email Not Send ", tagId: tagId })
+                                                    }
+                                                })
                                         });
                                 } else {
                                     if (tagId.length != 0) {
