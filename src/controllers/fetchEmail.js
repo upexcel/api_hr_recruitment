@@ -552,6 +552,7 @@ export class FetchController extends BaseAPIController {
     sendToSelectedTag = (req, res, next) => {
         var email_send_success_list = [];
         var email_send_fail_list = [];
+        var email_send_sucess_id = [];
         var id = req.body.tag_id
         this._db.Tag.findById(id)
             .then((data) => {
@@ -559,28 +560,35 @@ export class FetchController extends BaseAPIController {
                     .then((template) => {
                         this._db.Smtp.findOne({ where: { status: 1 } })
                             .then((smtp) => {
-                                req.email.find({ 'tag_id': { $in: [id] } }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).limit(1).exec(function(err, result) {
+                                req.email.find({ 'tag_id': { $in: [id] } }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
                                     var emails = result;
                                     sendTemplateToEmails(emails, template, smtp, function(err, data) {
                                         if (err) {
                                             res.status(400).send({ message: err })
                                         } else {
-                                            res.json(data)
+                                            req.email.update({ "_id": { "$in": data.id } }, { is_automatic_email_send: 1 }, { multi: true })
+                                                .then((data1) => {
+                                                    console.log(data1)
+                                                    delete data.id;
+                                                    res.json(data)
+
+                                                })
                                         }
                                     })
 
                                     function sendTemplateToEmails(emails, template, smtp, callback) {
-                                        // var replace = require("../modules/replaceVariable")
+                                        var subject = "";
                                         if (!smtp) {
                                             callback("Not active Smtp", null);
                                         }
                                         var email_id = emails.splice(0, 1)[0];
                                         replaceData.filter(template.body, emails.from, req.body.tag_id)
                                             .then((html) => {
-                                                template.subject = constant().automatic_mail_subject + " " + template.subject;
-                                                mail.sendMail(email_id.sender_mail, template.subject, constant().smtp.text, smtp.email, html)
+                                                subject = constant().automatic_mail_subject + " " + template.subject;
+                                                mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
                                                     .then((response) => {
                                                         if (response.status) {
+                                                            email_send_sucess_id.push(email_id._id);
                                                             email_send_success_list.push(email_id.sender_mail)
                                                         } else {
                                                             email_send_fail_list.push(email_id.sender_mail)
@@ -588,7 +596,7 @@ export class FetchController extends BaseAPIController {
                                                         if (emails.length) {
                                                             sendTemplateToEmails(emails, template, smtp, callback)
                                                         } else {
-                                                            callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
+                                                            callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }], id: email_send_sucess_id })
                                                         }
                                                     })
 
