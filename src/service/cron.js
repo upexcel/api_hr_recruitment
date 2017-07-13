@@ -5,7 +5,6 @@ export class CronController {
     cron(email) {
         new CronJob("*/60 * * * *", function() {
             inbox.fetchEmail(email); // running this function every 60 min
-            min
             inbox.beforeDateEmail(email);
         }, null, true);
     }
