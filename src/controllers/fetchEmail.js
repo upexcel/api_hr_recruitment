@@ -556,56 +556,65 @@ export class FetchController extends BaseAPIController {
         var id = req.body.tag_id
         this._db.Tag.findById(id)
             .then((data) => {
-                this._db.Template.findById(data.template_id)
-                    .then((template) => {
-                        this._db.Smtp.findOne({ where: { status: 1 } })
-                            .then((smtp) => {
-                                req.email.find({ 'tag_id': { $in: [id] } }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
-                                    var emails = result;
-                                    sendTemplateToEmails(emails, template, smtp, function(err, data) {
-                                        if (err) {
-                                            res.status(400).send({ message: err })
-                                        } else {
-                                            req.email.update({ "_id": { "$in": data.id } }, { is_automatic_email_send: 1 }, { multi: true })
-                                                .then((data1) => {
-                                                    delete data.id;
-                                                    res.json(data)
-
-                                                })
-                                        }
-                                    })
-
-                                    function sendTemplateToEmails(emails, template, smtp, callback) {
-                                        var subject = "";
-                                        if (!smtp) {
-                                            callback("Not active Smtp", null);
-                                        }
-                                        var email_id = emails.splice(0, 1)[0];
-                                        replaceData.filter(template.body, emails.from, req.body.tag_id)
-                                            .then((html) => {
-                                                subject = constant().automatic_mail_subject + " " + template.subject;
-                                                mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
-                                                    .then((response) => {
-                                                        if (response.status) {
-                                                            email_send_sucess_id.push(email_id._id);
-                                                            email_send_success_list.push(email_id.sender_mail)
-                                                        } else {
-                                                            email_send_fail_list.push(email_id.sender_mail)
-                                                        }
-                                                        if (emails.length) {
-                                                            sendTemplateToEmails(emails, template, smtp, callback)
-                                                        } else {
-                                                            callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }], id: email_send_sucess_id })
-                                                        }
-                                                    })
-
+                if (data) {
+                    this._db.Template.findById(data.template_id)
+                        .then((template) => {
+                            if (template) {
+                                this._db.Smtp.findOne({ where: { status: 1 } })
+                                    .then((smtp) => {
+                                        req.email.find({ 'tag_id': { $in: [id.toString()] } }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).limit(2).exec(function(err, result) {
+                                            var emails = result;
+                                            sendTemplateToEmails(emails, template, smtp, function(err, data) {
+                                                if (err) {
+                                                    res.status(400).send({ message: err })
+                                                } else {
+                                                    req.email.update({ "_id": { "$in": data.id } }, { is_automatic_email_send: 1 }, { multi: true })
+                                                        .then((data1) => {
+                                                            delete data.id;
+                                                            res.json(data)
+                                                        })
+                                                }
                                             })
 
-                                    }
-                                })
-                            })
-                    })
+                                            function sendTemplateToEmails(emails, template, smtp, callback) {
+                                                var subject = "";
+                                                if (!smtp) {
+                                                    callback("Not active Smtp", null);
+                                                }
+                                                var email_id = emails.splice(0, 1)[0];
+                                                replaceData.filter(template.body, emails.from, req.body.tag_id)
+                                                    .then((html) => {
+                                                        subject = constant().automatic_mail_subject + " " + template.subject;
+                                                        mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
+                                                            .then((response) => {
+                                                                if (response.status) {
+                                                                    email_send_sucess_id.push(email_id._id);
+                                                                    email_send_success_list.push(email_id.sender_mail)
+                                                                } else {
+                                                                    email_send_fail_list.push(email_id.sender_mail)
+                                                                }
+                                                                if (emails.length) {
+                                                                    sendTemplateToEmails(emails, template, smtp, callback)
+                                                                } else {
+                                                                    callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }], id: email_send_sucess_id })
+                                                                }
+                                                            })
+
+                                                    })
+
+                                            }
+                                        })
+                                    })
+                            } else {
+                                throw new Error("No template found")
+                            }
+                        })
+                        .catch(this.handleErrorResponse.bind(null, res))
+                } else {
+                    throw new Error("Invalid Tag id")
+                }
             })
+            .catch(this.handleErrorResponse.bind(null, res))
     }
     fetchByButton = (req, res, next) => {
         inbox.fetchEmail(req.email, 'apiCall')
