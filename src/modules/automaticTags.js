@@ -16,14 +16,14 @@ module.exports = {
                     .then((data) => {
                         get_email_already_save(to, function(tagId) {
                             if (tagId.length) {
-                                resolve({ tagId: tagId, default_tag_id: data.id.toString() })
+                                resolve({ tagId: tagId, default_tag_id: data.id.toString(), is_automatic_email_send: 1 })
                             } else {
-                                resolve({ tagId: [], default_tag_id: data.id.toString() })
+                                resolve({ tagId: [], default_tag_id: data.id.toString(), is_automatic_email_send: 1 })
                             }
                         })
 
                         function get_email_already_save(email_id, callback) {
-                            mongodb.findOne({ sender_mail: email_id }).limit(1).sort({ date: -1 }).exec(function(err, response) {
+                            mongodb.findOne({ sender_mail: email_id, tag_id: { "$size": { "$gt": 0 } } }).limit(1).sort({ date: -1 }).exec(function(err, response) {
                                 // console.log(response)
                                 if (response) {
                                     callback(response.tag_id)
