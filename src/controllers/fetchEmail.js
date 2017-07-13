@@ -561,8 +561,9 @@ export class FetchController extends BaseAPIController {
                             if (template) {
                                 this._db.Smtp.findOne({ where: { status: 1 } })
                                     .then((smtp) => {
-                                        req.email.find({ 'tag_id': { $in: [id.toString()] }, is_automatic_email_send: 0 }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                        req.email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0, is_automatic_email_send: { $exists: false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
                                             var emails = result;
+                                            console.log(result)
                                             if (result.length) {
                                                 sendTemplateToEmails(emails, template, smtp, function(err, data) {
                                                     if (err) {
