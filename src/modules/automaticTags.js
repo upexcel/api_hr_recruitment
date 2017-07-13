@@ -23,7 +23,7 @@ module.exports = {
                         })
 
                         function get_email_already_save(email_id, callback) {
-                            mongodb.findOne({ sender_mail: email_id, tag_id: { "$size": { "$gt": 0 } } }).limit(1).sort({ date: -1 }).exec(function(err, response) {
+                            mongodb.findOne({ sender_mail: email_id, tag_id: { "$not": { "$size": 0 } } }).limit(1).sort({ date: -1 }).exec(function(err, response) {
                                 // console.log(response)
                                 if (response) {
                                     callback(response.tag_id)
