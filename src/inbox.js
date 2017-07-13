@@ -118,7 +118,7 @@ module.exports = {
                                                                             answered = in_array("\\Answered", flag);
 
                                                                         parser.once("end", function() {
-                                                                            automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, true)
+                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
                                                                                         email_timestamp = new Date().getTime()
@@ -234,7 +234,7 @@ module.exports = {
                                                 var row = resp[0];
                                                 if (row && row.get("date")) {
                                                     date = moment(new Date(row.get("date"))).format("MMM DD, YYYY");
-                                                    dateFrom = moment(date).subtract(1, 'months').format('MMM DD, YYYY');
+                                                    dateFrom = moment(date).subtract(6, 'months').format('MMM DD, YYYY');
                                                 } else {
                                                     date = moment(new Date()).format("MMM DD, YYYY");
                                                     dateFrom = moment(date).subtract(6, 'months').format('MMM DD, YYYY');
@@ -314,7 +314,7 @@ module.exports = {
                                                                 var unread = !(in_array('\\Seen', flag)),
                                                                     answered = in_array("\\Answered", flag);
                                                                 parser.once("end", function() {
-                                                                    automaticTag.tags(subject, date, from, sender_mail, val.dataValues.email, false)
+                                                                    automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false)
                                                                         .then((tag) => {
                                                                             if (tag.tagId.length || tag.default_tag_id) {
                                                                                 email_timestamp = new Date().getTime()
