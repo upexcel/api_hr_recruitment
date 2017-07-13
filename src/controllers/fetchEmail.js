@@ -582,7 +582,7 @@ export class FetchController extends BaseAPIController {
                                                     callback("Not active Smtp", null);
                                                 }
                                                 var email_id = emails.splice(0, 1)[0];
-                                                replaceData.filter(template.body, emails.from, req.body.tag_id)
+                                                replaceData.filter(template.body, email_id.from, req.body.tag_id)
                                                     .then((html) => {
                                                         subject = constant().automatic_mail_subject + " " + template.subject;
                                                         mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
