@@ -552,7 +552,6 @@ export class FetchController extends BaseAPIController {
     sendToSelectedTag = (req, res, next) => {
         var email_send_success_list = [];
         var email_send_fail_list = [];
-        var email_send_sucess_id = [];
         var id = req.body.tag_id
         this._db.Tag.findById(id)
             .then((data) => {
@@ -568,11 +567,7 @@ export class FetchController extends BaseAPIController {
                                                 if (err) {
                                                     res.status(400).send({ message: err })
                                                 } else {
-                                                    req.email.update({ "_id": { "$in": data.id } }, { is_automatic_email_send: 1 }, { multi: true })
-                                                        .then((data1) => {
-                                                            delete data.id;
-                                                            res.json(data)
-                                                        })
+                                                    res.json(data)
                                                 }
                                             })
 
@@ -587,17 +582,19 @@ export class FetchController extends BaseAPIController {
                                                         subject = constant().automatic_mail_subject + " " + template.subject;
                                                         mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
                                                             .then((response) => {
-                                                                if (response.status) {
-                                                                    email_send_sucess_id.push(email_id._id);
-                                                                    email_send_success_list.push(email_id.sender_mail)
-                                                                } else {
-                                                                    email_send_fail_list.push(email_id.sender_mail)
-                                                                }
-                                                                if (emails.length) {
-                                                                    sendTemplateToEmails(emails, template, smtp, callback)
-                                                                } else {
-                                                                    callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }], id: email_send_sucess_id })
-                                                                }
+                                                                req.email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
+                                                                    .then((data1) => {
+                                                                        if (response.status) {
+                                                                            email_send_success_list.push(email_id.sender_mail)
+                                                                        } else {
+                                                                            email_send_fail_list.push(email_id.sender_mail)
+                                                                        }
+                                                                        if (emails.length) {
+                                                                            sendTemplateToEmails(emails, template, smtp, callback)
+                                                                        } else {
+                                                                            callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
+                                                                        }
+                                                                    })
                                                             })
 
                                                     })
