@@ -561,15 +561,20 @@ export class FetchController extends BaseAPIController {
                             if (template) {
                                 this._db.Smtp.findOne({ where: { status: 1 } })
                                     .then((smtp) => {
-                                        req.email.find({ 'tag_id': { $in: [id.toString()] } }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                        req.email.find({ 'tag_id': { $in: [id.toString()] }, is_automatic_email_send: 0 }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
                                             var emails = result;
-                                            sendTemplateToEmails(emails, template, smtp, function(err, data) {
-                                                if (err) {
-                                                    res.status(400).send({ message: err })
-                                                } else {
-                                                    res.json(data)
-                                                }
-                                            })
+                                            if (result.length) {
+                                                sendTemplateToEmails(emails, template, smtp, function(err, data) {
+                                                    if (err) {
+                                                        res.status(400).send({ message: err })
+                                                    } else {
+                                                        res.json(data)
+                                                    }
+                                                })
+                                            } else {
+                                                res.status(400).send({ message: "No Pending mails" })
+                                            }
+
 
                                             function sendTemplateToEmails(emails, template, smtp, callback) {
                                                 var subject = "";
