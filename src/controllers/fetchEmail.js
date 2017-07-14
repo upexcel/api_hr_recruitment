@@ -157,10 +157,13 @@ export class FetchController extends BaseAPIController {
                                 db.Tag.findAll({ where: { type: "Default" } })
                                     .then((default_tag) => {
                                         _.forEach(default_tag, (val, key) => {
-                                            default_id1.push(val);
+                                            if (val.title != constant().tagType.genuine) {
+                                                default_id1.push(val);
+                                            }
                                         })
                                         findDefaultCount(default_id1, function(resp) {
                                             findCount(candidate_list, function(data1) {
+                                                console.log(final_data)
                                                 var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
                                                 res.json({ data: array })
                                             })
@@ -516,21 +519,43 @@ export class FetchController extends BaseAPIController {
     }
 
     sendToMany = (req, res, next) => {
-        var { emails, subject, body } = req.body;
+        var { subject, body, tag_id } = req.body;
         var email_send_success_list = [];
         var email_send_fail_list = [];
         var result = []
-        db.Smtp.findOne({ where: { status: 1 } })
-            .then((data) => {
-                if (data) {
-                    sendmail(data.email, function(response) {
-                        res.json(response)
+        if (!tag_id) {
+            var emails = req.body.emails;
+            db.Smtp.findOne({ where: { status: 1 } })
+                .then((data) => {
+                    if (data) {
+                        sendmail(data.email, function(response) {
+                            res.json(response)
+                        })
+                    } else {
+                        throw new Error("No active smtp email found!!")
+                    }
+                })
+                .catch(this.handleErrorResponse.bind(null, res));
+        } else {
+            req.email.find({ tag_id: { "$in": [tag_id.toString()] } }, { "sender_mail": 1 }).exec(function(err, result) {
+                var emails = []
+                _.forEach(result, (val, key) => {
+                    emails.push(val.sender_mail)
+                })
+                db.Smtp.findOne({ where: { status: 1 } })
+                    .then((data) => {
+                        if (data) {
+                            sendmail(data.email, function(response) {
+                                res.json(response)
+                            })
+                        } else {
+                            throw new Error("No active smtp email found!!")
+                        }
                     })
-                } else {
-                    throw new Error("No active smtp email found!!")
-                }
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
-            .catch(this.handleErrorResponse.bind(null, res));
+        }
+
 
         function sendmail(from, callback) {
             var to_email = emails.splice(0, 1);

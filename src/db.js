@@ -20,17 +20,17 @@ Object.keys(db).forEach((modelName) => {
 });
 
 sequelize.sync().then(() => {
-    db.Tag.findOne({ where: { type: "Default", title: "Reject" } })
+    db.Tag.findOne({ where: { type: "Default", title: "Shortlist" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Reject", type: "Default", color: "#cb891b" });
+                db.Tag.create({ title: "Shortlist", type: "Default", color: "#cb891b" });
             }
         });
 
-    db.Tag.findOne({ where: { type: "Default", title: "Ignore" } })
+    db.Tag.findOne({ where: { type: "Default", title: "Reject" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Ignore", type: "Default", color: "#ef2e46" });
+                db.Tag.create({ title: "Reject", type: "Default", color: "#ef2e46" });
             }
         });
 
