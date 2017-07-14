@@ -163,7 +163,6 @@ export class FetchController extends BaseAPIController {
                                         })
                                         findDefaultCount(default_id1, function(resp) {
                                             findCount(candidate_list, function(data1) {
-                                                console.log(final_data)
                                                 var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
                                                 res.json({ data: array })
                                             })
