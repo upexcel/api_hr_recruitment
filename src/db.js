@@ -23,28 +23,39 @@ sequelize.sync().then(() => {
     db.Tag.findOne({ where: { type: "Default", title: "Shortlist" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Shortlist", type: "Default", color: "#cb891b" });
+                db.Tag.create({ title: "Shortlist", type: "Default", color: "#cb891b", default_id: 2 });
             }
         });
 
     db.Tag.findOne({ where: { type: "Default", title: "Reject" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Reject", type: "Default", color: "#ef2e46" });
+                db.Tag.create({ title: "Reject", type: "Default", color: "#ef2e46", default_id: 6 });
             }
         });
 
-    db.Tag.findOne({ where: { type: "Default", title: "Schedule" } })
+    db.Tag.findOne({ where: { type: "Default", title: "Schedule_first_round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule", type: "Default", color: "#ba21d3" });
+                db.Tag.create({ title: "Schedule_first_round", type: "Default", color: "#ba21d3", default_id: 3 });
             }
         });
-
+    db.Tag.findOne({ where: { type: "Default", title: "Schedule_second_round" } })
+        .then((id) => {
+            if (!id) {
+                db.Tag.create({ title: "Schedule_second_round", type: "Default", color: "#ba21d3", default_id: 4 });
+            }
+        });
+    db.Tag.findOne({ where: { type: "Default", title: "Schedule_third_round" } })
+        .then((id) => {
+            if (!id) {
+                db.Tag.create({ title: "Schedule_third_round", type: "Default", color: "#ba21d3", default_id: 5 });
+            }
+        });
     db.Tag.findOne({ where: { type: "Default", title: "Genuine Applicant" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Genuine Applicant", type: "Default", color: "#cb891b" });
+                db.Tag.create({ title: "Genuine Applicant", type: "Default", color: "#cb891b", default_id: 1 });
             }
         });
 

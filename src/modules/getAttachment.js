@@ -11,6 +11,7 @@ var replaceExt = require('replace-ext');
 
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
+
 oauth2Client.setCredentials({
     access_token: config.access_token,
     token_type: config.token_type,

@@ -161,14 +161,11 @@ export class FetchController extends BaseAPIController {
                                                 default_id1.push(val);
                                             }
                                         })
-                                        findDefaultCount(default_id1, function(resp) {
-                                            findCount(candidate_list, function(data1) {
-                                                var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
-                                                res.json({ data: array })
-                                            })
+                                        findCount(candidate_list, function(data1) {
+                                            var array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
+                                            res.json({ data: array })
                                         })
                                     })
-
                             })
                         })
                     })
@@ -217,7 +214,7 @@ export class FetchController extends BaseAPIController {
                         }
                     })
                     sub_child_list = []
-                    db.Tag.findAll({ where: { type: "Default" } })
+                    db.Tag.findAll({ where: { type: "Default" }, order: '`default_id` ASC' })
                         .then((default_tag_list) => {
                             find_child_count(tagId, default_tag_list, function(response) {
                                 response.id = tagId.id;
@@ -289,7 +286,9 @@ export class FetchController extends BaseAPIController {
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                if (data.type == "Default") {
+                                if (data.type == "Default" && req.body.shedule_for) {
+                                    var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": req.body.shedule_for, "shedule_date": req.body.shedule_date, "shedule_time": req.body.shedule_time }
+                                } else if (data.type == "Default") {
                                     var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime() };
                                 } else {
                                     where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
@@ -518,43 +517,41 @@ export class FetchController extends BaseAPIController {
     }
 
     sendToMany = (req, res, next) => {
-        var { subject, body, tag_id } = req.body;
+        var { subject, body, tag_id, default_id } = req.body;
         var email_send_success_list = [];
         var email_send_fail_list = [];
-        var result = []
-        if (!tag_id) {
-            var emails = req.body.emails;
-            db.Smtp.findOne({ where: { status: 1 } })
-                .then((data) => {
-                    if (data) {
-                        sendmail(data.email, function(response) {
+        var result = [];
+        var emails = [];
+        var where;
+
+        db.Smtp.findOne({ where: { status: 1 } })
+            .then((smtp_email) => {
+                if (smtp_email) {
+                    if (!tag_id) {
+                        emails = req.body.emails;
+                        sendmail(smtp_email.email, function(response) {
                             res.json(response)
                         })
+                    } else if (tag_id && default_id) {
+                        where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
                     } else {
-                        throw new Error("No active smtp email found!!")
+                        where = { tag_id: { "$in": [tag_id.toString()] } };
                     }
-                })
-                .catch(this.handleErrorResponse.bind(null, res));
-        } else {
-            req.email.find({ tag_id: { "$in": [tag_id.toString()] } }, { "sender_mail": 1 }).exec(function(err, result) {
-                var emails = []
-                _.forEach(result, (val, key) => {
-                    emails.push(val.sender_mail)
-                })
-                db.Smtp.findOne({ where: { status: 1 } })
-                    .then((data) => {
-                        if (data) {
-                            sendmail(data.email, function(response) {
+                    if (tag_id) {
+                        req.email.find({ "$and": [where] }).exec(function(err, data) {
+                            _.forEach(data, (val, key) => {
+                                emails.push(val.sender_mail)
+                            })
+                            sendmail(smtp_email.email, function(response) {
                                 res.json(response)
                             })
-                        } else {
-                            throw new Error("No active smtp email found!!")
-                        }
-                    })
-                    .catch(this.handleErrorResponse.bind(null, res));
+                        })
+                    }
+                } else {
+                    throw new Error("No active smtp email found!!")
+                }
             })
-        }
-
+            .catch(this.handleErrorResponse.bind(null, res));
 
         function sendmail(from, callback) {
             var to_email = emails.splice(0, 1);
@@ -566,7 +563,7 @@ export class FetchController extends BaseAPIController {
                         email_send_fail_list.push(to_email[0])
                     }
                     if (emails.length) {
-                        sendmail(emails, callback)
+                        sendmail(from, callback)
                     } else {
                         callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
                     }
@@ -599,7 +596,6 @@ export class FetchController extends BaseAPIController {
                                             } else {
                                                 res.status(400).send({ message: "No Pending mails" })
                                             }
-
 
                                             function sendTemplateToEmails(emails, template, smtp, callback) {
                                                 var subject = "";
