@@ -285,26 +285,25 @@ export class FetchController extends BaseAPIController {
                     })
                     .then((data) => {
                         if (data.id) {
-                            _.each(req.body.mongo_id, (val, key) => {
-                                if (data.type == "Default" && req.body.shedule_for) {
-                                    var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": req.body.shedule_for, "shedule_date": req.body.shedule_date, "shedule_time": req.body.shedule_time }
-                                } else if (data.type == "Default") {
-                                    var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime() };
+                            if (data.type == "Default" && req.body.shedule_for) {
+                                var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": req.body.shedule_for, "shedule_date": req.body.shedule_date, "shedule_time": req.body.shedule_time }
+                            } else if (data.type == "Default") {
+                                var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime() };
+                            } else {
+                                where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                            }
+                            req.email.update({ "_id": { "$in": req.body.mongo_id } }, where, { multi: true }).exec((err) => {
+                                if (err) {
+                                    next(new Error(err));
                                 } else {
-                                    where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                                    req.email.find({ "_id": { "$in": req.body.mongo_id } }, { "sender_mail": 1, "default_tag": 1 }).exec(function(err, response) {
+                                        console.log(response)
+                                        res.json({
+                                            status: 1,
+                                            message: "success"
+                                        });
+                                    })
                                 }
-                                req.email.findOneAndUpdate({ "_id": val }, where).exec((err) => {
-                                    if (err) {
-                                        next(new Error(err));
-                                    } else {
-                                        if (key == (_.size(req.body.mongo_id) - 1)) {
-                                            res.json({
-                                                status: 1,
-                                                message: "success"
-                                            });
-                                        }
-                                    }
-                                });
                             });
                         } else {
                             next(new Error("invalid tag id"));
