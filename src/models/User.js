@@ -7,7 +7,7 @@ import crypto from "crypto";
 export default function(sequelize, DataTypes) {
     const User = sequelize.define("USER", {
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
             unique: false,
         },
         password: DataTypes.STRING,

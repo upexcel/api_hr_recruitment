@@ -7,7 +7,7 @@ import config from "../config.js";
 export default function(sequelize, DataTypes) {
     const smtp = sequelize.define("SMTP", {
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
             unique: false,
         },
         password: DataTypes.STRING,
