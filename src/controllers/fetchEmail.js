@@ -288,7 +288,7 @@ export class FetchController extends BaseAPIController {
                             if (data.type == "Default" && req.body.shedule_for) {
                                 var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": req.body.shedule_for, "shedule_date": req.body.shedule_date, "shedule_time": req.body.shedule_time }
                             } else if (data.type == "Default") {
-                                var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime() };
+                                var where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
                             } else {
                                 where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                             }
