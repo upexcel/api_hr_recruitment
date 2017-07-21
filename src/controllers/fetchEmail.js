@@ -69,7 +69,6 @@ export class FetchController extends BaseAPIController {
                         where = { tag_id: { $in: [tag_id] } }
                     }
                 }
-                console.log(where)
                 req.email.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
                     if (err) {
                         next(err);
