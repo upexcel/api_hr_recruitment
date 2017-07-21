@@ -69,6 +69,4 @@ CLIENT_SECRET
 
 ## before run on server needs
 
-```$ npm run build```
- 
-```$ npm start```
+``` $ pm2 start npm --name hr_recruitment_live -- run -- live_config```
