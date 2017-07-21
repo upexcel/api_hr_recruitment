@@ -9,7 +9,7 @@ export default function(sequelize, DataTypes) {
         },
         color: DataTypes.STRING,
         subject: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
             unique: false,
         },
         type: {

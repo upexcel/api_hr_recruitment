@@ -3,7 +3,7 @@ import Imap from "imap"
 export default function(sequelize, DataTypes) {
     const imap = sequelize.define("IMAP", {
         email: {
-            type: DataTypes.STRING,
+            type: DataTypes.STRING(255),
             unique: false,
         },
         password: DataTypes.STRING,
