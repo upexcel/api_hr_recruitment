@@ -8,7 +8,7 @@ export default function(sequelize, DataTypes) {
     const smtp = sequelize.define("SMTP", {
         email: {
             type: DataTypes.STRING,
-            unique: true,
+            unique: false,
         },
         password: DataTypes.STRING,
         smtp_server: DataTypes.STRING,
