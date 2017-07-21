@@ -4,7 +4,7 @@ export default function(sequelize, DataTypes) {
     const imap = sequelize.define("IMAP", {
         email: {
             type: DataTypes.STRING,
-            unique: true,
+            unique: false,
         },
         password: DataTypes.STRING,
         imap_server: {

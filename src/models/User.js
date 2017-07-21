@@ -8,7 +8,7 @@ export default function(sequelize, DataTypes) {
     const User = sequelize.define("USER", {
         email: {
             type: DataTypes.STRING,
-            unique: true,
+            unique: false,
         },
         password: DataTypes.STRING,
         user_type: {

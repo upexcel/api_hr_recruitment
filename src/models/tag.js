@@ -10,7 +10,7 @@ export default function(sequelize, DataTypes) {
         color: DataTypes.STRING,
         subject: {
             type: DataTypes.STRING,
-            unique: true,
+            unique: false,
         },
         type: {
             type: DataTypes.ENUM,
