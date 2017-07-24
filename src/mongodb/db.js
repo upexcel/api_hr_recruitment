@@ -28,7 +28,10 @@ module.exports = function() {
         imap_email: { type: String },
         genuine_applicant: { type: String },
         attachment: { type: Array },
-        is_attachment: { type: Boolean }
+        is_attachment: { type: Boolean },
+        shedule_for: { type: String },
+        shedule_date: { type: String },
+        shedule_time: { type: String }
     }, {
         collection: "emailStored",
         strict: true,

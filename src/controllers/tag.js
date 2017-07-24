@@ -2,8 +2,11 @@ import BaseAPIController from "./BaseAPIController";
 import TagProvider from "../providers/TagProvider";
 import tag from "../models/constant";
 import _ from 'lodash';
+import moment from 'moment';
+import constant from "../models/constant";
+import email_process from "../mongodb/emailprocess";
 
-export class ImapController extends BaseAPIController {
+export class TagController extends BaseAPIController {
     /* Controller for Save Imap Data  */
     save = (req, res) => {
         var assign = req.body.assign;
@@ -13,34 +16,8 @@ export class ImapController extends BaseAPIController {
                     .then((data) => {
                         if (data) {
                             if ((data.type == tag().tagType.automatic) && (assign === true)) {
-                                this._db.Tag.assignTag(data, req.email)
-                                    .then((response) => {
-                                        function assignTag(id) {
-                                            var mongoId = id.splice(0, 100)
-                                            req.email.update({
-                                                    _id: { $in: mongoId }
-                                                }, {
-                                                    "$addToSet": {
-                                                        "tag_id": data.id.toString()
-                                                    },
-                                                    "email_timestamp": new Date().getTime()
-                                                }, {
-                                                    multi: true
-                                                })
-                                                .then((data1) => {
-                                                    if (!id.length) {
-                                                        res.json({ message: "tag assigned sucessfully", data: data })
-                                                    } else {
-                                                        assignTag(id)
-                                                    }
-                                                })
-                                        }
-                                        assignTag(response)
-                                    }, (err) => {
-                                        throw new Error(res.json(400, {
-                                            message: err
-                                        }))
-                                    });
+                                email_process.assignToOldTag(data, req.email)
+                                    .then((result) => { res.json(result) })
                             } else {
                                 res.json(data)
                             }
@@ -75,12 +52,7 @@ export class ImapController extends BaseAPIController {
 
     deleteTag = (req, res, next) => {
         if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual) {
-            this._db.Tag.destroy({
-                    where: {
-                        id: req.params.tagId,
-                        type: req.params.type
-                    }
-                })
+            this._db.Tag.destroy({ where: { id: req.params.tagId, type: req.params.type } })
                 .then((docs) => {
                     if (docs) {
                         req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
@@ -93,9 +65,8 @@ export class ImapController extends BaseAPIController {
                     }
                 }).catch(this.handleErrorResponse.bind(null, res));
         } else {
-            next(new Error("Invalid Type"));
+            next(res.status(400).send({ message: "Invalid tag type " }));
         }
-
     }
 
     /* Get Imap data */
@@ -144,7 +115,14 @@ export class ImapController extends BaseAPIController {
         this.getById(req, res, this._db.Tag, tagId, next);
     }
 
+    /*Get Shedules*/
+    getShedule = (req, res, next) => {
+        email_process.getShedule(req.email)
+            .then((result) => { res.json(result) })
+            .catch(this.handleErrorResponse)
+    }
+
 }
 
-const controller = new ImapController();
+const controller = new TagController();
 export default controller;
