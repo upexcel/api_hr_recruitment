@@ -21,22 +21,17 @@ export class ImapController extends BaseAPIController {
                     .then((imap) => {
                         imapService.imapConnection(imap)
                             .then((connection) => {
-                                var date = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-                                var stillUtc = moment.utc(date).toDate();
-                                var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
-                                imap.search(["ALL", ["BEFORE", local]], function(err, results) {
-                                    dataValues.total_emails = results.length;
-                                    db.Imap.create(dataValues)
-                                        .then((data) => {
-                                            res.json({
-                                                data
-                                            })
-                                        }, (err) => {
-                                            throw new Error(res.json(400, {
-                                                message: err
-                                            }));
+                                dataValues.total_emails = connection.messages.total;
+                                db.Imap.create(dataValues)
+                                    .then((data) => {
+                                        res.json({
+                                            data
                                         })
-                                })
+                                    }, (err) => {
+                                        throw new Error(res.json(400, {
+                                            message: err
+                                        }));
+                                    })
                             }, (err) => {
                                 throw new Error(res.json(400, { message: err }))
                             })
