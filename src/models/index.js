@@ -5,6 +5,7 @@ import Smtp from "./smtp";
 import Template from "./template";
 import Variable from "./emailVariable";
 import SystemVariable from "./systemVariable";
+import Candidate_device from './candidate_device';
 
 export default {
     User,
@@ -13,5 +14,6 @@ export default {
     Smtp,
     Template,
     Variable,
-    SystemVariable
+    SystemVariable,
+    Candidate_device
 };
