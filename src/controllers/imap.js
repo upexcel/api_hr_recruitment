@@ -32,17 +32,12 @@ export class ImapController extends BaseAPIController {
                                                 data
                                             })
                                         }, (err) => {
-                                            throw new Error(res.json(400, {
-                                                message: err
-                                            }));
-                                        }, (err) => {
                                             throw new Error(res.json(400, { message: err }))
                                         })
                                 })
                             }, (err) => {
                                 throw new Error(res.json(400, { message: "Invalid Details" }))
                             })
-
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
