@@ -21,10 +21,10 @@ export class ImapController extends BaseAPIController {
                     .then((imap) => {
                         imapService.imapConnection(imap)
                             .then((connection) => {
-                                var date = moment.utc().format('YYYY-MM-DD HH:mm:ss');
-                                var stillUtc = moment.utc(date).toDate();
-                                var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
-                                imap.search(["ALL", ["BEFORE", local]], function(err, results) {
+                                var today = new Date();
+                                today.setTime(Date.now());
+                                today = today.toISOString();
+                                imap.search(["ALL", ["BEFORE", today]], function(err, results) {
                                     dataValues.total_emails = results.length;
                                     db.Imap.create(dataValues)
                                         .then((data) => {
