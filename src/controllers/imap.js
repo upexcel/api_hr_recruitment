@@ -21,10 +21,10 @@ export class ImapController extends BaseAPIController {
                     .then((imap) => {
                         imapService.imapConnection(imap)
                             .then((connection) => {
-                                var today = new Date();
-                                today.setTime(Date.now());
-                                today = today.toISOString();
-                                imap.search(["ALL", ["BEFORE", today]], function(err, results) {
+                                var date = moment.utc().format('YYYY-MM-DD HH:mm:ss');
+                                var stillUtc = moment.utc(date).toDate();
+                                var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
+                                imap.search(["ALL", ["BEFORE", local]], function(err, results) {
                                     dataValues.total_emails = results.length;
                                     db.Imap.create(dataValues)
                                         .then((data) => {
@@ -32,12 +32,17 @@ export class ImapController extends BaseAPIController {
                                                 data
                                             })
                                         }, (err) => {
-                                            res.status(400).send({ message: err })
+                                            throw new Error(res.json(400, {
+                                                message: err
+                                            }));
+                                        }, (err) => {
+                                            throw new Error(res.json(400, { message: err }))
                                         })
                                 })
                             }, (err) => {
-                                res.status(400).send({ message: err })
+                                throw new Error(res.json(400, { message: "Invalid Details" }))
                             })
+
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
