@@ -9,7 +9,7 @@ export class imapConnection {
             imap.once("ready", function() {
                 openInbox(function(err, box) {
                     if (err) {
-                        reject('Invalid details');
+                        reject(err);
                     } else {
                         resolve(box);
                     }
@@ -31,7 +31,8 @@ export class imapConnection {
                 user: data.dataValues.email,
                 password: data.dataValues.password,
                 host: "imap.gmail.com",
-                port: 993
+                port: 993,
+                tls: "TLS",
             });
             resolve(imap);
         });

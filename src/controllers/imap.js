@@ -21,7 +21,6 @@ export class ImapController extends BaseAPIController {
                     .then((imap) => {
                         imapService.imapConnection(imap)
                             .then((connection) => {
-                                console.log("===========================================")
                                 var date = moment.utc().format('YYYY-MM-DD HH:mm:ss');
                                 var stillUtc = moment.utc(date).toDate();
                                 var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
@@ -39,7 +38,7 @@ export class ImapController extends BaseAPIController {
                                         })
                                 })
                             }, (err) => {
-                                throw new Error(res.json(400, { message: "Invalid Details" }))
+                                throw new Error(res.json(400, { message: err }))
                             })
 
                     })
