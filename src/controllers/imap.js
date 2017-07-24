@@ -36,7 +36,7 @@ export class ImapController extends BaseAPIController {
                                         })
                                 })
                             }, (err) => {
-                                res.status(400).send({ message: "Invalid Details" })
+                                res.status(400).send({ message: err })
                             })
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
