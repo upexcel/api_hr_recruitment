@@ -1,5 +1,6 @@
 import Sequelize from "sequelize";
 import models from "./models";
+import constant from "./models/constant";
 import config from "./config";
 const db = {};
 
@@ -20,42 +21,42 @@ Object.keys(db).forEach((modelName) => {
 });
 
 sequelize.sync().then(() => {
-    db.Tag.findOne({ where: { type: "Default", title: "Shortlist" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Shortlist" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Shortlist", type: "Default", color: "#cb891b", default_id: 2 });
+                db.Tag.create({ title: "Shortlist", type: constant().tagType.default, color: "#cb891b", default_id: 2 });
             }
         });
 
-    db.Tag.findOne({ where: { type: "Default", title: "Reject" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Reject" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Reject", type: "Default", color: "#ef2e46", default_id: 6 });
+                db.Tag.create({ title: "Reject", type: constant().tagType.default, color: "#ef2e46", default_id: 6 });
             }
         });
 
-    db.Tag.findOne({ where: { type: "Default", title: "Schedule_first_round" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Schedule_first_round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule_first_round", type: "Default", color: "#ba21d3", default_id: 3 });
+                db.Tag.create({ title: "Schedule_first_round", type: constant().tagType.default, color: "#ba21d3", default_id: 3 });
             }
         });
-    db.Tag.findOne({ where: { type: "Default", title: "Schedule_second_round" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Schedule_second_round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule_second_round", type: "Default", color: "#ba21d3", default_id: 4 });
+                db.Tag.create({ title: "Schedule_second_round", type: constant().tagType.default, color: "#ba21d3", default_id: 4 });
             }
         });
-    db.Tag.findOne({ where: { type: "Default", title: "Schedule_third_round" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Schedule_third_round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule_third_round", type: "Default", color: "#ba21d3", default_id: 5 });
+                db.Tag.create({ title: "Schedule_third_round", type: constant().tagType.default, color: "#ba21d3", default_id: 5 });
             }
         });
-    db.Tag.findOne({ where: { type: "Default", title: "Genuine Applicant" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Genuine Applicant" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Genuine Applicant", type: "Default", color: "#cb891b", default_id: 1 });
+                db.Tag.create({ title: "Genuine Applicant", type: constant().tagType.default, color: "#cb891b", default_id: 1 });
             }
         });
 
