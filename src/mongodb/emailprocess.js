@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import db from "../db";
 import constant from "../models/constant";
+import mail from "../modules/mail";
 
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
@@ -226,23 +227,160 @@ const findcount = (mongodb) => {
     })
 }
 
-let assignMultiple = (where, body, mongodb) => {
-    mongodb.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec((err) => {
-        if (err) {
-            next(new Error(err));
-        } else {
-            mongodb.find({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1 }).exec(function(err, response) {
-                console.log(response)
-                resolve({
-                    status: 1,
-                    message: "success"
-                });
+let assignMultiple = (tag_id, parent_id, body, email) => {
+    return new Promise((resolve, reject) => {
+        let where;
+        db.Tag.findOne({
+                where: {
+                    id: tag_id
+                }
             })
+            .then((data) => {
+                if (data.id) {
+                    if (data.type == "Default" && body.shedule_for) {
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                    } else if (data.type == "Default") {
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
+                    } else {
+                        where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                    }
+                    email.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec((err) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            email.find({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1 }).exec(function(err, response) {
+                                console.log(response)
+                                resolve({
+                                    status: 1,
+                                    message: "success"
+                                });
+                            })
+                        }
+                    });
+                } else {
+                    reject("invalid tag id");
+                }
+            })
+    })
+}
+
+let fetchById = (type, keyword, selected, default_id, tag_id) => {
+    return new Promise((resolve, reject) => {
+        db.Tag.findAll({ where: { type: "Default" } })
+            .then((default_tag) => {
+                let default_tag_id = []
+                _.forEach(default_tag, (val, key) => {
+                    default_tag_id.push(val.id.toString())
+                })
+                let where = '';
+                if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
+
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' } }
+                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    if (default_id) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                    }
+                } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
+                    if (default_id) {
+                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
+                    } else {
+                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                    }
+                } else
+                if ((type == "email") && tag_id) {
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, "tag_id": { $in: [tag_id] } }
+                    } else {
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
+                    }
+                } else if ((type == "subject") && tag_id) {
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': { $in: [tag_id] } }
+                    } else {
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
+                    }
+                } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
+
+                    where = { tag_id: { $size: 0 } };
+                } else {
+                    if (default_tag_id.indexOf(default_id) >= 0) {
+                        where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
+                    } else if (default_tag_id.indexOf(tag_id) >= 0) {
+                        where = { default_tag: tag_id }
+                    } else {
+                        where = { tag_id: { $in: [tag_id] } }
+                    }
+                }
+                resolve(where)
+            })
+    })
+}
+
+let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
+    return new Promise((reject, resolve) => {
+        let email_send_success_list = [];
+        let email_send_fail_list = [];
+        let result = [];
+        let emails = [];
+        let where;
+        db.Smtp.findOne({ where: { status: 1 } })
+            .then((smtp_email) => {
+                if (smtp_email) {
+                    if (!tag_id) {
+                        emails = email_list;
+                        sendmail(smtp_email.email, function(response) {
+                            resolve(response)
+                        })
+                    } else if (tag_id && default_id) {
+                        where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
+                    } else {
+                        where = { tag_id: { "$in": [tag_id.toString()] } };
+                    }
+                    if (tag_id) {
+                        email.find({ "$and": [where] }).exec(function(err, data) {
+                            _.forEach(data, (val, key) => {
+                                emails.push(val.sender_mail)
+                            })
+                            sendmail(smtp_email.email, function(response) {
+                                resolve(response)
+                            })
+                        })
+                    }
+                } else {
+                    reject("No active smtp email found!!")
+                }
+            })
+
+        function sendmail(from, callback) {
+            let to_email = emails.splice(0, 1);
+            console.log(to_email)
+            mail.sendMail(to_email[0], subject, "", from, body)
+                .then((resp) => {
+                    if (resp.status) {
+                        email_send_success_list.push(to_email[0])
+                    } else {
+                        email_send_fail_list.push(to_email[0])
+                    }
+                    console.log(emails.length)
+                    if (emails.length) {
+                        sendmail(from, callback)
+                    } else {
+                        callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
+                    }
+                })
+                .catch((err) => { reject(err) })
         }
-    });
+    })
 }
 export default {
     fetchEmail,
     findcount,
-    assignMultiple
+    assignMultiple,
+    fetchById,
+    sendToMany
 }

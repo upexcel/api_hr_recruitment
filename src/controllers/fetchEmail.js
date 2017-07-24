@@ -70,41 +70,12 @@ export class FetchController extends BaseAPIController {
     }
 
     assignMultiple = (req, res, next) => {
+        let where;
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
                 let { tag_id, parent_id } = req.params;
-                this._db.Tag.findOne({
-                        where: {
-                            id: tag_id
-                        }
-                    })
-                    .then((data) => {
-                        if (data.id) {
-                            if (data.type == "Default" && req.body.shedule_for) {
-                                let where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": req.body.shedule_for, "shedule_date": req.body.shedule_date, "shedule_time": req.body.shedule_time }
-                            } else if (data.type == "Default") {
-                                let where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
-                            } else {
-                                where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
-                            }
-                            req.email.update({ "_id": { "$in": req.body.mongo_id } }, where, { multi: true }).exec((err) => {
-                                if (err) {
-                                    next(new Error(err));
-                                } else {
-                                    req.email.find({ "_id": { "$in": req.body.mongo_id } }, { "sender_mail": 1, "default_tag": 1 }).exec(function(err, response) {
-                                        console.log(response)
-                                        res.json({
-                                            status: 1,
-                                            message: "success"
-                                        });
-                                    })
-                                }
-                            });
-                        } else {
-                            next(new Error("invalid tag id"));
-                        }
-                    })
-                    .catch(this.handleErrorResponse.bind(null, res));
+                email_process.assignMultiple(tag_id, parent_id, req.body, req.email)
+                    .then((data) => { res.json(data) })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -113,29 +84,16 @@ export class FetchController extends BaseAPIController {
     deleteTag = (req, res, next) => {
         MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                this._db.Tag.findOne({
-                        where: {
-                            id: req.params.tag_id
-                        }
-                    })
+                this._db.Tag.findOne({ where: { id: req.params.tag_id } })
                     .then((data) => {
                         if (data.id) {
                             _.each(req.body.mongo_id, (val, key) => {
-                                req.email.findOneAndUpdate({
-                                    "_id": val
-                                }, {
-                                    "$pull": {
-                                        "tag_id": req.params.tag_id
-                                    }
-                                }).exec((err) => {
+                                req.email.findOneAndUpdate({ "_id": val }, { "$pull": { "tag_id": req.params.tag_id } }).exec((err) => {
                                     if (err) {
                                         next(new Error(err));
                                     } else {
                                         if (key == (_.size(req.body.mongo_id) - 1)) {
-                                            res.json({
-                                                status: 1,
-                                                message: "success"
-                                            });
+                                            res.json({ status: 1, message: "success" });
                                         }
                                     }
                                 });
@@ -152,31 +110,19 @@ export class FetchController extends BaseAPIController {
     changeUnreadStatus = (req, res, next) => {
         let { mongo_id } = req.params;
         let status = (req.params.status + '').toLowerCase() === 'true'
-        req.email.find({
-            _id: mongo_id
-        }, (err) => {
+        req.email.find({ _id: mongo_id }, (err) => {
             if (err) {
                 next(new Error(err));
             } else if (status == false) {
-                req.email.update({
-                    _id: mongo_id
-                }, {
-                    unread: status,
-                }, (error) => {
+                req.email.update({ _id: mongo_id}, {unread: status}, (error) => {
                     if (error) {
                         next(new Error(err));
                     } else {
-                        res.json({
-                            status: 1,
-                            message: "the unread status is successfully changed to " + req.params.status
-                        });
+                        res.json({ status: 1, message: "the unread status is successfully changed to " + req.params.status });
                     }
                 });
             } else {
-                res.json({
-                    status: 0,
-                    message: "the unread status is not changed successfully,  you have to set status true or false"
-                });
+                res.json({ status: 0, message: "the unread status is not changed successfully,  you have to set status true or false" });
             }
         });
     }
@@ -187,13 +133,7 @@ export class FetchController extends BaseAPIController {
             .then(() => {
                 let size = _.size(req.body.mongo_id);
                 _.forEach(req.body.mongo_id, (val, key) => {
-                    req.email.findOneAndUpdate({
-                        "_id": val
-                    }, {
-                        "$pull": {
-                            "tag_id": req.params.tag_id
-                        }
-                    }, { new: true }).exec((err, data) => {
+                    req.email.findOneAndUpdate({ "_id": val }, { "$pull": { "tag_id": req.params.tag_id } }, { new: true }).exec((err, data) => {
                         if (err) {
                             response.push({ status: 0, message: err, array_length: key });
                         }
@@ -254,115 +194,68 @@ export class FetchController extends BaseAPIController {
 
 
     findByTagId = (req, res, next, tag_id) => {
-        let where;
         let { type, keyword, selected, default_id } = req.body;
-        this._db.Tag.findAll({ where: { type: "Default" } })
-            .then((default_tag) => {
-                let default_tag_id = []
-                _.forEach(default_tag, (val, key) => {
-                    default_tag_id.push(val.id.toString())
-                })
-                let where = '';
-                if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
-
-                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
-                } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
-
-                    where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
-                    if (default_id) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
-                    } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
-                    }
-                } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
-                    if (default_id) {
-                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
-                    } else {
-                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
-                    }
-                } else
-                if ((type == "email") && tag_id) {
-                    if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, "tag_id": { $in: [tag_id] } }
-                    } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
-                    }
-                } else if ((type == "subject") && tag_id) {
-                    if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': { $in: [tag_id] } }
-                    } else {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
-                    }
-                } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-
-                    where = { tag_id: { $size: 0 } };
-                } else {
-                    if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
-                    } else if (default_tag_id.indexOf(tag_id) >= 0) {
-                        where = { default_tag: tag_id }
-                    } else {
-                        where = { tag_id: { $in: [tag_id] } }
-                    }
-                }
-                this.getCount(req, res, next, where)
-            })
+        email_process.fetchById(type, keyword, selected, default_id,tag_id)
+        .then((data)=>{
+            this.getCount(req, res, next, data)
+        })
     }
 
     sendToMany = (req, res, next) => {
         let { subject, body, tag_id, default_id } = req.body;
-        let email_send_success_list = [];
-        let email_send_fail_list = [];
-        let result = [];
-        let emails = [];
-        let where;
+        email_process.sendToMany( req.body.emails,subject, body, tag_id, default_id,req.email)
+        .then((response)=>{res.json(response)})
+        // let email_send_success_list = [];
+        // let email_send_fail_list = [];
+        // let result = [];
+        // let emails = [];
+        // let where;
 
-        db.Smtp.findOne({ where: { status: 1 } })
-            .then((smtp_email) => {
-                if (smtp_email) {
-                    if (!tag_id) {
-                        emails = req.body.emails;
-                        sendmail(smtp_email.email, function(response) {
-                            res.json(response)
-                        })
-                    } else if (tag_id && default_id) {
-                        where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
-                    } else {
-                        where = { tag_id: { "$in": [tag_id.toString()] } };
-                    }
-                    if (tag_id) {
-                        req.email.find({ "$and": [where] }).exec(function(err, data) {
-                            _.forEach(data, (val, key) => {
-                                emails.push(val.sender_mail)
-                            })
-                            sendmail(smtp_email.email, function(response) {
-                                res.json(response)
-                            })
-                        })
-                    }
-                } else {
-                    throw new Error("No active smtp email found!!")
-                }
-            })
-            .catch(this.handleErrorResponse.bind(null, res));
+        // db.Smtp.findOne({ where: { status: 1 } })
+        //     .then((smtp_email) => {
+        //         if (smtp_email) {
+        //             if (!tag_id) {
+        //                 emails = req.body.emails;
+        //                 sendmail(smtp_email.email, function(response) {
+        //                     res.json(response)
+        //                 })
+        //             } else if (tag_id && default_id) {
+        //                 where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
+        //             } else {
+        //                 where = { tag_id: { "$in": [tag_id.toString()] } };
+        //             }
+        //             if (tag_id) {
+        //                 req.email.find({ "$and": [where] }).exec(function(err, data) {
+        //                     _.forEach(data, (val, key) => {
+        //                         emails.push(val.sender_mail)
+        //                     })
+        //                     sendmail(smtp_email.email, function(response) {
+        //                         res.json(response)
+        //                     })
+        //                 })
+        //             }
+        //         } else {
+        //             throw new Error("No active smtp email found!!")
+        //         }
+        //     })
+        //     .catch(this.handleErrorResponse.bind(null, res));
 
-        function sendmail(from, callback) {
-            let to_email = emails.splice(0, 1);
-            mail.sendMail(to_email[0], subject, "", from, body)
-                .then((resp) => {
-                    if (resp.status) {
-                        email_send_success_list.push(to_email[0])
-                    } else {
-                        email_send_fail_list.push(to_email[0])
-                    }
-                    if (emails.length) {
-                        sendmail(from, callback)
-                    } else {
-                        callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
-                    }
-                })
-        }
+        // function sendmail(from, callback) {
+        //     let to_email = emails.splice(0, 1);
+        //     mail.sendMail(to_email[0], subject, "", from, body)
+        //         .then((resp) => {
+        //             if (resp.status) {
+        //                 email_send_success_list.push(to_email[0])
+        //             } else {
+        //                 email_send_fail_list.push(to_email[0])
+        //             }
+        //             if (emails.length) {
+        //                 sendmail(from, callback)
+        //             } else {
+        //                 callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
+        //             }
+        //         })
+        // }
     }
 
     sendToSelectedTag = (req, res, next) => {
