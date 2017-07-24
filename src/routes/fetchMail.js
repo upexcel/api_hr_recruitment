@@ -36,7 +36,7 @@ export default (app) => {
     app.route("/email/send_to_selected_tag").put(auth.requiresLogin, fetch_email.sendToSelectedTag)
 
     /*get Candidate status*/
-    app.route("/app_get_candidate").post(auth.requiresLogin, fetch_email.app_get_candidate)
+    app.route("/app_get_candidate").post(fetch_email.app_get_candidate)
 
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
