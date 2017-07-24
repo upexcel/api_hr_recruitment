@@ -35,8 +35,6 @@ export class ImapController extends BaseAPIController {
                                             throw new Error(res.json(400, {
                                                 message: err
                                             }));
-                                        }, (err) => {
-                                            throw new Error(res.json(400, { message: err }))
                                         })
                                 })
                             }, (err) => {
