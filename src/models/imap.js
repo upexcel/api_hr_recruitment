@@ -1,5 +1,6 @@
 import imap_connection from "../service/imap";
-import Imap from "imap"
+import Imap from "imap";
+import moment from "moment";
 export default function(sequelize, DataTypes) {
     const imap = sequelize.define("IMAP", {
         email: {
@@ -105,7 +106,29 @@ export default function(sequelize, DataTypes) {
                         })
                 })
             },
+
+            getCounts(tag, dataValues) {
+                return new Promise((resolve, reject) => {
+                    imap_connection.imapCredential(tag)
+                        .then((imap) => {
+                            imap_connection.imapConnection(imap)
+                                .then((connection) => {
+                                    var date = moment.utc().format('YYYY-MM-DD HH:mm:ss');
+                                    var stillUtc = moment.utc(date).toDate();
+                                    var local = moment(stillUtc).local().format('YYYY-MM-DD HH:mm:ss');
+                                    imap.search(["ALL", ["BEFORE", local]], function(err, results) {
+                                        dataValues.total_emails = results.length;
+                                        resolve(dataValues)
+                                    })
+                                }, (err) => {
+                                    reject(err)
+                                })
+
+                        })
+                })
+            }
         },
+
     });
     return imap;
 }

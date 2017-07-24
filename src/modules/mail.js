@@ -6,7 +6,6 @@ var helper = require('sendgrid').mail;
 
 module.exports = {
     sendMail: function(email, subject, text, from, html) {
-        console.log(email, subject, text, from, html)
         return new Promise((resolve, reject) => {
             var mailer = nodemailer.createTransport(smtpTransport({
                 host: config.SMTP_HOST,
@@ -28,7 +27,6 @@ module.exports = {
                         if (error) {
                             reject("messsage not send successfully");
                         } else {
-                            console.log(response)
                             resolve({ message: "messsage send successfully", status: 1 });
                         }
                         mailer.close();

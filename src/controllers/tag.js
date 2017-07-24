@@ -4,6 +4,7 @@ import tag from "../models/constant";
 import _ from 'lodash';
 import moment from 'moment';
 import constant from "../models/constant";
+import email_process from "../mongodb/emailprocess";
 
 export class TagController extends BaseAPIController {
     /* Controller for Save Imap Data  */
@@ -15,34 +16,8 @@ export class TagController extends BaseAPIController {
                     .then((data) => {
                         if (data) {
                             if ((data.type == tag().tagType.automatic) && (assign === true)) {
-                                this._db.Tag.assignTag(data, req.email)
-                                    .then((response) => {
-                                        function assignTag(id) {
-                                            var mongoId = id.splice(0, 100)
-                                            req.email.update({
-                                                    _id: { $in: mongoId }
-                                                }, {
-                                                    "$addToSet": {
-                                                        "tag_id": data.id.toString()
-                                                    },
-                                                    "email_timestamp": new Date().getTime()
-                                                }, {
-                                                    multi: true
-                                                })
-                                                .then((data1) => {
-                                                    if (!id.length) {
-                                                        res.json({ message: "tag assigned sucessfully", data: data })
-                                                    } else {
-                                                        assignTag(id)
-                                                    }
-                                                })
-                                        }
-                                        assignTag(response)
-                                    }, (err) => {
-                                        throw new Error(res.json(400, {
-                                            message: err
-                                        }))
-                                    });
+                                email_process.assignToOldTag(data, req.email)
+                                    .then((result) => { res.json(result) })
                             } else {
                                 res.json(data)
                             }
@@ -77,12 +52,7 @@ export class TagController extends BaseAPIController {
 
     deleteTag = (req, res, next) => {
         if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual) {
-            this._db.Tag.destroy({
-                    where: {
-                        id: req.params.tagId,
-                        type: req.params.type
-                    }
-                })
+            this._db.Tag.destroy({ where: { id: req.params.tagId, type: req.params.type } })
                 .then((docs) => {
                     if (docs) {
                         req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
@@ -95,9 +65,8 @@ export class TagController extends BaseAPIController {
                     }
                 }).catch(this.handleErrorResponse.bind(null, res));
         } else {
-            next(new Error("Invalid Type"));
+            next(res.status(400).send({ message: "Invalid tag type " }));
         }
-
     }
 
     /* Get Imap data */
@@ -148,95 +117,9 @@ export class TagController extends BaseAPIController {
 
     /*Get Shedules*/
     getShedule = (req, res, next) => {
-        var slots_array = [];
-        var list_array = [];
-        var final_data_list = {}
-
-        function getDates(startDate, stopDate, callback) {
-            let prefixes = [1, 2, 3, 4, 5]
-            var currentDate = moment(startDate);
-            var stopDate = moment(stopDate);
-            if (!(moment(currentDate).day() == 6 && !(prefixes[0 | moment(currentDate).date() / 7] % 2))) {
-                if (!moment(currentDate).day() == 0) {
-                    getTimeSlots(currentDate, function(time_slots) {
-                        currentDate = moment(currentDate).add(1, 'days');
-                        if (startDate <= stopDate) {
-                            getDates(currentDate, stopDate, callback)
-                        } else {
-                            callback(time_slots);
-                        }
-                    })
-                } else {
-                    currentDate = moment(currentDate).add(1, 'days');
-                    getDates(currentDate, stopDate, callback)
-                }
-            } else {
-                currentDate = moment(currentDate).add(1, 'days');
-                getDates(currentDate, stopDate, callback)
-            }
-        }
-
-        function getTimeSlots(currentDate, callback) {
-            slots_array = []
-            final_data_list = {}
-            var shedule_for = constant().shedule_for;
-            var shedule_time_slots = [constant().first_round_slots, constant().second_round_slots, constant().third_round_slots];
-            check_slot_status(shedule_for, shedule_time_slots, currentDate, function(response) {
-                list_array.push({ date: currentDate.toISOString().substring(0, 10), time_slots: response })
-                callback(list_array)
-            })
-
-        }
-
-        function check_slot_status(shedule_type, shedule_slots, date, callback) {
-            var shedule = shedule_type.splice(0, 1)[0]
-            var slots = shedule_slots.splice(0, 1)[0]
-            req.email.find({ shedule_date: date.toISOString().substring(0, 10), shedule_for: shedule }, { "shedule_time": 1 }).exec(function(err, shedule_time) {
-                if (shedule_time.length) {
-                    var time = []
-                    _.forEach(shedule_time, (val, key) => {
-                        time.push(val.shedule_time)
-                    })
-                    _.forEach(slots, (val, key) => {
-                        if (time.indexOf(val) >= 0) {
-                            slots_array.push({ time: time[time.indexOf(val)], status: 0 })
-                        } else {
-                            slots_array.push({ time: val, status: 1 })
-                        }
-                        if (key == slots.length - 1) {
-                            final_data_list[shedule] = slots_array;
-                            if (shedule_type.length) {
-                                slots_array = []
-                                check_slot_status(shedule_type, shedule_slots, date, callback)
-                            } else {
-                                final_data_list[shedule] = slots_array;
-                                callback(final_data_list)
-                            }
-                        }
-                    })
-                } else {
-                    _.forEach(slots, (val, key) => {
-                        slots_array.push({ time: val, status: 1 })
-                        if (key == slots.length - 1) {
-                            final_data_list[shedule] = slots_array;
-                            if (shedule_type.length) {
-                                slots_array = []
-                                check_slot_status(shedule_type, shedule_slots, date, callback)
-                            } else {
-                                final_data_list[shedule] = slots_array;
-                                callback(final_data_list)
-                            }
-                        }
-                    })
-                }
-            })
-
-        }
-
-        let lastDate = moment(new Date()).add(1, 'months');
-        getDates(moment(new Date()).add(1, 'days'), lastDate, function(dateArray) {
-            res.json(dateArray)
-        })
+        email_process.getShedule(req.email)
+            .then((result) => { res.json(result) })
+            .catch(this.handleErrorResponse)
     }
 
 }
