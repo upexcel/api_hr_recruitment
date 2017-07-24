@@ -27,6 +27,7 @@ export class imapConnection {
     }
     imapCredential(data) {
         return new Promise((resolve, reject) => {
+            console.log(data)
             var imap = new Imap({
                 user: data.dataValues.email,
                 password: data.dataValues.password,
