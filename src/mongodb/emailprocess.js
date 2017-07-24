@@ -689,6 +689,40 @@ let getFetchedMailCount = (imap_emails, email) => {
         }
     })
 }
+
+let app_get_candidate = (email, email_id) => {
+    return new Promise((resolve, reject) => {
+        let rounds = []
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": constant().shedule_for } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1 }).exec(function(err, response) {
+            if (err) {
+                reject({ error: 1, message: err, data: [] })
+            } else {
+                if (response) {
+                    _.forEach(constant().shedule_for, (val, key) => {
+                        if (val == response.shedule_for) {
+                            rounds.push({ text: val, scheduled_time: response.shedule_time, scheduled_date: response.shedule_date, status: 1 })
+                        } else {
+                            rounds.push({ text: val, scheduled_time: "", scheduled_date: "", status: 0 })
+                        }
+                        if (key == constant().shedule_for.length - 1) {
+                            findSubject(response.tag_id[0], function(subject) {
+                                resolve({ name: response.from, subject: subject, rounds: rounds })
+                            })
+                        }
+                    })
+                } else {
+                    reject({ error: 1, message: "No data Found", data: [] })
+                }
+            }
+        })
+
+        function findSubject(tag_id, callback) {
+            db.Tag.findById(tag_id)
+                .then((data) => { callback(data.subject) })
+                .catch((err) => { reject(err) })
+        }
+    })
+}
 export default {
     fetchEmail,
     findcount,
@@ -700,5 +734,6 @@ export default {
     deleteEmail,
     getShedule,
     assignToOldTag,
-    getFetchedMailCount
+    getFetchedMailCount,
+    app_get_candidate
 }
