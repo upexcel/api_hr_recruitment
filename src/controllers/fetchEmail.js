@@ -67,7 +67,10 @@ export class FetchController extends BaseAPIController {
             .then(() => {
                 let { tag_id, parent_id } = req.params;
                 email_process.assignMultiple(tag_id, parent_id, req.body, req.email)
-                    .then((data) => { res.json(data) })
+                    .then((data) => {
+                        this._db.Candidate_device.pushNotification(data)
+                            .then((pushdata) => { res.json(data) })
+                    })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -153,7 +156,7 @@ export class FetchController extends BaseAPIController {
     app_get_candidate = (req, res, next) => {
         email_process.app_get_candidate(req.email, req.body.email_id)
             .then((result) => { res.json({ error: 0, message: "", data: result }) })
-            .catch(this.handleErrorResponse.bind(null, res))
+            .catch((err) => { res.json(err) })
     }
 }
 
