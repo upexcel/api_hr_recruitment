@@ -20,7 +20,7 @@ export class ImapController extends BaseAPIController {
                 imapService.imapCredential(tag)
                     .then((imap) => {
                         imapService.imapConnection(imap)
-                            .then(function(connection) {
+                            .then((connection) => {
                                 dataValues.total_emails = connection.messages.total;
                                 db.Imap.create(dataValues)
                                     .then((data) => {
