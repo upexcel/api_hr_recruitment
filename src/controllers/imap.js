@@ -35,88 +35,87 @@ export class ImapController extends BaseAPIController {
                         throw new Error(res.json(400, { message: err }))
                     })
 
+            }).catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /* Imap data Update */
+    update = (req, res) => {
+        ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
+            .then((data) => {
+                this._db.Imap.update(data, {
+                        where: {
+                            id: req.params.imapId
+                        }
+                    })
+                    .then((docs) => {
+                        this.handleSuccessResponse(res, null);
+                    })
+            }).catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /* Imap data delete */
+    deleteImap = (req, res) => {
+        this._db.Imap.destroy({
+                where: {
+                    id: req.params.imapId
+                }
             })
-    }).catch(this.handleErrorResponse.bind(null, res));
-}
+            .then((docs) => {
+                this.handleSuccessResponse(res, null);
+            }).catch(this.handleErrorResponse.bind(null, res));
+    }
 
-/* Imap data Update */
-update = (req, res) => {
-    ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
-        .then((data) => {
-            this._db.Imap.update(data, {
-                    where: {
-                        id: req.params.imapId
-                    }
+    /* Get Imap data */
+    getImap = (req, res) => {
+        var result = []
+        this._db.Imap.findAll({ order: '`id` DESC' })
+            .then((response) => {
+                var imap_emails = response;
+                findCount(imap_emails, function(data) {
+                    res.json(result)
                 })
-                .then((docs) => {
-                    this.handleSuccessResponse(res, null);
-                })
-        }).catch(this.handleErrorResponse.bind(null, res));
-}
 
-/* Imap data delete */
-deleteImap = (req, res) => {
-    this._db.Imap.destroy({
-            where: {
-                id: req.params.imapId
-            }
-        })
-        .then((docs) => {
-            this.handleSuccessResponse(res, null);
-        }).catch(this.handleErrorResponse.bind(null, res));
-}
-
-/* Get Imap data */
-getImap = (req, res) => {
-    var result = []
-    this._db.Imap.findAll({ order: '`id` DESC' })
-        .then((response) => {
-            var imap_emails = response;
-            findCount(imap_emails, function(data) {
-                res.json(result)
+                function findCount(emails, callback) {
+                    var imap_data = "";
+                    var imap_email = emails.splice(0, 1)[0]
+                    req.email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
+                        imap_data = {
+                            active: imap_email.active,
+                            createdAt: imap_email.createdAt,
+                            email: imap_email.email,
+                            id: imap_email.id,
+                            imap_server: imap_email.imap_server,
+                            password: imap_email.password,
+                            server_port: imap_email.port,
+                            status: imap_email.status,
+                            type: imap_email.type,
+                            updatedAt: imap_email.updatedAt,
+                            fetched_email_count: data,
+                            total_emails: imap_email.total_emails
+                        }
+                        result.push(imap_data)
+                        if (emails.length) {
+                            findCount(emails, callback)
+                        } else {
+                            callback(result)
+                        }
+                    })
+                }
             })
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
 
-            function findCount(emails, callback) {
-                var imap_data = "";
-                var imap_email = emails.splice(0, 1)[0]
-                req.email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
-                    imap_data = {
-                        active: imap_email.active,
-                        createdAt: imap_email.createdAt,
-                        email: imap_email.email,
-                        id: imap_email.id,
-                        imap_server: imap_email.imap_server,
-                        password: imap_email.password,
-                        server_port: imap_email.port,
-                        status: imap_email.status,
-                        type: imap_email.type,
-                        updatedAt: imap_email.updatedAt,
-                        fetched_email_count: data,
-                        total_emails: imap_email.total_emails
-                    }
-                    result.push(imap_data)
-                    if (emails.length) {
-                        findCount(emails, callback)
-                    } else {
-                        callback(result)
-                    }
-                })
-            }
-        })
-        .catch(this.handleErrorResponse.bind(null, res));
-}
+    /* Imap Active  Status */
+    statusActive = (req, res, next) => {
+        this._db.Imap.imapTest(req.params.email)
+            .then(res.json.bind(res))
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
 
-/* Imap Active  Status */
-statusActive = (req, res, next) => {
-    this._db.Imap.imapTest(req.params.email)
-        .then(res.json.bind(res))
-        .catch(this.handleErrorResponse.bind(null, res));
-}
-
-/* Get Imapp data using id */
-idResult = (req, res, next, imapId) => {
-    this.getById(req, res, this._db.Imap, imapId, next);
-}
+    /* Get Imapp data using id */
+    idResult = (req, res, next, imapId) => {
+        this.getById(req, res, this._db.Imap, imapId, next);
+    }
 }
 
 
