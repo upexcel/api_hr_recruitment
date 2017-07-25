@@ -1,3 +1,4 @@
+import pushNotification from "../service/pushmessage"
 export default function(sequelize, DataTypes) {
     const Candidate_device = sequelize.define("CANDIDATE_DEVICE", {
         email_id: DataTypes.STRING,
@@ -22,7 +23,21 @@ export default function(sequelize, DataTypes) {
         timestamps: true,
         freezeTableName: true,
         allowNull: true,
-
+        classMethods: {
+            pushNotification(data) {
+                return new Promise((resolve, reject) => {
+                    this.findOne({ email_id: data.sender_mail })
+                        .then((device_info) => {
+                            if (device_info) {
+                                pushNotification.pushMessage(device_info)
+                                    .then((response) => { resolve() })
+                            } else {
+                                resolve()
+                            }
+                        })
+                })
+            }
+        },
     });
     return Candidate_device;
 }

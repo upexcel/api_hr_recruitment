@@ -9,13 +9,13 @@ export class DeviceController extends BaseAPIController {
                     .then((data) => {
                         res.json({ error: 0, message: 'sucess', data: data })
                     }, (err) => {
-                        throw new Error(res.json(400, {
-                            err: 1,
+                        throw new Error(res.json({
+                            error: 1,
                             message: err,
                             data: []
                         }));
                     })
-            }).catch(this.handleErrorResponse.bind(null, res));
+            }).catch((err) => { res.json({ error: 1, message: err, data: [] }) });
     }
 }
 

@@ -254,10 +254,10 @@ let assignMultiple = (tag_id, parent_id, body, email) => {
                             reject(err);
                         } else {
                             email.find({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1 }).exec(function(err, response) {
-                                console.log(response)
                                 resolve({
                                     status: 1,
-                                    message: "success"
+                                    message: "success",
+                                    data: response
                                 });
                             })
                         }
@@ -717,7 +717,7 @@ let app_get_candidate = (email, email_id) => {
         })
 
         function findSubject(tag_id, callback) {
-            db.Tag.findById(tag_id)
+            db.Tag.findById(parseInt(tag_id))
                 .then((data) => { callback(data.subject) })
                 .catch((err) => { reject(err) })
         }
