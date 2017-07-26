@@ -80,7 +80,9 @@ export class FetchController extends BaseAPIController {
         MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
                 email_process.deleteTag(req.params.tag_id, req.body.mongo_id, req.email)
-                    .then((result) => { res.json(result) })
+                    .then((result) => {
+                        res.json(result)
+                    })
                     .catch(this.handleErrorResponse(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));

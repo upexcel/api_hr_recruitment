@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "hr_recruitment",
-		"_postman_id": "95ed1ec8-2001-b807-7452-024eb41edeae",
+		"_postman_id": "8f5affd5-32e5-55f9-d4db-1ceb335c0e6e",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -312,14 +312,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignTag/1/{{mongo_id}}?accessToken={{token}}",
+							"raw": "{{url}}/email/assignTag/9/{{mongo_id}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignTag",
-								"1",
+								"9",
 								"{{mongo_id}}"
 							],
 							"query": [
@@ -350,34 +350,20 @@
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
 									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}",
 									"if (jsonData.data) {",
 									"    tests[\"data exist\"] = true;",
-									"    for (i = 0; i < jsonData.data.length; i++) {",
+									"    for (i = 0; i < jsonData.data.length -1; i++) {",
 									"        if (jsonData.data[i].title) {",
 									"            tests[\"title Found \" + i] = true;",
+									"            ",
 									"        } else {",
 									"            tests[\"title Found \" + i] = false;",
 									"        }",
-									"        if (jsonData.data[i].color) {",
-									"            tests[\"color Found \" + i] = true;",
-									"        } else {",
-									"            tests[\"color Found \" + i] = false;",
-									"        }",
-									"        if (jsonData.data[i].type) {",
-									"            tests[\"type Found \" + i] = true;",
-									"        } else {",
-									"            tests[\"type Found \" + i] = false;",
-									"        }",
+									"    }",
+									"    if(jsonData.data[jsonData.data.length-1].subject_for_genuine == \"Revert Information\"){",
+									"        tests[\"subject for genuine\"] = true",
+									"    }else{",
+									"        tests[\"subject for genuine\"] = false",
 									"    }",
 									"} else {",
 									"    tests[\"data exist\"] = false;",
@@ -440,14 +426,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignMultiple/1/?accessToken={{token}}",
+							"raw": "{{url}}/email/assignMultiple/9/?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignMultiple",
-								"1",
+								"9",
 								""
 							],
 							"query": [
@@ -533,145 +519,6 @@
 						"method": "PUT",
 						"header": [],
 						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Email Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/deleteEmail/1?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"deleteEmail",
-								"1"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "mongo_id[0]",
-									"value": "{{mongo_id}}",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/deleteTag/1/?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"deleteTag",
-								"1",
-								""
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "mongo_id[0]",
-									"value": "{{mongo_id}}",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
 						"description": ""
 					},
 					"response": []
@@ -2692,7 +2539,7 @@
 								},
 								{
 									"key": "password",
-									"value": "0001",
+									"value": "java@123",
 									"type": "text"
 								},
 								{
