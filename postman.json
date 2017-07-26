@@ -47,7 +47,6 @@
 									"} else {",
 									"    tests[\"data exist\"] = false;",
 									"}",
-									"",
 									""
 								]
 							}
@@ -209,6 +208,53 @@
 			"description": "",
 			"item": [
 				{
+					"name": "Fetch Latest Emails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"if(jsonData.status){",
+									"    tests['fetch latest email'] = true",
+									"}else{",
+									"    tests['fetch latest email'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/fetchByButton?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"fetchByButton"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Email Fetch",
 					"event": [
 						{
@@ -285,61 +331,6 @@
 					"response": []
 				},
 				{
-					"name": "Assign Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/assignTag/9/{{mongo_id}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"assignTag",
-								"9",
-								"{{mongo_id}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Count Email",
 					"event": [
 						{
@@ -393,6 +384,114 @@
 							"variable": []
 						},
 						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Mail Attachments On Drive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status) {",
+									"    tests['attacment save'] = true",
+									"} else {",
+									"    tests['attacment save'] = false",
+									"}",
+									"",
+									"if (jsonData.data.attachment.length) {",
+									"    tests['attachment uploaded on drive'] = true",
+									"} else {",
+									"    tests['attachment uploaded on drive'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/mailAttachment/59786f49da94311b97555175?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"mailAttachment",
+								"59786f49da94311b97555175"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status == 1) {",
+									"    tests[\"status exist\"] = true;",
+									"} else {",
+									"    tests[\"status exist\"] = false;",
+									"}",
+									"if (jsonData.message == \"success\") {",
+									"    tests[\"Success message exist\"] = true;",
+									"} else {",
+									"    tests[\"Success message exist\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/assignTag/9/{{mongo_id}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"assignTag",
+								"9",
+								"{{mongo_id}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
 						"header": [],
 						"body": {},
 						"description": ""
@@ -6293,6 +6392,167 @@
 						"method": "GET",
 						"header": [],
 						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Candidate Device Data",
+			"description": "",
+			"item": [
+				{
+					"name": "Save Candidate Device Information",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.error) {",
+									"    tests['error'] = false",
+									"} else {",
+									"    tests['error'] = true",
+									"}",
+									"if (jsonData.data) {",
+									"    tests['data exist'] = true",
+									"    if (jsonData.data.id) {",
+									"        tests['id exist'] = true",
+									"    } else {",
+									"        tests['id exist'] = false",
+									"    }",
+									"    if (jsonData.data.email_id) {",
+									"        tests['email_id exist'] = true",
+									"    } else {",
+									"        tests['email_id exist'] = false",
+									"    }",
+									"    if (jsonData.data.device_id) {",
+									"        tests['device_id exist'] = true",
+									"    } else {",
+									"        tests['device_id exist'] = false",
+									"    }",
+									"    if (jsonData.data.token) {",
+									"        tests['token exist'] = true",
+									"    } else {",
+									"        tests['token exist'] = false",
+									"    }",
+									"} else {",
+									"    tests['data exist'] = false",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"device_id\", \"test\"+Math.floor((Math.random() * 10000) + 1));"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/app_save_candidate_device",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email_id",
+									"value": "{{email}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "device_id",
+									"value": "{{device_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "token",
+									"value": "qwertyui",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Candidate Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.error) {",
+									"    tests[\"error\"] = false",
+									"} else {",
+									"    tests['not error'] = true",
+									"}",
+									"if (jsonData.data.name) {",
+									"    tests['name exists'] = true",
+									"} else {",
+									"    tests['name exists'] = false",
+									"}",
+									"if (jsonData.data.subject) {",
+									"    tests['subject'] = true",
+									"} else {",
+									"    tests['subject'] = false",
+									"}",
+									"if (jsonData.data.rounds.length) {",
+									"    tests['rounds exists'] = true",
+									"    for (i = 0; i < jsonData.data.rounds.length; i++) {",
+									"        if (jsonData.data.rounds[i].status) {",
+									"            tests['interview sheduled ' + jsonData.data.rounds[i].text + \" status \" + jsonData.data.rounds[i].status] = true",
+									"        } else {",
+									"            tests['interview sheduled ' + jsonData.data.rounds[i].text + \" status \" + jsonData.data.rounds[i].status] = true",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests['rounds exists'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/app_get_candidate",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email_id",
+									"value": "sndpchn94@gmail.com",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
