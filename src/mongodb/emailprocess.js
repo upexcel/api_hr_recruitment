@@ -507,7 +507,7 @@ let deleteEmail = (tag_id, mongo_id, email) => {
                     }
                     response.push({ status: 1, msg: "delete success", array_length: key });
                 }
-                if (key == (size - 1)) {
+                if (key == (mongo_id.length - 1)) {
                     resolve({ status: 1, message: "success", data: response });
                 }
             });
@@ -732,6 +732,7 @@ export default {
     sendToSelectedTag,
     mailAttachment,
     deleteEmail,
+    deleteTag,
     getShedule,
     assignToOldTag,
     getFetchedMailCount,

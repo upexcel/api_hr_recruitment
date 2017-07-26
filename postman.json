@@ -2,7 +2,7 @@
 	"variables": [],
 	"info": {
 		"name": "hr_recruitment",
-		"_postman_id": "95ed1ec8-2001-b807-7452-024eb41edeae",
+		"_postman_id": "8f5affd5-32e5-55f9-d4db-1ceb335c0e6e",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -47,7 +47,6 @@
 									"} else {",
 									"    tests[\"data exist\"] = false;",
 									"}",
-									"",
 									""
 								]
 							}
@@ -209,6 +208,53 @@
 			"description": "",
 			"item": [
 				{
+					"name": "Fetch Latest Emails",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"",
+									"if(jsonData.status){",
+									"    tests['fetch latest email'] = true",
+									"}else{",
+									"    tests['fetch latest email'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/fetchByButton?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"fetchByButton"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Email Fetch",
 					"event": [
 						{
@@ -285,61 +331,6 @@
 					"response": []
 				},
 				{
-					"name": "Assign Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/assignTag/1/{{mongo_id}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"assignTag",
-								"1",
-								"{{mongo_id}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Count Email",
 					"event": [
 						{
@@ -350,34 +341,20 @@
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
 									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}",
 									"if (jsonData.data) {",
 									"    tests[\"data exist\"] = true;",
-									"    for (i = 0; i < jsonData.data.length; i++) {",
+									"    for (i = 0; i < jsonData.data.length -1; i++) {",
 									"        if (jsonData.data[i].title) {",
 									"            tests[\"title Found \" + i] = true;",
+									"            ",
 									"        } else {",
 									"            tests[\"title Found \" + i] = false;",
 									"        }",
-									"        if (jsonData.data[i].color) {",
-									"            tests[\"color Found \" + i] = true;",
-									"        } else {",
-									"            tests[\"color Found \" + i] = false;",
-									"        }",
-									"        if (jsonData.data[i].type) {",
-									"            tests[\"type Found \" + i] = true;",
-									"        } else {",
-									"            tests[\"type Found \" + i] = false;",
-									"        }",
+									"    }",
+									"    if(jsonData.data[jsonData.data.length-1].subject_for_genuine == \"Revert Information\"){",
+									"        tests[\"subject for genuine\"] = true",
+									"    }else{",
+									"        tests[\"subject for genuine\"] = false",
 									"    }",
 									"} else {",
 									"    tests[\"data exist\"] = false;",
@@ -414,6 +391,114 @@
 					"response": []
 				},
 				{
+					"name": "Mail Attachments On Drive",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status) {",
+									"    tests['attacment save'] = true",
+									"} else {",
+									"    tests['attacment save'] = false",
+									"}",
+									"",
+									"if (jsonData.data.attachment.length) {",
+									"    tests['attachment uploaded on drive'] = true",
+									"} else {",
+									"    tests['attachment uploaded on drive'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/mailAttachment/59786f49da94311b97555175?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"mailAttachment",
+								"59786f49da94311b97555175"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Tag",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.status == 1) {",
+									"    tests[\"status exist\"] = true;",
+									"} else {",
+									"    tests[\"status exist\"] = false;",
+									"}",
+									"if (jsonData.message == \"success\") {",
+									"    tests[\"Success message exist\"] = true;",
+									"} else {",
+									"    tests[\"Success message exist\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/assignTag/9/{{mongo_id}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"assignTag",
+								"9",
+								"{{mongo_id}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Assign Multiple Tags",
 					"event": [
 						{
@@ -440,14 +525,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignMultiple/1/?accessToken={{token}}",
+							"raw": "{{url}}/email/assignMultiple/9/?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignMultiple",
-								"1",
+								"9",
 								""
 							],
 							"query": [
@@ -533,145 +618,6 @@
 						"method": "PUT",
 						"header": [],
 						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Email Delete",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/deleteEmail/1?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"deleteEmail",
-								"1"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "mongo_id[0]",
-									"value": "{{mongo_id}}",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Delete Tag",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"",
-									"if (jsonData.status == 1) {",
-									"    tests[\"status exist\"] = true;",
-									"} else {",
-									"    tests[\"status exist\"] = false;",
-									"}",
-									"if (jsonData.message == \"success\") {",
-									"    tests[\"Success message exist\"] = true;",
-									"} else {",
-									"    tests[\"Success message exist\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/email/deleteTag/1/?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"email",
-								"deleteTag",
-								"1",
-								""
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "mongo_id[0]",
-									"value": "{{mongo_id}}",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
 						"description": ""
 					},
 					"response": []
@@ -2692,7 +2638,7 @@
 								},
 								{
 									"key": "password",
-									"value": "0001",
+									"value": "java@123",
 									"type": "text"
 								},
 								{
@@ -6446,6 +6392,167 @@
 						"method": "GET",
 						"header": [],
 						"body": {},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "9. Candidate Device Data",
+			"description": "",
+			"item": [
+				{
+					"name": "Save Candidate Device Information",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.error) {",
+									"    tests['error'] = false",
+									"} else {",
+									"    tests['error'] = true",
+									"}",
+									"if (jsonData.data) {",
+									"    tests['data exist'] = true",
+									"    if (jsonData.data.id) {",
+									"        tests['id exist'] = true",
+									"    } else {",
+									"        tests['id exist'] = false",
+									"    }",
+									"    if (jsonData.data.email_id) {",
+									"        tests['email_id exist'] = true",
+									"    } else {",
+									"        tests['email_id exist'] = false",
+									"    }",
+									"    if (jsonData.data.device_id) {",
+									"        tests['device_id exist'] = true",
+									"    } else {",
+									"        tests['device_id exist'] = false",
+									"    }",
+									"    if (jsonData.data.token) {",
+									"        tests['token exist'] = true",
+									"    } else {",
+									"        tests['token exist'] = false",
+									"    }",
+									"} else {",
+									"    tests['data exist'] = false",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"device_id\", \"test\"+Math.floor((Math.random() * 10000) + 1));"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/app_save_candidate_device",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email_id",
+									"value": "{{email}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "device_id",
+									"value": "{{device_id}}",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "token",
+									"value": "qwertyui",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Get Candidate Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.error) {",
+									"    tests[\"error\"] = false",
+									"} else {",
+									"    tests['not error'] = true",
+									"}",
+									"if (jsonData.data.name) {",
+									"    tests['name exists'] = true",
+									"} else {",
+									"    tests['name exists'] = false",
+									"}",
+									"if (jsonData.data.subject) {",
+									"    tests['subject'] = true",
+									"} else {",
+									"    tests['subject'] = false",
+									"}",
+									"if (jsonData.data.rounds.length) {",
+									"    tests['rounds exists'] = true",
+									"    for (i = 0; i < jsonData.data.rounds.length; i++) {",
+									"        if (jsonData.data.rounds[i].status) {",
+									"            tests['interview sheduled ' + jsonData.data.rounds[i].text + \" status \" + jsonData.data.rounds[i].status] = true",
+									"        } else {",
+									"            tests['interview sheduled ' + jsonData.data.rounds[i].text + \" status \" + jsonData.data.rounds[i].status] = true",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests['rounds exists'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/app_get_candidate",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email_id",
+									"value": "sndpchn94@gmail.com",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
