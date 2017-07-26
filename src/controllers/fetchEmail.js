@@ -68,8 +68,7 @@ export class FetchController extends BaseAPIController {
                 let { tag_id } = req.params;
                 email_process.assignMultiple(tag_id, req.body, req.email)
                     .then((data) => {
-                        this._db.Candidate_device.pushNotification(data)
-                            .then((pushdata) => { res.json(data) })
+                        res.json(data)
                     })
             })
             .catch(this.handleErrorResponse.bind(null, res));
