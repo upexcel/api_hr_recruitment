@@ -232,7 +232,7 @@ const findcount = (mongodb) => {
     })
 }
 
-let assignMultiple = (tag_id, parent_id, body, email) => {
+let assignMultiple = (tag_id, body, email) => {
     return new Promise((resolve, reject) => {
         let where;
         db.Tag.findOne({
@@ -253,13 +253,33 @@ let assignMultiple = (tag_id, parent_id, body, email) => {
                         if (err) {
                             reject(err);
                         } else {
-                            email.find({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1 }).exec(function(err, response) {
+                            if (data.type == constant().tagType.default && body.shedule_for) {
+                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1 }).exec(function(err, response) {
+                                    db.Template.findById(body.tamplate_id)
+                                        .then((template) => {
+                                            replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
+                                                .then((replaced_data) => {
+                                                    db.Smtp.findOne({ where: { status: 1 } })
+                                                        .then((smtp) => {
+                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp.email, replaced_data)
+                                                                .then((mail_response) => {
+                                                                    resolve({
+                                                                        status: 1,
+                                                                        message: "success",
+                                                                        data: response
+                                                                    });
+                                                                }, (err) => { reject(err) })
+                                                        })
+                                                })
+
+                                        })
+                                })
+                            } else {
                                 resolve({
                                     status: 1,
                                     message: "success",
-                                    data: response
                                 });
-                            })
+                            }
                         }
                     });
                 } else {

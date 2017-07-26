@@ -65,8 +65,8 @@ export class FetchController extends BaseAPIController {
         let where;
         MailProvider.changeUnreadStatus(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
-                let { tag_id, parent_id } = req.params;
-                email_process.assignMultiple(tag_id, parent_id, req.body, req.email)
+                let { tag_id } = req.params;
+                email_process.assignMultiple(tag_id, req.body, req.email)
                     .then((data) => {
                         res.json(data)
                     })
