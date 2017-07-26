@@ -391,6 +391,75 @@
 					"response": []
 				},
 				{
+					"name": "Get Available Shedule Dates",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"for(i = 0 ;i<jsonData.length;i++){",
+									"    if(jsonData[i]){",
+									"        tests['data for ' + jsonData[i].date] = true",
+									"    }else{",
+									"        tests['data for ' + jsonData[i].date] = true",
+									"    }",
+									"    if(jsonData[i].time_slots.first_round.length){",
+									"        tests['time slots avialable for first_round ' + jsonData[i].date] = true",
+									"    }else{",
+									"        tests['time slots avialable for first_round '  + jsonData[i].date ] = false",
+									"    }",
+									"    if(jsonData[i].time_slots.second_round.length){",
+									"        tests['time slots avialable for second_round '  + jsonData[i].date] = true",
+									"    }else{",
+									"        tests['time slots avialable for second_round '  + jsonData[i].date] = false",
+									"    }",
+									"    if(jsonData[i].time_slots.third_round.length){",
+									"        tests['time slots avialable for third_round '  + jsonData[i].date] = true",
+									"    }else{",
+									"        tests['time slots avialable for third_round '  + jsonData[i].date] = false",
+									"    }",
+									"}",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/get/shedule?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"get",
+								"shedule"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Mail Attachments On Drive",
 					"event": [
 						{
