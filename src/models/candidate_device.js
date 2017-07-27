@@ -22,6 +22,23 @@ export default function(sequelize, DataTypes) {
         timestamps: true,
         freezeTableName: true,
         allowNull: true,
+
+        classMethods: {
+            createDevice(body) {
+                return new Promise((resolve, reject) => {
+                    this.findOne({ where: { email_id: body.email_id } })
+                        .then((device) => {
+                            if (device) {
+                                this.update(body, { where: { email_id: body.email_id } })
+                                    .then((response) => { resolve(response) })
+                            } else {
+                                this.create(body)
+                                    .then((data) => { resolve(data) })
+                            }
+                        })
+                })
+            }
+        }
     });
     return Candidate_device;
 }
