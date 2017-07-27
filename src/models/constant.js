@@ -25,7 +25,7 @@ export default function() {
         second_round_slots: ['10:30', '12:00', '01:30'],
         third_round_slots: ['03:00', '04:00'],
         push_notification_message: 'Your Interview Is Sheduled For',
-        limit_for_email_fetch: 5,
+        old_emails_fetch_days_count: 5,
     };
     return constant;
 }

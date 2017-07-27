@@ -233,10 +233,10 @@ module.exports = {
                                         var row = val.dataValues;
                                         if (row && row.last_fetched_time) {
                                             date = moment(new Date(row.last_fetched_time)).format("MMM DD, YYYY");
-                                            dateFrom = moment(date).subtract(constant().limit_for_email_fetch, 'days').format('MMM DD, YYYY');
+                                            dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
                                         } else {
                                             date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
-                                            dateFrom = moment(date).subtract(constant().limit_for_email_fetch, 'days').format('MMM DD, YYYY');
+                                            dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
                                         }
                                         console.log(date, dateFrom)
                                         imap.search(['ALL', ['SINCE', dateFrom],
