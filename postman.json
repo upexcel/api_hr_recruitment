@@ -474,26 +474,21 @@
 									"} else {",
 									"    tests['attacment save'] = false",
 									"}",
-									"",
-									"if (jsonData.data.attachment.length) {",
-									"    tests['attachment uploaded on drive'] = true",
-									"} else {",
-									"    tests['attachment uploaded on drive'] = false",
-									"}"
+									""
 								]
 							}
 						}
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/mailAttachment/59786f49da94311b97555175?accessToken={{token}}",
+							"raw": "{{url}}/email/mailAttachment/{{mongo_id}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"mailAttachment",
-								"59786f49da94311b97555175"
+								"{{mongo_id}}"
 							],
 							"query": [
 								{
@@ -6571,11 +6566,10 @@
 									"var jsonData = JSON.parse(responseBody);",
 									"",
 									"if (jsonData.error) {",
-									"    tests[\"error\"] = false",
+									"    tests[\"error\"] = true",
 									"} else {",
 									"    tests['not error'] = true",
-									"}",
-									"if (jsonData.data.name) {",
+									"    if (jsonData.data.name) {",
 									"    tests['name exists'] = true",
 									"} else {",
 									"    tests['name exists'] = false",
@@ -6596,7 +6590,9 @@
 									"    }",
 									"} else {",
 									"    tests['rounds exists'] = false",
-									"}"
+									"}",
+									"}",
+									""
 								]
 							}
 						}
@@ -6616,7 +6612,7 @@
 							"urlencoded": [
 								{
 									"key": "email_id",
-									"value": "sndpchn94@gmail.com",
+									"value": "saurabhk_etech@excellencetechnologies.in",
 									"description": "",
 									"type": "text"
 								}

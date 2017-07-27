@@ -276,12 +276,21 @@ let assignMultiple = (tag_id, body, email) => {
                                                                             if (device_list) {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
-                                                                                        resolve({
-                                                                                            status: 1,
-                                                                                            message: "success",
-                                                                                            data: response,
-                                                                                            push_status: push_response
-                                                                                        });
+                                                                                        if (!push_response.error) {
+                                                                                            resolve({
+                                                                                                status: 1,
+                                                                                                message: "success",
+                                                                                                data: response,
+                                                                                                push_status: push_response
+                                                                                            });
+                                                                                        } else {
+                                                                                            resolve({
+                                                                                                status: 1,
+                                                                                                message: "success",
+                                                                                                data: response,
+                                                                                                push_status: push_response
+                                                                                            });
+                                                                                        }
                                                                                     })
                                                                             } else {
                                                                                 resolve({
