@@ -723,6 +723,7 @@ let getFetchedMailCount = (imap_emails, email) => {
                     type: imap_email.type,
                     updatedAt: imap_email.updatedAt,
                     fetched_email_count: data,
+                    fetched_mail_till: moment(imap_email.last_fetched_time).format("DD,MM,YYYY"),
                     total_emails: imap_email.total_emails
                 }
                 result.push(imap_data)
