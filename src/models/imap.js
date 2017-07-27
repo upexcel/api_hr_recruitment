@@ -32,6 +32,11 @@ export default function(sequelize, DataTypes) {
         total_emails: {
             type: DataTypes.INTEGER,
             defaultValue: 0,
+        },
+        last_fetched_time: {
+            type: DataTypes.DATE,
+            defaultValue: false,
+            allowNull: new Date()
         }
     }, {
         timestamps: true,
