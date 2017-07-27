@@ -6,6 +6,7 @@ import replaceData from "../modules/replaceVariable";
 import imap from "../service/imap";
 import Attachment from "../modules/getAttachment";
 import moment from 'moment';
+import pushMessage from '../service/pushmessage';
 
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
@@ -261,13 +262,38 @@ let assignMultiple = (tag_id, body, email) => {
                                                 .then((replaced_data) => {
                                                     db.Smtp.findOne({ where: { status: 1 } })
                                                         .then((smtp) => {
+                                                            if (!smtp) {
+                                                                resolve({
+                                                                    status: 1,
+                                                                    message: "Interview is sheduled but email is not send",
+                                                                    data: response
+                                                                })
+                                                            }
                                                             mail.sendMail(response.sender_mail, template.subject, "", smtp.email, replaced_data)
                                                                 .then((mail_response) => {
-                                                                    resolve({
-                                                                        status: 1,
-                                                                        message: "success",
-                                                                        data: response
-                                                                    });
+                                                                    db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
+                                                                        .then((device_list) => {
+                                                                            if (device_list) {
+                                                                                pushMessage.pushMessage(device_list, body.shedule_for)
+                                                                                    .then((push_response) => {
+                                                                                        resolve({
+                                                                                            status: 1,
+                                                                                            message: "success",
+                                                                                            data: response,
+                                                                                            push_status: push_response
+                                                                                        });
+                                                                                    })
+                                                                            } else {
+                                                                                resolve({
+                                                                                    status: 1,
+                                                                                    message: "success",
+                                                                                    data: response
+                                                                                })
+                                                                            }
+
+
+                                                                        })
+
                                                                 }, (err) => { reject(err) })
                                                         })
                                                 })
