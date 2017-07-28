@@ -244,9 +244,9 @@ let assignMultiple = (tag_id, body, email) => {
             .then((data) => {
                 if (data.id) {
                     if (data.type == constant().tagType.default && body.shedule_for) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "push_message": "", push_status: 0 }
                     } else if (data.type == constant().tagType.default) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "", "push_message": "", push_status: 0 };
                     } else {
                         where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                     }
@@ -276,12 +276,19 @@ let assignMultiple = (tag_id, body, email) => {
                                                                             if (device_list) {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
-                                                                                        resolve({
-                                                                                            status: 1,
-                                                                                            message: "success",
-                                                                                            data: response,
-                                                                                            push_status: push_response
-                                                                                        });
+                                                                                        if (!push_response.err) {
+                                                                                            where = { "push_message": constant().push_notification_message + body.shedule_for, "push_status": 1 }
+                                                                                        } else {
+                                                                                            where = { "push_message": "", "push_status": 0 }
+                                                                                        }
+                                                                                        email.update({ "$in": { "$in": body.mongo_id } }, where).exec(function(err, saved_info) {
+                                                                                            resolve({
+                                                                                                status: 1,
+                                                                                                message: "success",
+                                                                                                data: response,
+                                                                                                push_status: push_response
+                                                                                            });
+                                                                                        })
                                                                                     })
                                                                             } else {
                                                                                 resolve({
@@ -290,9 +297,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                                                     data: response
                                                                                 })
                                                                             }
-
-
-                                                                        })
+                                                                        }, (err) => { reject(err) })
 
                                                                 }, (err) => { reject(err) })
                                                         })
@@ -739,14 +744,14 @@ let getFetchedMailCount = (imap_emails, email) => {
 let app_get_candidate = (email, email_id) => {
     return new Promise((resolve, reject) => {
         let rounds = []
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": constant().shedule_for } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1 }).exec(function(err, response) {
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": constant().shedule_for } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
             if (err) {
                 reject({ error: 1, message: err, data: [] })
             } else {
                 if (response) {
                     _.forEach(constant().shedule_for, (val, key) => {
                         if (val == response.shedule_for) {
-                            rounds.push({ text: val, scheduled_time: response.shedule_time, scheduled_date: response.shedule_date, status: 1 })
+                            rounds.push({ text: val, scheduled_time: response.shedule_time, scheduled_date: response.shedule_date, push_message: response.push_message, push_status: response.push_status, status: 1 })
                         } else {
                             rounds.push({ text: val, scheduled_time: "", scheduled_date: "", status: 0 })
                         }

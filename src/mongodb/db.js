@@ -31,7 +31,9 @@ module.exports = function() {
         is_attachment: { type: Boolean },
         shedule_for: { type: String },
         shedule_date: { type: String },
-        shedule_time: { type: String }
+        shedule_time: { type: String },
+        push_message: { type: String },
+        push_status: { type: Boolean }
     }, {
         collection: "emailStored",
         strict: true,
