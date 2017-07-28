@@ -22,8 +22,8 @@ export class ImapController extends BaseAPIController {
                     .then((data) => {
                         this._db.Imap.create(dataValues)
                             .then((data) => {
-                                res.json(data)
-                            })
+                                res.json({ data: data })
+                            }).catch(this.handleErrorResponse.bind(null, res))
                     }).catch(this.handleErrorResponse.bind(null, res));
             }).catch(this.handleErrorResponse.bind(null, res));
     }

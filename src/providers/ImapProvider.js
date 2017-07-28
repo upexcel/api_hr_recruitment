@@ -10,6 +10,7 @@ const save = (model, validate, body, validationResult) => {
             if (!result.isEmpty()) {
                 reject(result.array()[0].msg);
             } else {
+                body.last_fetched_time = new Date()
                 resolve(body);
             }
         });
