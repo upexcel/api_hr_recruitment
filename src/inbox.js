@@ -355,14 +355,6 @@ module.exports = {
                                                                                 } else {
                                                                                     console.log(tag)
                                                                                     console.log("data saved successfully");
-                                                                                    if (!count && (key == docs.length - 1)) {
-                                                                                        let imap_emails = [];
-                                                                                        _.forEach(docs, (email, key) => {
-                                                                                            imap_emails.push(email.email)
-                                                                                        })
-                                                                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: { "$in": imap_emails } } }, { multi: true })
-                                                                                            .then((last_updated_time) => { console.log("last time updated") })
-                                                                                    }
                                                                                 }
                                                                             });
                                                                         } else {
@@ -399,6 +391,14 @@ module.exports = {
                             });
                             imap.connect();
                         });
+                    if (!count && (key == docs.length - 1)) {
+                        let imap_emails = [];
+                        _.forEach(docs, (email, key) => {
+                            imap_emails.push(email.email)
+                        })
+                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: { "$in": imap_emails } } }, { multi: true })
+                            .then((last_updated_time) => { console.log("last time updated") })
+                    }
                 });
             } else {
                 console.log("No Active connection")
