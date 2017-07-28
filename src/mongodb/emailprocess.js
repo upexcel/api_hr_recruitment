@@ -276,12 +276,12 @@ let assignMultiple = (tag_id, body, email) => {
                                                                             if (device_list) {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
-                                                                                        if (!push_response.err) {
-                                                                                            where = { "push_message": constant().push_notification_message + body.shedule_for, "push_status": 1 }
+                                                                                        if (!push_response.error) {
+                                                                                            where = { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }
                                                                                         } else {
                                                                                             where = { "push_message": "", "push_status": 0 }
                                                                                         }
-                                                                                        email.update({ "$in": { "$in": body.mongo_id } }, where).exec(function(err, saved_info) {
+                                                                                        email.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec(function(err, saved_info) {
                                                                                             resolve({
                                                                                                 status: 1,
                                                                                                 message: "success",
@@ -751,13 +751,13 @@ let app_get_candidate = (email, email_id) => {
                 if (response) {
                     _.forEach(constant().shedule_for, (val, key) => {
                         if (val == response.shedule_for) {
-                            rounds.push({ text: val, scheduled_time: response.shedule_time, scheduled_date: response.shedule_date, push_message: response.push_message, push_status: response.push_status, status: 1 })
+                            rounds.push({ text: val, scheduled_time: response.shedule_time, scheduled_date: response.shedule_date, status: 1 })
                         } else {
                             rounds.push({ text: val, scheduled_time: "", scheduled_date: "", status: 0 })
                         }
                         if (key == constant().shedule_for.length - 1) {
                             findSubject(response.tag_id[0], function(subject) {
-                                resolve({ name: response.from, subject: subject, rounds: rounds })
+                                resolve({ name: response.from, subject: subject, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
                             })
                         }
                     })
