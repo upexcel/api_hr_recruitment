@@ -51,10 +51,16 @@ export default function(sequelize, DataTypes) {
                         })
                         .then((details) => {
                             if (details) {
+                                let expiredIn = 0;
+                                if (user.remember_me) {
+                                    expiredIn = 24 * 60 * 60;
+                                } else {
+                                    expiredIn = 60 * 60;
+                                }
                                 const token = jwt.sign({
                                     token: details.id,
                                 }, "secret_key", {
-                                    expiresIn: 60 * 60,
+                                    expiresIn: expiredIn,
                                 });
                                 resolve({
                                     status: 1,
