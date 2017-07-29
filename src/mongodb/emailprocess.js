@@ -276,12 +276,23 @@ let assignMultiple = (tag_id, body, email) => {
                                                                             if (device_list) {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
-                                                                                        resolve({
-                                                                                            status: 1,
-                                                                                            message: "success",
-                                                                                            data: response,
-                                                                                            push_status: push_response
-                                                                                        });
+                                                                                        if (!push_response.error) {
+                                                                                            email.update({ "_id": { "$in": body.mongo_id } }, { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }, { multi: true }).exec(function(err, saved_info) {
+                                                                                                resolve({
+                                                                                                    status: 1,
+                                                                                                    message: "success",
+                                                                                                    data: response,
+                                                                                                    push_status: push_response
+                                                                                                });
+                                                                                            })
+                                                                                        } else {
+                                                                                            resolve({
+                                                                                                status: 1,
+                                                                                                message: "success",
+                                                                                                data: response,
+                                                                                                push_status: push_response
+                                                                                            });
+                                                                                        }
                                                                                     })
                                                                             } else {
                                                                                 resolve({
@@ -290,9 +301,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                                                     data: response
                                                                                 })
                                                                             }
-
-
-                                                                        })
+                                                                        }, (err) => { reject(err) })
 
                                                                 }, (err) => { reject(err) })
                                                         })
@@ -740,7 +749,7 @@ let getFetchedMailCount = (imap_emails, email) => {
 let app_get_candidate = (email, email_id) => {
     return new Promise((resolve, reject) => {
         let rounds = []
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": constant().shedule_for } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1 }).exec(function(err, response) {
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": constant().shedule_for } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
             if (err) {
                 reject({ error: 1, message: err, data: [] })
             } else {
@@ -753,7 +762,7 @@ let app_get_candidate = (email, email_id) => {
                         }
                         if (key == constant().shedule_for.length - 1) {
                             findSubject(response.tag_id[0], function(subject) {
-                                resolve({ name: response.from, subject: subject, rounds: rounds })
+                                resolve({ name: response.from, subject: subject, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
                             })
                         }
                     })

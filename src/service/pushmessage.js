@@ -19,7 +19,7 @@ let pushMessage = (device_info, information) => {
         };
         fcm.send(message, function(err, response) {
             if (err) {
-                reject({ error: 1, message: err, data: [] })
+                resolve({ error: 1, message: err, data: [] })
             } else {
                 resolve({ error: 0, message: response, data: [] })
             }
