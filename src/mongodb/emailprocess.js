@@ -11,7 +11,11 @@ import pushMessage from '../service/pushmessage';
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
         let message;
-        let default_tag_id = []
+        let default_tag_id = [];
+        let data_length = 0;
+        let sender_email_list = []
+        let emails = [];
+
         _.forEach(default_tag, (val, key) => {
             default_tag_id.push(val.id.toString())
         })
@@ -63,17 +67,37 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
                 where = { tag_id: { $in: [tag_id] } }
             }
         }
-        db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).exec((err, data) => {
             if (err) {
                 reject(err);
             } else {
                 if (data[0] == null) {
                     message = "No Result Found"
+                    resolve(data, message)
+                } else {
+                    data_length = data.length;
+                    findEmails(data, function(response) {
+                        resolve(response, message)
+                    });
+
+                    function findEmails(allEmails, callback) {
+                        let value = allEmails.splice(0, 1)[0]
+                        if (sender_email_list.indexOf(value.sender_mail) < 0) {
+                            sender_email_list.push(value.sender_mail)
+                            emails.push(value)
+                        }
+                        if ((emails.length == limit) || (!--data_length)) {
+                            callback(emails)
+                        } else {
+                            findEmails(allEmails, callback)
+                        }
+                    }
                 }
-                resolve(data, message);
             }
         });
     })
+
+
 }
 
 
