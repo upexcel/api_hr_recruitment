@@ -276,20 +276,23 @@ let assignMultiple = (tag_id, body, email) => {
                                                                             if (device_list) {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
-                                                                                        let update_to;
                                                                                         if (!push_response.error) {
-                                                                                            update_to = { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }
+                                                                                            email.update({ "_id": { "$in": body.mongo_id } }, { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }, { multi: true }).exec(function(err, saved_info) {
+                                                                                                resolve({
+                                                                                                    status: 1,
+                                                                                                    message: "success",
+                                                                                                    data: response,
+                                                                                                    push_status: push_response
+                                                                                                });
+                                                                                            })
                                                                                         } else {
-                                                                                            update_to = { "$addToSet": { "push_message": "" }, "push_status": 0 }
-                                                                                        }
-                                                                                        email.update({ "_id": { "$in": body.mongo_id } }, update_to, { multi: true }).exec(function(err, saved_info) {
                                                                                             resolve({
                                                                                                 status: 1,
                                                                                                 message: "success",
                                                                                                 data: response,
                                                                                                 push_status: push_response
                                                                                             });
-                                                                                        })
+                                                                                        }
                                                                                     })
                                                                             } else {
                                                                                 resolve({
