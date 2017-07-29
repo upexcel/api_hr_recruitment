@@ -244,9 +244,9 @@ let assignMultiple = (tag_id, body, email) => {
             .then((data) => {
                 if (data.id) {
                     if (data.type == constant().tagType.default && body.shedule_for) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "push_message": "", push_status: 0 }
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
                     } else if (data.type == constant().tagType.default) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "", "push_message": "", push_status: 0 };
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
                     } else {
                         where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                     }
@@ -276,12 +276,13 @@ let assignMultiple = (tag_id, body, email) => {
                                                                             if (device_list) {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
+                                                                                        let update_to;
                                                                                         if (!push_response.error) {
-                                                                                            where = { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }
+                                                                                            update_to = { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }
                                                                                         } else {
-                                                                                            where = { "push_message": "", "push_status": 0 }
+                                                                                            update_to = { "$addToSet": { "push_message": "" }, "push_status": 0 }
                                                                                         }
-                                                                                        email.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec(function(err, saved_info) {
+                                                                                        email.update({ "_id": { "$in": body.mongo_id } }, update_to, { multi: true }).exec(function(err, saved_info) {
                                                                                             resolve({
                                                                                                 status: 1,
                                                                                                 message: "success",
