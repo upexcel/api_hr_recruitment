@@ -639,7 +639,7 @@ let getShedule = (email) => {
         function check_slot_status(shedule_type, shedule_slots, date, callback) {
             let shedule = shedule_type.splice(0, 1)[0]
             let slots = shedule_slots.splice(0, 1)[0]
-            email.find({ shedule_date: date.toISOString().substring(0, 10), shedule_for: shedule }, { "shedule_time": 1 }).exec(function(err, shedule_time) {
+            email.find({ shedule_date: date.toISOString().substring(0, 10), shedule_for: shedule.value }, { "shedule_time": 1 }).exec(function(err, shedule_time) {
                 if (shedule_time.length) {
                     let time = []
                     _.forEach(shedule_time, (val, key) => {
@@ -652,12 +652,12 @@ let getShedule = (email) => {
                             slots_array.push({ time: val, status: 1 })
                         }
                         if (key == slots.length - 1) {
-                            final_data_list[shedule] = slots_array;
+                            final_data_list[shedule.value] = slots_array;
                             if (shedule_type.length) {
                                 slots_array = []
                                 check_slot_status(shedule_type, shedule_slots, date, callback)
                             } else {
-                                final_data_list[shedule] = slots_array;
+                                final_data_list[shedule.value] = slots_array;
                                 callback(final_data_list)
                             }
                         }
@@ -666,12 +666,12 @@ let getShedule = (email) => {
                     _.forEach(slots, (val, key) => {
                         slots_array.push({ time: val, status: 1 })
                         if (key == slots.length - 1) {
-                            final_data_list[shedule] = slots_array;
+                            final_data_list[shedule.value] = slots_array;
                             if (shedule_type.length) {
                                 slots_array = []
                                 check_slot_status(shedule_type, shedule_slots, date, callback)
                             } else {
-                                final_data_list[shedule] = slots_array;
+                                final_data_list[shedule.value] = slots_array;
                                 callback(final_data_list)
                             }
                         }
@@ -744,17 +744,20 @@ let getFetchedMailCount = (imap_emails, email) => {
 let app_get_candidate = (email, email_id) => {
     return new Promise((resolve, reject) => {
         let rounds = []
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": constant().shedule_for } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
+        let scheduled_rounds = []
+        _.forEach(constant().shedule_for, (val, key) => {
+            scheduled_rounds.push(val.value)
+        })
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
             if (err) {
                 reject({ error: 1, message: err, data: [] })
             } else {
                 if (response) {
                     _.forEach(constant().shedule_for, (val, key) => {
-                        let round = val.replace("_", " ").replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); })
-                        if (val == response.shedule_for) {
-                            rounds.push({ text: round, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
+                        if (val.value == response.shedule_for) {
+                            rounds.push({ text: val.text, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
                         } else {
-                            rounds.push({ text: round, scheduled_time: "", scheduled_date: "", status: 0 })
+                            rounds.push({ text: val.text, scheduled_time: "", scheduled_date: "", status: 0 })
                         }
                         if (key == constant().shedule_for.length - 1) {
                             findSubject(response.tag_id[0], function(subject) {
