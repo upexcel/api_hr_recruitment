@@ -5,7 +5,7 @@ export class DeviceController extends BaseAPIController {
     save = (req, res, next) => {
         CandidateDeviceProvider.save(req.checkBody, req.body, req.getValidationResult())
             .then((body) => {
-                this._db.Candidate_device.create(body)
+                this._db.Candidate_device.createDevice(body)
                     .then((data) => {
                         res.json({ error: 0, message: 'sucess', data: data })
                     }, (err) => {

@@ -244,9 +244,9 @@ let assignMultiple = (tag_id, body, email) => {
             .then((data) => {
                 if (data.id) {
                     if (data.type == constant().tagType.default && body.shedule_for) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "push_message": "", push_status: 0 }
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
                     } else if (data.type == constant().tagType.default) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "", "push_message": "", push_status: 0 };
+                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
                     } else {
                         where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
                     }
@@ -277,18 +277,22 @@ let assignMultiple = (tag_id, body, email) => {
                                                                                 pushMessage.pushMessage(device_list, body.shedule_for)
                                                                                     .then((push_response) => {
                                                                                         if (!push_response.error) {
-                                                                                            where = { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }
+                                                                                            email.update({ "_id": { "$in": body.mongo_id } }, { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }, { multi: true }).exec(function(err, saved_info) {
+                                                                                                resolve({
+                                                                                                    status: 1,
+                                                                                                    message: "success",
+                                                                                                    data: response,
+                                                                                                    push_status: push_response
+                                                                                                });
+                                                                                            })
                                                                                         } else {
-                                                                                            where = { "push_message": "", "push_status": 0 }
-                                                                                        }
-                                                                                        email.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec(function(err, saved_info) {
                                                                                             resolve({
                                                                                                 status: 1,
                                                                                                 message: "success",
                                                                                                 data: response,
                                                                                                 push_status: push_response
                                                                                             });
-                                                                                        })
+                                                                                        }
                                                                                     })
                                                                             } else {
                                                                                 resolve({
@@ -728,6 +732,7 @@ let getFetchedMailCount = (imap_emails, email) => {
                     type: imap_email.type,
                     updatedAt: imap_email.updatedAt,
                     fetched_email_count: data,
+                    fetched_mail_till: moment(imap_email.last_fetched_time).format("DD,MM,YYYY"),
                     total_emails: imap_email.total_emails
                 }
                 result.push(imap_data)
