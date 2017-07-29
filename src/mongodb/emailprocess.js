@@ -752,7 +752,7 @@ let app_get_candidate = (email, email_id) => {
                     _.forEach(constant().shedule_for, (val, key) => {
                         let round = val.replace("_", " ").replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); })
                         if (val == response.shedule_for) {
-                            rounds.push({ text: round, scheduled_time: response.shedule_time, scheduled_date: response.shedule_date, status: 1 })
+                            rounds.push({ text: round, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
                         } else {
                             rounds.push({ text: round, scheduled_time: "", scheduled_date: "", status: 0 })
                         }
