@@ -53,7 +53,7 @@ export default function(sequelize, DataTypes) {
                             if (details) {
                                 let expiredIn = 0;
                                 if (user.remember_me) {
-                                    expiredInexpiredIn = 24 * 60 * 60;
+                                    expiredIn = 24 * 60 * 60;
                                 } else {
                                     expiredIn = 60 * 60;
                                 }
