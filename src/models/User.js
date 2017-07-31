@@ -99,9 +99,17 @@ export default function(sequelize, DataTypes) {
                         })
                         .then((data) => {
                             resolve(data)
-                        }, (err) => { reject(err) })
+                        }, (err) => { reject({ error: 1, message: err, data: [] }) })
                 })
-
+            },
+            userDelete(id) {
+                return new Promise((resolve, reject) => {
+                    this.destroy({ where: { id: id } })
+                        .then((response) => {
+                            resolve(response)
+                        })
+                        .catch((err) => { reject({ error: 1, messgae: "User Not Found" }) })
+                })
             }
         },
     });

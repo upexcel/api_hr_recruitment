@@ -42,8 +42,20 @@ export class UserController extends BaseAPIController {
     /*controller for user list*/
     list = (req, res) => {
         this._db.User.userFindAll(req.params.page, req.params.limit)
-            .then((data) => { res.json(data) })
+            .then((data) => { res.json({ error: 0, message: "success", data: data }) })
             .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /*Controller for user delete*/
+    deleteUser = (req, res) => {
+        this._db.User.userDelete(req.params.id)
+            .then((data) => { res.json({ error: 0, message: "success", data: data }) })
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
+
+    /*Find Id result*/
+    idResult = (req, res, next, id) => {
+        this.getById(req, res, this._db.User, id, next)
     }
 }
 
