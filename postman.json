@@ -125,13 +125,13 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/user/register?accessToken={{token}}",
+							"raw": "{{url}}/user/add_user?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"user",
-								"register"
+								"add_user"
 							],
 							"query": [
 								{

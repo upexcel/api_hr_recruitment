@@ -6,7 +6,7 @@ export default (app) => {
     app.route("/verify").get(auth.verifyToken);
 
     /* Route for User Registration  */
-    app.route("/user/register").post(auth.requiresAdmin, user.create);
+    app.route("/user/add_user").post(auth.requiresAdmin, user.create);
 
     /* Route for User Login  */
     app.route("/user/login").post(user.login);
