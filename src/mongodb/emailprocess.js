@@ -11,8 +11,7 @@ import pushMessage from '../service/pushmessage';
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
         let message;
-        let default_tag_id = [];
-
+        let default_tag_id = []
         _.forEach(default_tag, (val, key) => {
             default_tag_id.push(val.id.toString())
         })
