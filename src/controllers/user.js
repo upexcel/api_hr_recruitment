@@ -14,7 +14,7 @@ export class UserController extends BaseAPIController {
                     this._db.User.create(user)
                         .then((data) => {
                             res.json({
-                                status: 1,
+                                error: 0,
                                 message: 'success',
                                 data: data,
                             })
