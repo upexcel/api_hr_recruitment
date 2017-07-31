@@ -11,10 +11,10 @@ export class AccountController extends BaseAPIController {
                         .then((response) => {
                             res.json(response)
                         }, (err) => {
-                            throw new Error(err)
+                            next(res.status(400).send({ message: err }))
                         })
                 } else {
-                    next(new Error("Email Id Not Found"));
+                    next(res.status(400).send({ message: "Email Id Not Found" }))
                 }
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -24,12 +24,12 @@ export class AccountController extends BaseAPIController {
     update_password = (req, res, next) => {
         AccountProvider.updatePassword(req.checkBody, req.body, req.getValidationResult())
             .then((body) => {
-                this._db.User.update({ password: body.new_password }, { where: { email: req.params.email, password: body.old_password } })
+                this._db.User.update({ password: body.new_password }, { where: { id: req.user.id, password: body.old_password } })
                     .then((user) => {
                         if (user && user[0]) {
                             res.json({ message: 'password updated successfully' });
                         } else {
-                            next(new Error("Data not Found"));
+                            next(res.status(400).send({ message: "Data not Found" }))
                         }
                     }, (err) => {
                         this.handleErrorResponse.bind(null, err)
