@@ -74,8 +74,6 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             }
         });
     })
-
-
 }
 
 
