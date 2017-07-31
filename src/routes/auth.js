@@ -11,5 +11,8 @@ export default (app) => {
     /* Route for User Login  */
     app.route("/user/login").post(user.login);
 
+    /* Route for user list*/
+    app.route("/user/list/:page/:limit").get(auth.requiresAdmin, user.list)
+
     return app;
 };

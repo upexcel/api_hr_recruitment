@@ -38,6 +38,13 @@ export class UserController extends BaseAPIController {
             .then(res.json.bind(res))
             .catch(this.handleErrorResponse.bind(null, res));
     }
+
+    /*controller for user list*/
+    list = (req, res) => {
+        this._db.User.userFindAll(req.params.page, req.params.limit)
+            .then((data) => { res.json(data) })
+            .catch(this.handleErrorResponse.bind(null, res));
+    }
 }
 
 const controller = new UserController();

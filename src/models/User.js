@@ -89,6 +89,19 @@ export default function(sequelize, DataTypes) {
                             }
                         }, (err) => { reject(err) })
                 })
+            },
+            userFindAll(page, limit) {
+                return new Promise((resolve, reject) => {
+                    this.findAll({
+                            offset: (page - 1) * parseInt(limit),
+                            limit: parseInt(limit),
+                            order: '`id` DESC'
+                        })
+                        .then((data) => {
+                            resolve(data)
+                        }, (err) => { reject(err) })
+                })
+
             }
         },
     });
