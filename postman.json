@@ -12,6 +12,66 @@
 			"description": "",
 			"item": [
 				{
+					"name": "Login by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.status == 1) {",
+									"    tests[\"status exist\"] = true;",
+									"} else {",
+									"    tests[\"status exist\"] = false;",
+									"}",
+									"if (jsonData.token) {",
+									"    postman.setEnvironmentVariable(\"token\", jsonData.token);",
+									"    tests[\"token exist\"] = true;",
+									"} else {",
+									"    tests[\"token exist\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/user/login",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "dev@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "remember_me",
+									"value": "true",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Register",
 					"event": [
 						{
@@ -64,7 +124,25 @@
 						}
 					],
 					"request": {
-						"url": "{{url}}/user/register",
+						"url": {
+							"raw": "{{url}}/user/register?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"register"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -79,22 +157,26 @@
 								{
 									"key": "email",
 									"value": "{{email}}",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "user_type",
 									"value": "Admin",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "password",
 									"value": "123",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "confirm_password",
 									"value": "123",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								}
 							]
 						},
@@ -148,6 +230,12 @@
 								{
 									"key": "password",
 									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "remember_me",
+									"value": "true",
+									"description": "",
 									"type": "text"
 								}
 							]
@@ -1568,7 +1656,11 @@
 									"        tests[\"email exist\"] = false;",
 									"    }",
 									"} else {",
-									"    tests[\"invalid Details\"] = true;",
+									"     if(jsonData.message == \"Invalid credentials (Failure)\" || \"Email Already In Use\"){",
+									"        tests['invalid imap details'] = true",
+									"    }else{",
+									"        tests['invalid imap details'] = false",
+									"    }",
 									"}",
 									"    tests['Admin'] = true;",
 									"}else{",
@@ -1624,27 +1716,12 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "{{imapEmail}}",
-									"type": "text"
-								},
-								{
-									"key": "imap_server",
-									"value": "sasssss",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "TLS",
+									"value": "testhr69@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "123",
-									"type": "text"
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
+									"value": "java@123",
 									"type": "text"
 								}
 							]
@@ -1846,6 +1923,9 @@
 									"    tests[\"data exist\"] = true;",
 									"    for (i = 0; i < jsonData.length; i++) {",
 									"        if (jsonData[i].id) {",
+									"            if(jsonData[i].id == postman.getEnvironmentVariable(\"imapId\")){",
+									"                tests['saved data exist'] = true",
+									"            }",
 									"            tests[\"id exist \" + i] = true;",
 									"        } else {",
 									"            tests[\"id exist \" + i] = false;",
@@ -2060,27 +2140,13 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								},
-								{
-									"key": "imap_server",
-									"value": "sasssss",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "TLS",
+									"value": "testhr69@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "12333333333",
-									"type": "text"
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
+									"value": "java@123",
+									"description": "",
 									"type": "text"
 								}
 							]

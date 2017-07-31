@@ -8,7 +8,7 @@ export class UserController extends BaseAPIController {
     create = (req, res) => {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
-                if (user.user_type == constant().userType.admin || user.user_type == constant().userType.hr || user.user_type == constant().userType.guest) {
+                if ((user.user_type == constant().userType.admin || user.user_type == constant().userType.hr || user.user_type == constant().userType.guest) && (req.user.id)) {
                     this._db.User.create(user)
                         .then((data) => {
                             res.json({
@@ -16,11 +16,13 @@ export class UserController extends BaseAPIController {
                             })
                         }, (err) => {
                             throw new Error(res.json(400, {
-                                meesage: err
+                                message: err
                             }));
                         })
                 } else {
-                    throw new Error("Invalid User Type")
+                    throw new Error(res.json(400, {
+                        message: "Invalid User Type"
+                    }))
                 }
             })
             .catch(this.handleErrorResponse.bind(null, res));
