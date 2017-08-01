@@ -17,6 +17,18 @@ export class DeviceController extends BaseAPIController {
                     })
             }).catch((err) => { res.json({ error: 1, message: err, data: [] }) });
     }
+
+    logout = (req, res, next) => {
+        this._db.Candidate_device.logout(req.body.email_id, req.body.device_id)
+            .then((data) => {
+                res.json({ error: 0, message: 'sucess' })
+            }, (err) => {
+                throw new Error(res.json({
+                    error: 1,
+                    message: err,
+                }));
+            })
+    }
 }
 
 const controller = new DeviceController();
