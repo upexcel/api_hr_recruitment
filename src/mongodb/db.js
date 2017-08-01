@@ -33,7 +33,8 @@ module.exports = function() {
         shedule_date: { type: String },
         shedule_time: { type: String },
         push_message: { type: Array },
-        push_status: { type: Boolean }
+        push_status: { type: Boolean },
+        registration_id: { type: Number }
     }, {
         collection: "emailStored",
         strict: true,

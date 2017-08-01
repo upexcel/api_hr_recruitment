@@ -7,6 +7,7 @@ import imap from "../service/imap";
 import Attachment from "../modules/getAttachment";
 import moment from 'moment';
 import pushMessage from '../service/pushmessage';
+import crypto from "crypto";
 
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
@@ -244,7 +245,12 @@ let assignMultiple = (tag_id, body, email) => {
             .then((data) => {
                 if (data.id) {
                     if (data.type == constant().tagType.default && body.shedule_for) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                        if (body.shedule_for == constant().shedule_for[0].value) {
+                            var registration_id = Math.floor((Math.random() * 1000 * 1000) + Math.random() * 10000);
+                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id }
+                        } else {
+                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                        }
                     } else if (data.type == constant().tagType.default) {
                         where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
                     } else {
@@ -260,6 +266,9 @@ let assignMultiple = (tag_id, body, email) => {
                                         .then((template) => {
                                             replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
                                                 .then((replaced_data) => {
+                                                    if (body.shedule_for == constant().shedule_for[0].value)
+                                                        replaced_data = replaced_data + constant().registration_message + registration_id
+                                                    console.log(replaced_data)
                                                     db.Smtp.findOne({ where: { status: 1 } })
                                                         .then((smtp) => {
                                                             if (!smtp) {
