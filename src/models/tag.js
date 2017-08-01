@@ -27,9 +27,13 @@ export default function(sequelize, DataTypes) {
             defaultValue: 0
         },
         template_id: { type: DataTypes.INTEGER },
-        default_id:{
-            type:DataTypes.INTEGER,
-            defaultValue:0
+        default_id: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0
+        },
+        job_description: {
+            type: DataTypes.TEXT('long'),
+            defaultValue: null
         }
     }, {
         hooks: {
