@@ -755,14 +755,14 @@ let getFetchedMailCount = (imap_emails, email) => {
     })
 }
 
-let app_get_candidate = (email, email_id) => {
+let app_get_candidate = (email, email_id, registration_id) => {
     return new Promise((resolve, reject) => {
         let rounds = []
         let scheduled_rounds = []
         _.forEach(constant().shedule_for, (val, key) => {
             scheduled_rounds.push(val.value)
         })
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
             if (err) {
                 reject({ error: 1, message: err, data: [] })
             } else {
