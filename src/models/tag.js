@@ -96,6 +96,13 @@ export default function(sequelize, DataTypes) {
                             reject(err)
                         })
                 })
+            },
+            findTagInfo(tagId) {
+                return new Promise((resolve, reject) => {
+                    this.findById(tagId)
+                        .then((response) => { resolve(response) })
+                        .catch((error) => { reject({ error: 1, message: error, data: [] }) })
+                })
             }
         },
         associate: (models) => {

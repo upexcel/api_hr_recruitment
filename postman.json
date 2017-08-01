@@ -623,14 +623,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignTag/9/{{mongo_id}}?accessToken={{token}}",
+							"raw": "{{url}}/email/assignTag/12/{{mongo_id}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignTag",
-								"9",
+								"12",
 								"{{mongo_id}}"
 							],
 							"query": [
@@ -679,14 +679,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignMultiple/9/?accessToken={{token}}",
+							"raw": "{{url}}/email/assignMultiple/12/?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignMultiple",
-								"9",
+								"12",
 								""
 							],
 							"query": [
@@ -6686,7 +6686,7 @@
 								},
 								{
 									"key": "registration_id",
-									"value": "{{registartion_id}}",
+									"value": "208496",
 									"description": "",
 									"type": "text"
 								}
