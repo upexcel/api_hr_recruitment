@@ -16,12 +16,16 @@ export class UserController extends BaseAPIController {
                             this.handleSuccessResponse(req, res, next, { data: data })
                         }, (err) => {
                             throw new Error(res.json(400, {
-                                message: err
+                                error: 1,
+                                message: err,
+                                data: []
                             }));
                         })
                 } else {
                     throw new Error(res.json(400, {
-                        message: "Invalid User Type"
+                        error: 1,
+                        message: "Invalid User Type",
+                        data: []
                     }))
                 }
             })
