@@ -5091,7 +5091,8 @@
 								{
 									"key": "template_id",
 									"value": "{{templateId}}",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -5936,7 +5937,8 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
-									"description": ""
+									"description": "",
+									"disabled": true
 								}
 							]
 						},
@@ -6050,7 +6052,8 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
-									"description": ""
+									"description": "",
+									"disabled": true
 								}
 							]
 						},
@@ -6154,7 +6157,8 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
-									"description": ""
+									"description": "",
+									"disabled": true
 								}
 							]
 						},

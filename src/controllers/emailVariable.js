@@ -8,12 +8,12 @@ export class VariableController extends BaseAPIController {
         VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((variable) => {
                 this._db.Variable.create(variable)
-                    .then(res.json.bind(res))
+                    .then((data) => this.handleSuccessResponse(req, res, next, data))
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Template Update */
-    update = (req, res) => {
+    update = (req, res, next) => {
         VariableProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Variable.update(data, {
@@ -22,7 +22,7 @@ export class VariableController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                        this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -30,24 +30,24 @@ export class VariableController extends BaseAPIController {
 
 
     /* Template delete */
-    deleteVariable = (req, res) => {
+    deleteVariable = (req, res, next) => {
         this._db.Variable.destroy({
                 where: {
                     id: req.params.variableId
                 }
             })
             .then((docs) => {
-                this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get List of All Templates */
-    variableList = (req, res) => {
+    variableList = (req, res, next) => {
         this._db.Variable.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
                 limit: parseInt(req.params.limit)
             })
-            .then(res.json.bind(res))
+            .then((data) => this.handleSuccessResponse(req, res, next, data))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
