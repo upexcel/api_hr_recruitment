@@ -8,19 +8,29 @@ export class UserController extends BaseAPIController {
     create = (req, res) => {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
-                if (user.user_type == constant().userType.admin || user.user_type == constant().userType.hr || user.user_type == constant().userType.guest) {
+                let user_type = user.user_type;
+                let allowed_role = constant().userType;
+                if ((user_type == allowed_role.admin || user_type == allowed_role.hr || user_type == allowed_role.guest) && (req.user.id)) {
                     this._db.User.create(user)
                         .then((data) => {
                             res.json({
-                                data
+                                error: 0,
+                                message: 'success',
+                                data: data,
                             })
                         }, (err) => {
                             throw new Error(res.json(400, {
-                                meesage: err
+                                error: 1,
+                                message: err,
+                                data: []
                             }));
                         })
                 } else {
-                    throw new Error("Invalid User Type")
+                    throw new Error(res.json(400, {
+                        error: 1,
+                        message: "Invalid User Type",
+                        data: []
+                    }))
                 }
             })
             .catch(this.handleErrorResponse.bind(null, res));
