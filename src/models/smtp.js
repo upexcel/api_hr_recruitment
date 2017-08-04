@@ -66,7 +66,7 @@ export default function(sequelize, DataTypes) {
                                 if (data.status == true) {
                                     emailExistence.check(data.email, function(err, res) {
                                         if (res) {
-                                            if (config.is_silent == true) {
+                                            if (config.is_silent === true) {
                                                 resolve({ is_silent: true })
                                             } else {
                                                 mail.sendMail(email, constant().smtp.subject, constant().smtp.text, data.email, constant().smtp.html)
