@@ -7,12 +7,13 @@ var helper = require('sendgrid').mail;
 module.exports = {
     sendMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
+            from = from.Instance ? from.Instance.dataValues : from.dataValues;
             var mailer = nodemailer.createTransport(smtpTransport({
-                host: config.SMTP_HOST,
-                port: config.SMTP_PORT,
+                host: from.smtp_server,
+                port: from.server_port,
                 auth: {
-                    user: config.SMTP_USER,
-                    pass: config.SMTP_PASS
+                    user: from.email,
+                    pass: from.password
                 }
             }));
             emailExistence.check(email, function(err, res) {

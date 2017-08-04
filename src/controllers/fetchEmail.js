@@ -136,7 +136,6 @@ export class FetchController extends BaseAPIController {
         let { subject, body, tag_id, default_id } = req.body;
         email_process.sendToMany(req.body.emails, subject, body, tag_id, default_id, req.email)
             .then((response) => {
-                console.log(response);
                 this.handleSuccessResponse(req, res, next, response)
             })
             .catch(this.handleErrorResponse.bind(null, res));

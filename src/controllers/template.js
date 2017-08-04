@@ -70,7 +70,7 @@ export class TemplateController extends BaseAPIController {
         this._db.Template.findById(req.params.templateId)
             .then((data) => {
                 replace.templateTest(data.body)
-                    .then((data) => { this.handleSuccessResponse(req, res, next, { status: "SUCCESS" }) })
+                    .then((data) => { this.handleSuccessResponse(req, res, next, data) })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -83,7 +83,7 @@ export class TemplateController extends BaseAPIController {
                     .then((data) => {
                         if (data) {
                             if (config.is_silent) {
-                                mail.sendMail(req.params.email, template.subject, constant().smtp.text, data.email, template.body)
+                                mail.sendMail(req.params.email, template.subject, constant().smtp.text, data, template.body)
                                     .then((response) => {
                                         this.handleSuccessResponse(req, res, next, response)
                                     })

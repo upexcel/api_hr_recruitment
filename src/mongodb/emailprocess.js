@@ -277,7 +277,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     data: response
                                                                 })
                                                             }
-                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp.email, replaced_data)
+                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
                                                                         .then((device_list) => {
@@ -414,7 +414,7 @@ let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
                             _.forEach(data, (val, key) => {
                                 emails.push(val.sender_mail)
                             })
-                            sendmail(smtp_email.email, function(response) {
+                            sendmail(smtp_email, function(response) {
                                 resolve(response)
                             })
                         })
@@ -433,7 +433,6 @@ let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
                     } else {
                         email_send_fail_list.push(to_email[0])
                     }
-                    console.log(emails.length)
                     if (emails.length) {
                         sendmail(from, callback)
                     } else {
@@ -457,7 +456,7 @@ let sendToSelectedTag = (id, email) => {
                             if (template) {
                                 db.Smtp.findOne({ where: { status: 1 } })
                                     .then((smtp) => {
-                                        email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0, is_automatic_email_send: { $exists: false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                        email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
                                             let emails = result;
                                             if (result.length) {
                                                 sendTemplateToEmails(emails, template, smtp, function(err, data) {
@@ -480,7 +479,7 @@ let sendToSelectedTag = (id, email) => {
                                                 replaceData.filter(template.body, email_id.from, id)
                                                     .then((html) => {
                                                         subject = constant().automatic_mail_subject + " " + template.subject;
-                                                        mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
+                                                        mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
                                                             .then((response) => {
                                                                 email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
                                                                     .then((data1) => {

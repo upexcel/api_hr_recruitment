@@ -69,7 +69,7 @@ export default function(sequelize, DataTypes) {
                                             if (config.is_silent == true) {
                                                 resolve({ is_silent: true })
                                             } else {
-                                                mail.sendMail(email, constant().smtp.subject, constant().smtp.text, data.email, constant().smtp.html)
+                                                mail.sendMail(email, constant().smtp.subject, constant().smtp.text, data, constant().smtp.html)
                                                     .then((response) => { resolve(response) })
                                                     .catch((error) => { reject(error) });
                                             }
