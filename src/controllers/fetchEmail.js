@@ -155,7 +155,7 @@ export class FetchController extends BaseAPIController {
     }
 
     app_get_candidate = (req, res, next) => {
-        email_process.app_get_candidate(req.email, req.body.email_id)
+        email_process.app_get_candidate(req.email, req.body.email_id, req.body.registration_id)
             .then((result) => { res.json({ error: 0, message: "", data: result }) })
             .catch((err) => { res.json(err) })
     }

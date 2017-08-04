@@ -670,7 +670,9 @@
 									"    tests[\"Success message exist\"] = true;",
 									"} else {",
 									"    tests[\"Success message exist\"] = false;",
-									"}"
+									"}",
+									"",
+									""
 								]
 							}
 						}
@@ -6679,6 +6681,12 @@
 								{
 									"key": "email_id",
 									"value": "saurabhk_etech@excellencetechnologies.in",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "registration_id",
+									"value": "{{registartion_id}}",
 									"description": "",
 									"type": "text"
 								}
