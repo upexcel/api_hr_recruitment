@@ -268,7 +268,6 @@ let assignMultiple = (tag_id, body, email) => {
                                                 .then((replaced_data) => {
                                                     if (body.shedule_for == constant().shedule_for[0].value)
                                                         replaced_data = replaced_data + constant().registration_message + registration_id
-                                                    console.log(replaced_data)
                                                     db.Smtp.findOne({ where: { status: 1 } })
                                                         .then((smtp) => {
                                                             if (!smtp) {
