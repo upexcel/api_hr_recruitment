@@ -58,7 +58,7 @@ module.exports = {
                                                 .then((smtp) => {
                                                     if (config.send_automatic_tags_email === true && send_to) {
                                                         data.subject = constant().automatic_mail_subject + " " + data.subject;
-                                                        mail.sendMail(to, data.subject, constant().smtp.text, smtp.email, html)
+                                                        mail.sendMail(to, data.subject, constant().smtp.text, smtp, html)
                                                             .then((response) => {
                                                                 if (response.status) {
                                                                     resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1 })

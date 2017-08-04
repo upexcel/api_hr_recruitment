@@ -11,14 +11,22 @@ export class SmtpController extends BaseAPIController {
     save = (req, res, next) => {
         SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                this._db.Smtp.create(data)
-                    .then((data) => {
-                        this.handleSuccessResponse(req, res, next, { data })
-                    }, (err) => {
-                        throw new Error(res.json(400, {
-                            message: "Data Already Saved"
-                        }));
+                mail.sendMail(data.email, constant().smtp.subject, constant().smtp.text, data, constant().smtp.html)
+                    .then((response) => {
+                        this._db.Smtp.create(data)
+                            .then((data) => {
+                                this._db.Smtp.changeStatus(data.email)
+                                    .then((response_status) => {
+                                        this.handleSuccessResponse(req, res, next, { data, response_status })
+                                    })
+                            }, (err) => {
+                                throw new Error(res.json(400, {
+                                    message: "Data Already Saved"
+                                }));
+                            })
+                            .catch(this.handleErrorResponse.bind(null, res));
                     })
+                    .catch(this.handleErrorResponse.bind(null, res));
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
