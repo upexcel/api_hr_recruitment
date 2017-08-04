@@ -15,14 +15,8 @@ const save = (model, validate, body, validationResult) => {
             if (!result.isEmpty()) {
                 reject(result.array()[0].msg);
             } else {
-                emailExistence.check(body.email, function(err, res) {
-                    if (res) {
-                        resolve(body);
-                    } else {
-                        reject("Invalid Email Details")
-                    }
-                })
-
+                resolve(body);
+                reject("Invalid Email Details")
             }
         });
     });
