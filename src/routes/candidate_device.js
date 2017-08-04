@@ -6,7 +6,7 @@ export default (app) => {
     app.route("/app_save_candidate_device").post(device.save);
 
     /*Route for Logout*/
-    app.route("/candidate/logout").post(device.logout)
+    app.route("/candidate/logout").put(device.logout)
 
     return app;
 };
