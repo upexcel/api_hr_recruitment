@@ -14,16 +14,22 @@ export class UserController extends BaseAPIController {
                     this._db.User.create(user)
                         .then((data) => {
                             res.json({
-                                data
+                                error: 0,
+                                message: 'success',
+                                data: data,
                             })
                         }, (err) => {
                             throw new Error(res.json(400, {
-                                message: err
+                                error: 1,
+                                message: err,
+                                data: []
                             }));
                         })
                 } else {
                     throw new Error(res.json(400, {
-                        message: "Invalid User Type"
+                        error: 1,
+                        message: "Invalid User Type",
+                        data: []
                     }))
                 }
             })

@@ -18,13 +18,23 @@ export class ImapController extends BaseAPIController {
                         password: dataValues.password
                     }
                 }
-                this._db.Imap.getCounts(tag, dataValues)
-                    .then((data) => {
-                        this._db.Imap.create(dataValues)
-                            .then((data) => {
-                                res.json({ data: data })
-                            }).catch(this.handleErrorResponse.bind(null, res))
-                    }).catch(this.handleErrorResponse.bind(null, res));
+                imapService.imapCredential(tag)
+                    .then((imap) => {
+                        imapService.imapConnection(imap)
+                            .then((connection) => {
+                                dataValues.total_emails = connection.messages.total;
+                                db.Imap.create(dataValues)
+                                    .then((data) => {
+                                        res.json({
+                                            data
+                                        })
+                                    })
+                                    .catch(this.handleErrorResponse.bind(null, res))
+                            })
+                            .catch(this.handleErrorResponse.bind(null, res))
+                    }, (err) => {
+                        throw new Error(res.json(400, { message: err }))
+                    })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
