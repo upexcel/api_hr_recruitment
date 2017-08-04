@@ -89,6 +89,27 @@ export default function(sequelize, DataTypes) {
                             }
                         }, (err) => { reject(err) })
                 })
+            },
+            userFindAll(page, limit) {
+                return new Promise((resolve, reject) => {
+                    this.findAll({
+                            offset: (page - 1) * parseInt(limit),
+                            limit: parseInt(limit),
+                            order: '`id` DESC'
+                        })
+                        .then((data) => {
+                            resolve(data)
+                        }, (err) => { reject({ error: 1, message: err, data: [] }) })
+                })
+            },
+            userDelete(id) {
+                return new Promise((resolve, reject) => {
+                    this.destroy({ where: { id: id } })
+                        .then((response) => {
+                            resolve(response)
+                        })
+                        .catch((err) => { reject({ error: 1, messgae: "User Not Found" }) })
+                })
             }
         },
     });

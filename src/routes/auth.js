@@ -11,5 +11,13 @@ export default (app) => {
     /* Route for User Login  */
     app.route("/user/login").post(user.login);
 
+    /* Route for user list*/
+    app.route("/user/list/:page/:limit").get(auth.requiresAdmin, user.list);
+
+    /*Route for delete user only by admin*/
+    app.route("/user/delete/:id").delete(auth.requiresAdmin, user.deleteUser);
+
+    app.param("id", user.idResult)
+
     return app;
 };
