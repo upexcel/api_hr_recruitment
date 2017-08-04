@@ -7,7 +7,7 @@ export class DeviceController extends BaseAPIController {
             .then((body) => {
                 this._db.Candidate_device.createDevice(body)
                     .then((data) => {
-                        res.json({ error: 0, message: 'sucess', data: data })
+                        this.handleSuccessResponse(req, res, next, { error: 0, message: 'sucess', data: data })
                     }, (err) => {
                         throw new Error(res.json({
                             error: 1,
@@ -15,13 +15,13 @@ export class DeviceController extends BaseAPIController {
                             data: []
                         }));
                     })
-            }).catch((err) => { res.json({ error: 1, message: err, data: [] }) });
+            }).catch((err) => { this.handleSuccessResponse(req, res, next, { error: 1, message: err, data: [] }) });
     }
 
     logout = (req, res, next) => {
         this._db.Candidate_device.logout(req.body.email_id, req.body.device_id)
             .then((data) => {
-                res.json({ error: 0, message: 'sucess' })
+                this.handleSuccessResponse(req, res, next, { error: 0, message: 'sucess' })
             }, (err) => {
                 throw new Error(res.json({
                     error: 1,

@@ -26,7 +26,8 @@ export default function() {
         third_round_slots: ['03:00 pm', '04:00 pm'],
         push_notification_message: 'Your Interview Is Sheduled For',
         old_emails_fetch_days_count: 5,
-        registration_message: " <br> your registration_id is:-"
+        registration_message: " <br> your registration_id is:-",
+        ignored_api_log_list: ["/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate"]
     };
     return constant;
 }

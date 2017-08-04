@@ -39,11 +39,19 @@ module.exports = function() {
         collection: "emailStored",
         strict: true,
     });
+
+    let userActivity = mongoose.Schema({}, {
+        collection: 'userActivity',
+        strict: false
+    })
+
     let email = conn.model("EMAIL", emailSchema);
+    let user_activity = conn.model('ACTIVITY', userActivity);
 
     cronService.cron(email)
     return function(req, res, next) {
         req.email = email;
+        req.user_activity = user_activity;
         next();
     };
 };

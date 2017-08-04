@@ -5,7 +5,7 @@ import constant from "../models/constant";
 export class UserController extends BaseAPIController {
 
     /* Controller for User Register  */
-    create = (req, res) => {
+    create = (req, res, next) => {
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
                 let user_type = user.user_type;
@@ -13,11 +13,7 @@ export class UserController extends BaseAPIController {
                 if ((user_type == allowed_role.admin || user_type == allowed_role.hr || user_type == allowed_role.guest) && (req.user.id)) {
                     this._db.User.create(user)
                         .then((data) => {
-                            res.json({
-                                error: 0,
-                                message: 'success',
-                                data: data,
-                            })
+                            this.handleSuccessResponse(req, res, next, { data: data })
                         }, (err) => {
                             throw new Error(res.json(400, {
                                 error: 1,
@@ -38,24 +34,24 @@ export class UserController extends BaseAPIController {
 
 
     /* Controller for User Login  */
-    login = (req, res) => {
+    login = (req, res, next) => {
         let login = UserProvider.login(this._db.User, req.body);
         this._db.User.login(login)
-            .then(res.json.bind(res))
+            .then((data) => { this.handleSuccessResponse(req, res, next, data) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /*controller for user list*/
-    list = (req, res) => {
+    list = (req, res, next) => {
         this._db.User.userFindAll(req.params.page, req.params.limit)
-            .then((data) => { res.json({ error: 0, message: "success", data: data }) })
+            .then((data) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data }) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /*Controller for user delete*/
-    deleteUser = (req, res) => {
+    deleteUser = (req, res, next) => {
         this._db.User.userDelete(req.params.id)
-            .then((data) => { res.json({ error: 0, message: "success", data: data }) })
+            .then((data) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data }) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 

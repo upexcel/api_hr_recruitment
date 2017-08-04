@@ -773,9 +773,10 @@ let app_get_candidate = (email, email_id, registration_id) => {
                             rounds.push({ text: val.text, info: val.info, scheduled_time: "", scheduled_date: "", status: 0 })
                         }
                         if (key == constant().shedule_for.length - 1) {
-                            findSubject(response.tag_id[0], function(subject) {
-                                resolve({ name: response.from, subject: subject, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
-                            })
+                            db.Tag.findTagInfo(response.tag_id[0])
+                                .then((tagInfo) => {
+                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
+                                }, (error) => { reject(error) })
                         }
                     })
                 } else {
@@ -784,11 +785,11 @@ let app_get_candidate = (email, email_id, registration_id) => {
             }
         })
 
-        function findSubject(tag_id, callback) {
-            db.Tag.findById(parseInt(tag_id))
-                .then((data) => { callback(data.subject) })
-                .catch((err) => { reject(err) })
-        }
+        // function findSubject(tag_id, callback) {
+        //     db.Tag.findById(parseInt(tag_id))
+        //         .then((data) => { callback(data) })
+        //         .catch((err) => { reject(err) })
+        // }
     })
 }
 export default {
