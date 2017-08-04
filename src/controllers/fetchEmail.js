@@ -24,7 +24,7 @@ export class FetchController extends BaseAPIController {
                             data: data,
                             status: 1,
                             count: req.count,
-                            message: message || "success"
+                            message: (data.length) ? "SUCCESS" : "No Emails Found"
                         })
                     })
                     .catch(this.handleErrorResponse.bind(null, res))

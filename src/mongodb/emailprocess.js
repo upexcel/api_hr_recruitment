@@ -44,13 +44,13 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             if (default_tag_id.indexOf(default_id) >= 0) {
                 where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
             } else {
-                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
             }
         } else if ((type == "subject") && tag_id) {
             if (default_tag_id.indexOf(default_id) >= 0) {
                 where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
             } else {
-                where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
             }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
@@ -61,16 +61,13 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             } else if (default_tag_id.indexOf(tag_id) >= 0) {
                 where = { default_tag: tag_id }
             } else {
-                where = { tag_id: { $in: [tag_id] } }
+                where = { tag_id: { $in: [tag_id] }, default_tag: "" }
             }
         }
         db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 reject(err);
             } else {
-                if (data[0] == null) {
-                    message = "No Result Found"
-                }
                 resolve(data, message);
             }
         });
@@ -165,7 +162,7 @@ const findcount = (mongodb) => {
                 callback(count1)
             } else {
                 let tagId = tag_id.splice(0, 1)[0]
-                mongodb.find({ tag_id: { "$in": [tagId.id.toString()] } }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                mongodb.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: "" }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
                     let unread = 0
                     _.forEach(result, (val, key) => {
                         if (val.unread === true) {
@@ -364,13 +361,13 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, "tag_id": { $in: [tag_id] } }
                     } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] }, default_tag: "" }
                     }
                 } else if ((type == "subject") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': { $in: [tag_id] } }
                     } else {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] }, default_tag: "" }
                     }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
@@ -381,7 +378,7 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
                     } else if (default_tag_id.indexOf(tag_id) >= 0) {
                         where = { default_tag: tag_id }
                     } else {
-                        where = { tag_id: { $in: [tag_id] } }
+                        where = { tag_id: { $in: [tag_id] }, default_tag: "" }
                     }
                 }
                 resolve(where)
