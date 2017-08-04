@@ -45,7 +45,8 @@ export class VariableController extends BaseAPIController {
     variableList = (req, res, next) => {
         this._db.Variable.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
-                limit: parseInt(req.params.limit)
+                limit: parseInt(req.params.limit),
+                order: '`id` DESC'
             })
             .then((data) => this.handleSuccessResponse(req, res, next, data))
             .catch(this.handleErrorResponse.bind(null, res));
