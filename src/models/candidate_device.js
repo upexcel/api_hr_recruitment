@@ -40,8 +40,9 @@ export default function(sequelize, DataTypes) {
             },
             logout(email_id, device_id) {
                 return new Promise((resolve, reject) => {
-                    this.update({ token: null,device_id:null }, { where: { email_id: email_id, device_id: device_id } })
+                    this.update({ token: null, device_id: null }, { where: { email_id: email_id, device_id: device_id } })
                         .then((response) => {
+                            console.log(response)
                             resolve(response)
                         }, (err) => { reject(err) })
                 })
