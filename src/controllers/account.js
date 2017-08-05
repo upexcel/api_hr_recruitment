@@ -14,7 +14,7 @@ export class AccountController extends BaseAPIController {
                             next(res.status(400).send({ message: err }))
                         })
                 } else {
-                    this.handleSuccessResponse(req, res, next, { message: "if email exist, your updated password is send by email" })
+                    this.handleSuccessResponse(req, res, next, { message: "If email exists, new password will be send to your email !!" })
                 }
             })
             .catch(this.handleErrorResponse.bind(null, res));
