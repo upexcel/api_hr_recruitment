@@ -85,7 +85,7 @@ export default function(sequelize, DataTypes) {
                                         new_password = `your new password is : ${new_password}`;
                                         mail.sendMail(email, constant().smtp.passwordMessage, constant().smtp.text, smtp_data, new_password)
                                             .then((response) => {
-                                                resolve({ message: "Password Updated. Check your email for new password." })
+                                                resolve({ message: "if email exist, your updated password is send by email" })
                                             }).catch((error) => { reject(error) });
                                     } else {
                                         reject("update failed");
