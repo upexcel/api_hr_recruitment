@@ -62,6 +62,9 @@ CLIENT_SECRET
 "boolean":true,
 "is_silent":true
 ```
+## before run need to run (first time)
+
+```./node_modules/.bin/sequelize init```
 
 ## To run on local use 
 
