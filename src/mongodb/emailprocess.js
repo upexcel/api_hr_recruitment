@@ -780,7 +780,7 @@ let app_get_candidate = (email, email_id, registration_id) => {
                         if (key == constant().shedule_for.length - 1) {
                             db.Tag.findTagInfo(response.tag_id[0])
                                 .then((tagInfo) => {
-                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id,office_location:constant().office_location })
+                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id,office_location:constant().office_location,app_hr_contact_email:constant().app_hr_contact_email })
                                 }, (error) => { reject(error) })
                         }
                     })
