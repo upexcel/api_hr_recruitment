@@ -65,8 +65,8 @@ CLIENT_SECRET
 
 ## To run on local use 
 
-```$ npm run dev```
+```$ npm start```
 
 ## to run on server use
 
-``` $ pm2 start npm --name hr_recruitment_live -- run -- live```
+``` $ pm2 start npm --name hr_recruitment_live -- start```

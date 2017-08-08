@@ -4,7 +4,7 @@ import replace from "../modules/replaceVariable";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import db from "../db";
-import config from "../config.js";
+import config from "../../config/config.json";
 
 export class TemplateController extends BaseAPIController {
 

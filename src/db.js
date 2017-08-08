@@ -1,7 +1,7 @@
 import Sequelize from "sequelize";
 import models from "./models";
 import constant from "./models/constant";
-import config from "./config";
+import config from "../config/config.json";
 
 const db = {};
 
