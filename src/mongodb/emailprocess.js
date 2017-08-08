@@ -789,12 +789,6 @@ let app_get_candidate = (email, email_id, registration_id) => {
                 }
             }
         })
-
-        // function findSubject(tag_id, callback) {
-        //     db.Tag.findById(parseInt(tag_id))
-        //         .then((data) => { callback(data) })
-        //         .catch((err) => { reject(err) })
-        // }
     })
 }
 export default {
