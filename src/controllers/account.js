@@ -14,7 +14,7 @@ export class AccountController extends BaseAPIController {
                             next(res.status(400).send({ message: err }))
                         })
                 } else {
-                    next(res.status(400).send({ message: "Email Id Not Found" }))
+                    this.handleSuccessResponse(req, res, next, { message: "If email exists, new password will be send to your email !!" })
                 }
             })
             .catch(this.handleErrorResponse.bind(null, res));

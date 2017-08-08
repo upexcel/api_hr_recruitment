@@ -28,7 +28,7 @@ export default function() {
         first_round_slots: ['10:30 am', '11:00 am', '11:30 am', '12:00 pm', '12:30 pm', '01:00 pm', '01:30 pm', '02:00 pm', '02:30 pm', '03:00 pm', '03:30 pm', '04:30 pm'],
         second_round_slots: ['10:30 am', '12:00 pm', '01:30 pm'],
         third_round_slots: ['03:00 pm', '04:00 pm'],
-        push_notification_message: 'Your Interview Is Sheduled For',
+        push_notification_message: 'Interview Scheduled',
         old_emails_fetch_days_count: 5,
         registration_message: " <br> your registration_id is:-",
         ignored_api_log_list: ["/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate"]

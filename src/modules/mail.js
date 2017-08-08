@@ -8,8 +8,8 @@ module.exports = {
     sendMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
             if (!from.email)
-                from = from.Instance ? from.Instance.dataValues : from.dataValues;
-
+                from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
+            console.log(from.email)
             var mailer = nodemailer.createTransport(smtpTransport({
                 host: from.smtp_server,
                 port: from.server_port,
@@ -19,7 +19,7 @@ module.exports = {
                 }
             }));
             mailer.sendMail({
-                from: from,
+                from: from.email,
                 to: email,
                 subject: subject,
                 template: text || "",
