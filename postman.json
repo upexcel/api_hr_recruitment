@@ -200,6 +200,7 @@
 									"    tests[\"status exist\"] = false;",
 									"}",
 									"if (jsonData.token) {",
+									"    postman.clearEnvironmentVariable(\"token\");",
 									"    postman.setEnvironmentVariable(\"token\", jsonData.token);",
 									"    tests[\"token exist\"] = true;",
 									"} else {",
@@ -240,6 +241,51 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.status == true){",
+									"    tests[\"token verify\"] = true;",
+									"}else{",
+									"    tests[\"token verify\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/verify?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"verify"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -309,51 +355,6 @@
 								}
 							]
 						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "Verify Token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"tests[\"Status code is 200\"] = responseCode.code === 200;",
-									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.status == true){",
-									"    tests[\"token verify\"] = true;",
-									"}else{",
-									"    tests[\"token verify\"] = false;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/verify?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"verify"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -6767,19 +6768,19 @@
 							"urlencoded": [
 								{
 									"key": "email_id",
-									"value": "saurabhcse.iimtgn@gmail.com",
+									"value": "yuvraj@excellencetechnologies.in",
 									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "device_id",
-									"value": "{{device_id}}",
+									"value": "6eb04ca62d721b58",
 									"description": "",
 									"type": "text"
 								},
 								{
 									"key": "token",
-									"value": "qwertyui",
+									"value": "fBSOKzg-1ko:APA91bEu5JIHO3l0SlE87SYMjNCDYxjBgdpRZMrMzNu4LyWU6bdSpCNB1xdxjS_Zmlf4hPHxv2i3OtqSgJlvru_Roty_tHbQT6SrRRMwno7Ff5z9TVY6ZfEiXL4-1JjYFJDkieQJqW5k",
 									"description": "",
 									"type": "text"
 								}
@@ -6879,7 +6880,7 @@
 							"urlencoded": [
 								{
 									"key": "email_id",
-									"value": "saurabhk_etech@excellencetechnologies.in",
+									"value": "yuvraj@excellencetechnologies.in",
 									"description": "",
 									"type": "text"
 								},
