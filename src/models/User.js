@@ -3,6 +3,7 @@ import generatePassword from "password-generator";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import crypto from "crypto";
+import db from "../db.js"
 
 export default function(sequelize, DataTypes) {
     const User = sequelize.define("USER", {
@@ -78,16 +79,40 @@ export default function(sequelize, DataTypes) {
                     var new_pass = crypto.createHash("sha256").update(new_password).digest("base64");
                     this.update({ password: new_pass }, { where: { email: email } })
                         .then((docs) => {
-                            if (docs && docs[0]) {
-                                new_password = `your new password is : ${new_password}`;
-                                mail.sendMail(email, constant().smtp.passwordMessage, constant().smtp.text, constant().smtp.from, new_password)
-                                    .then((response) => {
-                                        resolve({ message: "Password Updated. Check your email for new password." })
-                                    }).catch((error) => { reject(error) });
-                            } else {
-                                reject("update failed");
-                            }
+                            db.Smtp.findOne({ where: { status: true } })
+                                .then((smtp_data) => {
+                                    if (docs && docs[0]) {
+                                        new_password = `your new password is : ${new_password}`;
+                                        mail.sendMail(email, constant().smtp.passwordMessage, constant().smtp.text, smtp_data, new_password)
+                                            .then((response) => {
+                                                resolve({ message: "Password Updated. Check your email for new password." })
+                                            }).catch((error) => { reject(error) });
+                                    } else {
+                                        reject("update failed");
+                                    }
+                                })
                         }, (err) => { reject(err) })
+                })
+            },
+            userFindAll(page, limit) {
+                return new Promise((resolve, reject) => {
+                    this.findAll({
+                            offset: (page - 1) * parseInt(limit),
+                            limit: parseInt(limit),
+                            order: '`id` DESC'
+                        })
+                        .then((data) => {
+                            resolve(data)
+                        }, (err) => { reject({ error: 1, message: err, data: [] }) })
+                })
+            },
+            userDelete(id) {
+                return new Promise((resolve, reject) => {
+                    this.destroy({ where: { id: id } })
+                        .then((response) => {
+                            resolve(response)
+                        })
+                        .catch((err) => { reject({ error: 1, messgae: "User Not Found" }) })
                 })
             }
         },

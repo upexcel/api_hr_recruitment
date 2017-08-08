@@ -8,7 +8,7 @@ import email_process from "../mongodb/emailprocess";
 
 export class TagController extends BaseAPIController {
     /* Controller for Save Imap Data  */
-    save = (req, res) => {
+    save = (req, res, next) => {
         var assign = req.body.assign;
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((response) => {
@@ -17,9 +17,9 @@ export class TagController extends BaseAPIController {
                         if (data) {
                             if ((data.type == tag().tagType.automatic) && (assign === true)) {
                                 email_process.assignToOldTag(data, req.email)
-                                    .then((result) => { res.json(result) })
+                                    .then((result) => { this.handleSuccessResponse(req, res, next, result) })
                             } else {
-                                res.json(data)
+                                this.handleSuccessResponse(req, res, next, data)
                             }
                         } else {
                             res.status(500).send({ message: "Tag is not Added" })
@@ -33,7 +33,7 @@ export class TagController extends BaseAPIController {
 
 
     /* Imap data Update*/
-    update = (req, res) => {
+    update = (req, res, next) => {
         TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Tag.update(data, {
@@ -43,7 +43,7 @@ export class TagController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                        this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
@@ -57,7 +57,7 @@ export class TagController extends BaseAPIController {
                     if (docs) {
                         req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
                             .then((data) => {
-                                this.handleSuccessResponse(res, null);
+                                this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
                             })
                             .catch(this.handleErrorResponse.bind(null, res));
                     } else {
@@ -80,7 +80,7 @@ export class TagController extends BaseAPIController {
                     },
                     order: '`id` DESC'
                 })
-                .then(res.json.bind(res))
+                .then((data) => this.handleSuccessResponse(req, res, next, data))
                 .catch(this.handleErrorResponse.bind(null, res));
         } else {
             next(new Error("Invalid Type"));
@@ -88,9 +88,9 @@ export class TagController extends BaseAPIController {
     }
 
     /* Get all tag */
-    getAllTag = (req, res) => {
+    getAllTag = (req, res, next) => {
         this._db.Tag.findAll({ order: '`id` ASC' })
-            .then(res.json.bind(res))
+            .then((data) => this.handleSuccessResponse(req, res, next, data))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -103,7 +103,7 @@ export class TagController extends BaseAPIController {
                         type: req.params.type
                     }
                 })
-                .then(res.json.bind(res))
+                .then((data) => this.handleSuccessResponse(req, res, next, data))
                 .catch(this.handleErrorResponse.bind(null, res));
         } else {
             next(new Error("Invalid Type"));
@@ -118,7 +118,7 @@ export class TagController extends BaseAPIController {
     /*Get Shedules*/
     getShedule = (req, res, next) => {
         email_process.getShedule(req.email)
-            .then((result) => { res.json(result) })
+            .then((result) => { this.handleSuccessResponse(req, res, next, result) })
             .catch(this.handleErrorResponse)
     }
 

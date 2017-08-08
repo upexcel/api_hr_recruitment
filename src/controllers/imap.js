@@ -9,7 +9,7 @@ import email_process from "../mongodb/emailprocess";
 export class ImapController extends BaseAPIController {
 
     /* Controller for Save Imap Data  */
-    save = (req, res) => {
+    save = (req, res, next) => {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((dataValues) => {
                 let tag = {
@@ -39,7 +39,7 @@ export class ImapController extends BaseAPIController {
     }
 
     /* Imap data Update */
-    update = (req, res) => {
+    update = (req, res, next) => {
         ImapProvider.save(this._db.Imap, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Imap.update(data, {
@@ -48,29 +48,29 @@ export class ImapController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                        this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Imap data delete */
-    deleteImap = (req, res) => {
+    deleteImap = (req, res, next) => {
         this._db.Imap.destroy({
                 where: {
                     id: req.params.imapId
                 }
             })
             .then((docs) => {
-                this.handleSuccessResponse(res, null);
+                this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Get Imap data */
-    getImap = (req, res) => {
+    getImap = (req, res, next) => {
         this._db.Imap.findAll({ order: '`id` DESC' })
             .then((response) => {
                 email_process.getFetchedMailCount(response, req.email)
-                    .then((result) => { res.json(result) })
+                    .then((result) => { this.handleSuccessResponse(req, res, next, result) })
                     .catch(this.handleErrorResponse.bind(null, res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -79,7 +79,7 @@ export class ImapController extends BaseAPIController {
     /* Imap Active  Status */
     statusActive = (req, res, next) => {
         this._db.Imap.imapTest(req.params.email)
-            .then(res.json.bind(res))
+            .then((data) => this.handleSuccessResponse(req, res, next, data))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 

@@ -7,6 +7,7 @@ import imap from "../service/imap";
 import Attachment from "../modules/getAttachment";
 import moment from 'moment';
 import pushMessage from '../service/pushmessage';
+import crypto from "crypto";
 
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
@@ -43,13 +44,13 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             if (default_tag_id.indexOf(default_id) >= 0) {
                 where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
             } else {
-                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
             }
         } else if ((type == "subject") && tag_id) {
             if (default_tag_id.indexOf(default_id) >= 0) {
                 where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
             } else {
-                where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id }
+                where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
             }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
@@ -60,16 +61,13 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             } else if (default_tag_id.indexOf(tag_id) >= 0) {
                 where = { default_tag: tag_id }
             } else {
-                where = { tag_id: { $in: [tag_id] } }
+                where = { tag_id: { $in: [tag_id] }, default_tag: "" }
             }
         }
         db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 reject(err);
             } else {
-                if (data[0] == null) {
-                    message = "No Result Found"
-                }
                 resolve(data, message);
             }
         });
@@ -164,7 +162,7 @@ const findcount = (mongodb) => {
                 callback(count1)
             } else {
                 let tagId = tag_id.splice(0, 1)[0]
-                mongodb.find({ tag_id: { "$in": [tagId.id.toString()] } }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                mongodb.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: "" }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
                     let unread = 0
                     _.forEach(result, (val, key) => {
                         if (val.unread === true) {
@@ -244,7 +242,12 @@ let assignMultiple = (tag_id, body, email) => {
             .then((data) => {
                 if (data.id) {
                     if (data.type == constant().tagType.default && body.shedule_for) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                        if (body.shedule_for == constant().shedule_for[0].value) {
+                            var registration_id = Math.floor((Math.random() * 1000 * 1000) + Math.random() * 10000);
+                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id }
+                        } else {
+                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                        }
                     } else if (data.type == constant().tagType.default) {
                         where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
                     } else {
@@ -260,6 +263,8 @@ let assignMultiple = (tag_id, body, email) => {
                                         .then((template) => {
                                             replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
                                                 .then((replaced_data) => {
+                                                    if (body.shedule_for == constant().shedule_for[0].value)
+                                                        replaced_data = replaced_data + constant().registration_message + registration_id
                                                     db.Smtp.findOne({ where: { status: 1 } })
                                                         .then((smtp) => {
                                                             if (!smtp) {
@@ -269,7 +274,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     data: response
                                                                 })
                                                             }
-                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp.email, replaced_data)
+                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
                                                                         .then((device_list) => {
@@ -356,13 +361,13 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, "tag_id": { $in: [tag_id] } }
                     } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] }, default_tag: "" }
                     }
                 } else if ((type == "subject") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': { $in: [tag_id] } }
                     } else {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] } }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] }, default_tag: "" }
                     }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
 
@@ -373,7 +378,7 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
                     } else if (default_tag_id.indexOf(tag_id) >= 0) {
                         where = { default_tag: tag_id }
                     } else {
-                        where = { tag_id: { $in: [tag_id] } }
+                        where = { tag_id: { $in: [tag_id] }, default_tag: "" }
                     }
                 }
                 resolve(where)
@@ -406,7 +411,7 @@ let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
                             _.forEach(data, (val, key) => {
                                 emails.push(val.sender_mail)
                             })
-                            sendmail(smtp_email.email, function(response) {
+                            sendmail(smtp_email, function(response) {
                                 resolve(response)
                             })
                         })
@@ -425,7 +430,6 @@ let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
                     } else {
                         email_send_fail_list.push(to_email[0])
                     }
-                    console.log(emails.length)
                     if (emails.length) {
                         sendmail(from, callback)
                     } else {
@@ -449,7 +453,7 @@ let sendToSelectedTag = (id, email) => {
                             if (template) {
                                 db.Smtp.findOne({ where: { status: 1 } })
                                     .then((smtp) => {
-                                        email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0, is_automatic_email_send: { $exists: false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                        email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
                                             let emails = result;
                                             if (result.length) {
                                                 sendTemplateToEmails(emails, template, smtp, function(err, data) {
@@ -472,7 +476,7 @@ let sendToSelectedTag = (id, email) => {
                                                 replaceData.filter(template.body, email_id.from, id)
                                                     .then((html) => {
                                                         subject = constant().automatic_mail_subject + " " + template.subject;
-                                                        mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp.email, html)
+                                                        mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
                                                             .then((response) => {
                                                                 email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
                                                                     .then((data1) => {
@@ -746,28 +750,29 @@ let getFetchedMailCount = (imap_emails, email) => {
     })
 }
 
-let app_get_candidate = (email, email_id) => {
+let app_get_candidate = (email, email_id, registration_id) => {
     return new Promise((resolve, reject) => {
         let rounds = []
         let scheduled_rounds = []
         _.forEach(constant().shedule_for, (val, key) => {
             scheduled_rounds.push(val.value)
         })
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds } }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
             if (err) {
                 reject({ error: 1, message: err, data: [] })
             } else {
                 if (response) {
                     _.forEach(constant().shedule_for, (val, key) => {
                         if (val.value == response.shedule_for) {
-                            rounds.push({ text: val.text, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
+                            rounds.push({ text: val.text, info: val.info, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
                         } else {
-                            rounds.push({ text: val.text, scheduled_time: "", scheduled_date: "", status: 0 })
+                            rounds.push({ text: val.text, info: val.info, scheduled_time: "", scheduled_date: "", status: 0 })
                         }
                         if (key == constant().shedule_for.length - 1) {
-                            findSubject(response.tag_id[0], function(subject) {
-                                resolve({ name: response.from, subject: subject, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
-                            })
+                            db.Tag.findTagInfo(response.tag_id[0])
+                                .then((tagInfo) => {
+                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
+                                }, (error) => { reject(error) })
                         }
                     })
                 } else {
@@ -775,12 +780,6 @@ let app_get_candidate = (email, email_id) => {
                 }
             }
         })
-
-        function findSubject(tag_id, callback) {
-            db.Tag.findById(parseInt(tag_id))
-                .then((data) => { callback(data.subject) })
-                .catch((err) => { reject(err) })
-        }
     })
 }
 export default {

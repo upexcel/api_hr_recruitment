@@ -20,11 +20,11 @@ export class FetchController extends BaseAPIController {
             .then((default_tag) => {
                 email_process.fetchEmail(page, tag_id, limit, type, keyword, selected, default_id, default_tag, req.email)
                     .then((data, message) => {
-                        res.json({
+                        this.handleSuccessResponse(req, res, next, {
                             data: data,
                             status: 1,
                             count: req.count,
-                            message: message || "success"
+                            message: (data.length) ? "SUCCESS" : "No Emails Found"
                         })
                     })
                     .catch(this.handleErrorResponse.bind(null, res))
@@ -41,7 +41,7 @@ export class FetchController extends BaseAPIController {
                         if (err) {
                             next(new Error(err));
                         } else {
-                            res.json({
+                            this.handleSuccessResponse(req, res, next, {
                                 data: data,
                                 status: 1,
                                 message: "success"
@@ -57,7 +57,7 @@ export class FetchController extends BaseAPIController {
 
     countEmail = (req, res, next) => {
         email_process.findcount(req.email)
-            .then((data) => { res.json(data) })
+            .then((data) => { this.handleSuccessResponse(req, res, next, data) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -68,7 +68,7 @@ export class FetchController extends BaseAPIController {
                 let { tag_id } = req.params;
                 email_process.assignMultiple(tag_id, req.body, req.email)
                     .then((data) => {
-                        res.json(data)
+                        this.handleSuccessResponse(req, res, next, data)
                     })
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -80,7 +80,7 @@ export class FetchController extends BaseAPIController {
             .then(() => {
                 email_process.deleteTag(req.params.tag_id, req.body.mongo_id, req.email)
                     .then((result) => {
-                        res.json(result)
+                        this.handleSuccessResponse(req, res, next, result)
                     })
                     .catch(this.handleErrorResponse(null, res));
             })
@@ -98,20 +98,20 @@ export class FetchController extends BaseAPIController {
                     if (error) {
                         next(new Error(err));
                     } else {
-                        res.json({ status: 1, message: "the unread status is successfully changed to " + req.params.status });
+                        this.handleSuccessResponse(req, res, next, { status: 1, message: "the unread status is successfully changed to " + req.params.status });
                     }
                 });
             } else {
-                res.json({ status: 0, message: "the unread status is not changed successfully,  you have to set status true or false" });
+                this.handleSuccessResponse(req, res, next, { status: 0, message: "the unread status is not changed successfully,  you have to set status true or false" });
             }
         });
     }
 
-    deleteEmail = (req, res) => {
+    deleteEmail = (req, res, next) => {
         MailProvider.deleteEmail(req.checkBody, req.body, req.getValidationResult())
             .then(() => {
                 email_process.deleteEmail(req.params.tag_id, req.body.mongo_id, req.email)
-                    .then((result) => { res.json(result) })
+                    .then((result) => { this.handleSuccessResponse(req, res, next, result) })
                     .catch(this.handleErrorResponse(null, res))
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -119,7 +119,7 @@ export class FetchController extends BaseAPIController {
 
     mailAttachment = (req, res, next) => {
         email_process.mailAttachment(req.params.mongo_id, req.email)
-            .then((result) => { res.json(result) })
+            .then((result) => { this.handleSuccessResponse(req, res, next, result) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
@@ -136,28 +136,27 @@ export class FetchController extends BaseAPIController {
         let { subject, body, tag_id, default_id } = req.body;
         email_process.sendToMany(req.body.emails, subject, body, tag_id, default_id, req.email)
             .then((response) => {
-                console.log(response);
-                res.json(response)
+                this.handleSuccessResponse(req, res, next, response)
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     sendToSelectedTag = (req, res, next) => {
         email_process.sendToSelectedTag(req.body.tag_id, req.email)
-            .then((result) => { res.json(result) })
+            .then((result) => { this.handleSuccessResponse(req, res, next, result) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     fetchByButton = (req, res, next) => {
         inbox.fetchEmail(req.email, 'apiCall')
-            .then((data) => { res.json({ status: 1, message: "success" }) })
+            .then((data) => { this.handleSuccessResponse(req, res, next, { status: 1, message: "success" }) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     app_get_candidate = (req, res, next) => {
-        email_process.app_get_candidate(req.email, req.body.email_id)
-            .then((result) => { res.json({ error: 0, message: "", data: result }) })
-            .catch((err) => { res.json(err) })
+        email_process.app_get_candidate(req.email, req.body.email_id, req.body.registration_id)
+            .then((result) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result }) })
+            .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
     }
 }
 

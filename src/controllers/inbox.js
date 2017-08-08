@@ -9,9 +9,7 @@ export class InboxController extends BaseAPIController {
             if (err) {
                 next(new Error("invalid page"));
             } else {
-                res.json({
-                    data
-                });
+                this.handleSuccessResponse(req, res, next, { data });
             }
         });
     }
@@ -30,9 +28,7 @@ export class InboxController extends BaseAPIController {
             if (err) {
                 next(new Error(err));
             } else {
-                res.json({
-                    data
-                });
+                this.handleSuccessResponse(req, res, next, { data });
             }
         });
     }
@@ -46,9 +42,7 @@ export class InboxController extends BaseAPIController {
             if (err) {
                 next(new Error("invalid UID"));
             } else {
-                res.json({
-                    data
-                });
+                this.handleSuccessResponse(req, res, next, { data });
             }
         });
     }

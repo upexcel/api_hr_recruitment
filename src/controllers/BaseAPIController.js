@@ -1,5 +1,6 @@
 import db from "../db";
 import errorHandler from "../lib/util";
+import userActivity from "../service/userActivity";
 
 export default class BaseAPIController {
     constructor() {
@@ -10,10 +11,9 @@ export default class BaseAPIController {
         res.status(400).send(errorHandler(err));
     }
 
-    handleSuccessResponse(res, next) {
-        res.json({
-            status: "SUCCESS"
-        });
+    handleSuccessResponse(req, res, next, data) {
+        userActivity.userActivityLogs(req, data)
+            .then((response) => { res.json(data) })
     }
 
     getById(req, res, model, id, next) {

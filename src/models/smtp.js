@@ -64,19 +64,13 @@ export default function(sequelize, DataTypes) {
                         .then((data) => {
                             if (data) {
                                 if (data.status == true) {
-                                    emailExistence.check(data.email, function(err, res) {
-                                        if (res) {
-                                            if (config.is_silent == true) {
-                                                resolve({ is_silent: true })
-                                            } else {
-                                                mail.sendMail(email, constant().smtp.subject, constant().smtp.text, data.email, constant().smtp.html)
-                                                    .then((response) => { resolve(response) })
-                                                    .catch((error) => { reject(error) });
-                                            }
-                                        } else {
-                                            reject("Invalid Active Email")
-                                        }
-                                    })
+                                    if (config.is_silent == false) {
+                                        resolve({ is_silent: true })
+                                    } else {
+                                        mail.sendMail(email, constant().smtp.subject, constant().smtp.text, data, constant().smtp.html)
+                                            .then((response) => { resolve(response) })
+                                            .catch((error) => { reject(error) });
+                                    }
                                 } else {
                                     reject("Email Is Not Active , Active And Try Again...");
                                 }

@@ -14,6 +14,8 @@ const save = (model, type, validate, body, validationResult) => {
         } else {
             reject("Invalid Type");
         }
+        if (body.is_job_profile_tag)
+            validate("job_description", "job_description cannot be empty").notEmpty();
         validationResult.then(function(result) {
             if (!result.isEmpty()) {
                 reject(result.array()[0].msg);

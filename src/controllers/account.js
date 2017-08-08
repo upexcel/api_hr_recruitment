@@ -9,7 +9,7 @@ export class AccountController extends BaseAPIController {
                 if (user) {
                     this._db.User.forgotPassword(req.params.email)
                         .then((response) => {
-                            res.json(response)
+                            this.handleSuccessResponse(req, res, next, response)
                         }, (err) => {
                             next(res.status(400).send({ message: err }))
                         })
@@ -27,7 +27,7 @@ export class AccountController extends BaseAPIController {
                 this._db.User.update({ password: body.new_password }, { where: { id: req.user.id, password: body.old_password } })
                     .then((user) => {
                         if (user && user[0]) {
-                            res.json({ message: 'password updated successfully' });
+                            this.handleSuccessResponse(req, res, next, { message: 'password updated successfully' });
                         } else {
                             next(res.status(400).send({ message: "Data not Found" }))
                         }

@@ -33,16 +33,25 @@ module.exports = function() {
         shedule_date: { type: String },
         shedule_time: { type: String },
         push_message: { type: Array },
-        push_status: { type: Boolean }
+        push_status: { type: Boolean },
+        registration_id: { type: Number }
     }, {
         collection: "emailStored",
         strict: true,
     });
+
+    let userActivity = mongoose.Schema({}, {
+        collection: 'userActivity',
+        strict: false
+    })
+
     let email = conn.model("EMAIL", emailSchema);
+    let user_activity = conn.model('ACTIVITY', userActivity);
 
     cronService.cron(email)
     return function(req, res, next) {
         req.email = email;
+        req.user_activity = user_activity;
         next();
     };
 };

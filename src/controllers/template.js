@@ -9,17 +9,17 @@ import config from "../config.js";
 export class TemplateController extends BaseAPIController {
 
     /* Controller for User Register  */
-    create = (req, res) => {
+    create = (req, res, next) => {
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Template.create(template)
-                    .then(res.json.bind(res))
+                    .then((data) => { this.handleSuccessResponse(req, res, next, data) })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Template Update */
-    update = (req, res) => {
+    update = (req, res, next) => {
         TemplateProvider.save(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Template.update(data, {
@@ -28,14 +28,14 @@ export class TemplateController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                        this.handleSuccessResponse(res, null);
+                        this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }
 
 
     /* Template delete */
-    deleteTemplate = (req, res) => {
+    deleteTemplate = (req, res, next) => {
         db.Tag.findOne({ where: { template_id: req.params.templateId } })
             .then((data) => {
                 if (!data) {
@@ -45,7 +45,7 @@ export class TemplateController extends BaseAPIController {
                             }
                         })
                         .then((docs) => {
-                            this.handleSuccessResponse(res, null);
+                            this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
                         }).catch(this.handleErrorResponse.bind(null, res));
                 } else {
                     throw new Error("Template is Assigned to Tag")
@@ -54,41 +54,41 @@ export class TemplateController extends BaseAPIController {
     }
 
     /* Get List of All Templates */
-    templateList = (req, res) => {
+    templateList = (req, res, next) => {
         this._db.Template.findAll({
                 offset: (req.params.page - 1) * parseInt(req.params.limit),
                 limit: parseInt(req.params.limit),
                 order: '`id` DESC'
             })
-            .then(res.json.bind(res))
+            .then((data) => this.handleSuccessResponse(req, res, next, data))
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
 
     /* Template  Test */
-    templateTest = (req, res) => {
+    templateTest = (req, res, next) => {
         this._db.Template.findById(req.params.templateId)
             .then((data) => {
                 replace.templateTest(data.body)
-                    .then(res.json.bind(res))
+                    .then((data) => { this.handleSuccessResponse(req, res, next, data) })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /* Send Email */
-    templateEmail = (req, res) => {
+    templateEmail = (req, res, next) => {
         TemplateProvider.templateEmail(this._db, req.checkBody, req.body, req.getValidationResult())
             .then((template) => {
                 this._db.Smtp.findOne({ where: { status: true } })
                     .then((data) => {
                         if (data) {
                             if (config.is_silent) {
-                                mail.sendMail(req.params.email, template.subject, constant().smtp.text, data.email, template.body)
+                                mail.sendMail(req.params.email, template.subject, constant().smtp.text, data, template.body)
                                     .then((response) => {
-                                        res.json(response)
+                                        this.handleSuccessResponse(req, res, next, response)
                                     })
                             } else {
-                                res.json({ message: "Tempelte Tested" })
+                                this.handleSuccessResponse(req, res, next, { message: "Tempelte Tested" })
                             }
 
                         } else {

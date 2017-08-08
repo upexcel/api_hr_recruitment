@@ -245,6 +245,75 @@
 					"response": []
 				},
 				{
+					"name": "Update Password",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.message == \"password updated successfully\") {",
+									"    tests[\"Password Updated\"] = true;",
+									"} else {",
+									"    tests[\"Password Updated\"] = false;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/account/update_password?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"account",
+								"update_password"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "old_password",
+									"value": "123",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "new_password",
+									"value": "123",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Verify Token",
 					"event": [
 						{
@@ -271,6 +340,73 @@
 							],
 							"path": [
 								"verify"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.error) {",
+									"    tests[\"Error message contains\"] = false",
+									"} else {",
+									"    tests[\"Error message contains\"] = true",
+									"}",
+									"if (jsonData.data) {",
+									"    postman.setEnvironmentVariable(\"user_id\", jsonData.data[0].id);",
+									"    for (i = 0; i < jsonData.data.length; i++) {",
+									"        if (jsonData.data[i].id) {",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"",
+									"        if (jsonData.data[i].email) {",
+									"            tests[\"email exist \"+ i] = true;",
+									"        } else {",
+									"            tests['email exist '+ i] = false;",
+									"        }",
+									"    }",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/user/list/1/11?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"list",
+								"1",
+								"11"
 							],
 							"query": [
 								{
@@ -589,7 +725,13 @@
 							"variable": []
 						},
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
 						"body": {},
 						"description": ""
 					},
@@ -623,14 +765,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignTag/9/{{mongo_id}}?accessToken={{token}}",
+							"raw": "{{url}}/email/assignTag/12/{{mongo_id}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignTag",
-								"9",
+								"12",
 								"{{mongo_id}}"
 							],
 							"query": [
@@ -670,21 +812,23 @@
 									"    tests[\"Success message exist\"] = true;",
 									"} else {",
 									"    tests[\"Success message exist\"] = false;",
-									"}"
+									"}",
+									"",
+									""
 								]
 							}
 						}
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignMultiple/9/?accessToken={{token}}",
+							"raw": "{{url}}/email/assignMultiple/12/?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignMultiple",
-								"9",
+								"12",
 								""
 							],
 							"query": [
@@ -933,7 +1077,7 @@
 									"if(environment.type==\"Hr\"){",
 									"    tests[\"Login user is Hr\"] = true;",
 									"if (jsonData.id) {",
-									"    postman.setEnvironmentVariable(\"variableId\", jsonData.id);",
+									"        postman.setEnvironmentVariable(\"variableId_hr\", jsonData.id)",
 									"    tests[\"Variable id exist\"] = true;",
 									"} else {",
 									"    tests[\"Variable id exist\"] = false;",
@@ -949,6 +1093,9 @@
 									"    tests[\"variableCode exist\"] = false;",
 									"}",
 									"}else{",
+									"    if(jsonData.id){",
+									"        postman.setEnvironmentVariable(\"variableId_hr\", jsonData.id)",
+									"    }",
 									"    tests[\"Login user is not Hr\"] = true;",
 									"}"
 								]
@@ -1014,12 +1161,26 @@
 									"var jsonData = JSON.parse(responseBody);",
 									"if(environment.type==\"Guest\"){",
 									"    tests[\"Login user is Guest\"] = true;",
-									"if (jsonData) {",
-									"    tests[\"Email Variable is not add by Guest\"] = true;",
+									"if (jsonData.id) {",
+									"        postman.setEnvironmentVariable(\"variableId_guest\", jsonData.id);",
+									"    tests[\"Variable id exist\"] = true;",
 									"} else {",
-									"    tests[\"Email Variable is not add by Guest\"] = true;",
+									"    tests[\"Variable id exist\"] = false;",
+									"}",
+									"if (jsonData.variableValue) {",
+									"    tests[\"variableValue exist\"] = true;",
+									"} else {",
+									"    tests[\"variableValue exist\"] = false;",
+									"}",
+									"if (jsonData.variableCode) {",
+									"    tests[\"variableCode exist\"] = true;",
+									"} else {",
+									"    tests[\"variableCode exist\"] = false;",
 									"}",
 									"}else{",
+									"    if(jsonData.id){",
+									"            postman.setEnvironmentVariable(\"variableId_guest\", jsonData.id);",
+									"    }",
 									"    tests[\"Login user is not Guest\"] = true;",
 									"}"
 								]
@@ -1087,7 +1248,10 @@
 									"    tests[\"Login user is Admin\"] = true;",
 									"for (var i = 0; i < jsonData.length; i++) {",
 									"    if (jsonData[i].id) {",
-									"        tests[\"id exist\" + i] = true;",
+									"        if(jsonData[i].id == postman.getEnvironmentVariable(\"variableId\")){",
+									"            tests['saved data Exists'] = true;",
+									"        }",
+									"        tests[\"id exist\" + i] = true;   ",
 									"    } else {",
 									"        tests[\"id exist\" + i] = false;",
 									"    }",
@@ -1153,6 +1317,9 @@
 									"    tests[\"Login user is Hr\"] = true;",
 									"for (var i = 0; i < jsonData.length; i++) {",
 									"    if (jsonData[i].id) {",
+									"        if(jsonData[i].id == postman.getEnvironmentVariable(\"variableId_hr\")){",
+									"            tests['saved data Exists'] = true;",
+									"        }",
 									"        tests[\"id exist\" + i] = true;",
 									"    } else {",
 									"        tests[\"id exist\" + i] = false;",
@@ -1355,14 +1522,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/variable/update/{{variableId}}?accessToken={{token}}",
+							"raw": "{{url}}/variable/update/{{variableId_hr}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"variable",
 								"update",
-								"{{variableId}}"
+								"{{variableId_hr}}"
 							],
 							"query": [
 								{
@@ -1426,14 +1593,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/variable/update/{{variableId}}?accessToken={{token}}",
+							"raw": "{{url}}/variable/update/{{variableId_guest}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"variable",
 								"update",
-								"{{variableId}}"
+								"{{variableId_guest}}"
 							],
 							"query": [
 								{
@@ -1548,14 +1715,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/variable/delete/{{variableId}}?accessToken={{token}}",
+							"raw": "{{url}}/variable/delete/{{variableId_hr}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"variable",
 								"delete",
-								"{{variableId}}"
+								"{{variableId_hr}}"
 							],
 							"query": [
 								{
@@ -1586,7 +1753,7 @@
 									"if(environment.type == \"Guest\"){",
 									"    tests[\"Login user is Guest\"] = true;",
 									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"Email Variable is not deleted by Guest\"]= true;",
+									"    tests[\"Email Variable is deleted by Guest\"]= true;",
 									"}else{",
 									"    tests[\"Email Variable is not deleted by Guest\"]= true;",
 									"}",
@@ -1599,14 +1766,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/variable/delete/{{variableId}}?accessToken={{token}}",
+							"raw": "{{url}}/variable/delete/{{variableId_guest}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"variable",
 								"delete",
-								"{{variableId}}"
+								"{{variableId_guest}}"
 							],
 							"query": [
 								{
@@ -1651,6 +1818,7 @@
 									"        tests[\"id exist\"] = false;",
 									"    }",
 									"    if (jsonData.data.email) {",
+									"        postman.setEnvironmentVariable(\"imapEmail\", jsonData.data.email);",
 									"        tests[\"email exist\"] = true;",
 									"    } else {",
 									"        tests[\"email exist\"] = false;",
@@ -1665,20 +1833,7 @@
 									"    tests['Admin'] = true;",
 									"}else{",
 									"    tests['Login user is not Admin'] = true;",
-									"}",
-									"",
-									"",
-									"",
-									""
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"imapEmail\", \"test\" + Math.floor((Math.random() * 10000) + 1) + \"@gmail.com\")"
+									"}"
 								]
 							}
 						}
@@ -2352,14 +2507,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/imap/statusActive/vaibhav_pathak@excellencetechnologies.in?accessToken={{token}}",
+							"raw": "{{url}}/imap/statusActive/testhr69@gmail.com?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"imap",
 								"statusActive",
-								"vaibhav_pathak@excellencetechnologies.in"
+								"testhr69@gmail.com"
 							],
 							"query": [
 								{
@@ -2711,6 +2866,7 @@
 									"        tests[\"id exist\"] = false;",
 									"    }",
 									"    if (jsonData.data.email) {",
+									"        postman.setEnvironmentVariable(\"smtpEmail\", jsonData.data.email);",
 									"        tests[\"email exist\"] = true;",
 									"    } else {",
 									"        tests[\"email exist\"] = false;",
@@ -2763,12 +2919,12 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "{{email}}",
+									"value": "saurabh.cs123@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "java@123",
+									"value": "monu6668",
 									"type": "text"
 								},
 								{
@@ -2778,7 +2934,7 @@
 								},
 								{
 									"key": "server_port",
-									"value": "993",
+									"value": "465",
 									"type": "text"
 								},
 								{
@@ -3596,10 +3752,12 @@
 									"var jsonData = JSON.parse(responseBody);",
 									"if(environment.type == \"Admin\"){",
 									"    tests[\"Login user is Admin\"] = true;",
-									"if (jsonData.is_silent) {",
+									"if (jsonData.status) {",
 									"    tests[\"message sent successfully\"] = true;",
-									"} else {",
+									"} else if(!jsonData.is_silent){",
 									"    tests[\"message not sent successfully\"] = false;",
+									"}else{",
+									"    tests['is_silent'] = true;",
 									"}",
 									"}else{",
 									"    tests[\"Login user is not Admin\"] = true;",
@@ -3610,14 +3768,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/testSmtp/{{email}}?accessToken={{token}}",
+							"raw": "{{url}}/smtp/testSmtp/{{smtpEmail}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"smtp",
 								"testSmtp",
-								"{{email}}"
+								"{{smtpEmail}}"
 							],
 							"query": [
 								{
@@ -4740,9 +4898,9 @@
 									"if(environment.type == \"Hr\"){",
 									"    tests[\"Login user is Hr\"] = true;",
 									"if(jsonData){",
-									"    tests[\"success\"] = true;",
+									"    tests[\"Template Test is not done by Hr\"] = true;",
 									"}else{",
-									"    tests[\"success\"] = false; ",
+									"     tests[\"Template Test is not done by Hr\"] = true;",
 									"}",
 									"}else{",
 									"    tests[\"Login user is Hr\"] = true;",
@@ -4875,7 +5033,13 @@
 							"variable": []
 						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
 						"body": {},
 						"description": ""
 					},
@@ -5089,7 +5253,8 @@
 								{
 									"key": "template_id",
 									"value": "{{templateId}}",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -5934,7 +6099,8 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
-									"description": ""
+									"description": "",
+									"disabled": true
 								}
 							]
 						},
@@ -6048,7 +6214,8 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
-									"description": ""
+									"description": "",
+									"disabled": true
 								}
 							]
 						},
@@ -6152,7 +6319,8 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
-									"description": ""
+									"description": "",
+									"disabled": true
 								}
 							]
 						},
@@ -6599,7 +6767,7 @@
 							"urlencoded": [
 								{
 									"key": "email_id",
-									"value": "{{email}}",
+									"value": "saurabhcse.iimtgn@gmail.com",
 									"description": "",
 									"type": "text"
 								},
@@ -6678,12 +6846,104 @@
 							"urlencoded": [
 								{
 									"key": "email_id",
-									"value": "saurabhk_etech@excellencetechnologies.in",
+									"value": "saurabhcse.iimtgn@gmail.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "registration_id",
+									"value": "476443",
 									"description": "",
 									"type": "text"
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Candidate Logout",
+					"request": {
+						"url": "{{url}}/candidate/logout",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email_id",
+									"value": "saurabhk_etech@excellencetechnologies.in",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "device_id",
+									"value": "6eb04ca62d721b58",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User delete",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.error){",
+									"    tests[\"error not exist\"] = false",
+									"}else{",
+									"    tests['error not exist'] = true",
+									"}",
+									"if(jsonData.data){",
+									"    tests['data deleted'] =  true",
+									"}else{",
+									"    tests['data deleted'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/user/delete/{{user_id}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"delete",
+								"{{user_id}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
