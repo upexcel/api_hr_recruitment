@@ -21,7 +21,7 @@ module.exports = {
             });
         queryInterface.addColumn(
             'IMAP',
-            'job_description', {
+            'total_emails', {
                 type: Sequelize.STRING,
                 allowNull: true
             });
