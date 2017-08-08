@@ -43,7 +43,6 @@
     "SMTP_HOST": "smtp.sendgrid.net",
     "SMTP_PORT": 25,
     "SMTP_USER": "apikey",
-    "SMTP_PASS": "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",
     "send_automatic_tags_email": true,
     "is_silent": true,
     "folderid": "0BwfzbqfMIBF9V28tZ0pvLUpscEk",
