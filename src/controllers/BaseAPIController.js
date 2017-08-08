@@ -14,7 +14,6 @@ export default class BaseAPIController {
     handleSuccessResponse(req, res, next, data) {
         userActivity.userActivityLogs(req, data)
             .then((response) => { res.json(data) })
-        // res.json(data);
     }
 
     getById(req, res, model, id, next) {
