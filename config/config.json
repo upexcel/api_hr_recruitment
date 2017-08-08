@@ -2,21 +2,21 @@
   "development": {
     "username": "root",
     "password": "java@123",
-    "database": "hr_recruit_dev",
+    "database": "hr_recruit_live",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "test": {
     "username": "root",
     "password": "java@123",
-    "database": "hr_recruit_dev",
+    "database": "hr_recruit_live",
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
   "production": {
     "username": "root",
     "password": "java@123",
-    "database": "hr_recruit_dev",
+    "database": "hr_recruit_live",
     "host": "127.0.0.1",
     "dialect": "mysql"
   }
