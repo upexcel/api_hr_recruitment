@@ -2,11 +2,11 @@ import Sequelize from "sequelize";
 import models from "./models";
 import constant from "./models/constant";
 import config from "./config";
+
 const db = {};
 
 // create your instance of sequelize
 const sequelize = new Sequelize(config.db.name, config.db.username, config.db.password);
-
 // load modelsa
 Object.keys(models).forEach((modelName) => {
     const model = models[modelName](sequelize, Sequelize.DataTypes);

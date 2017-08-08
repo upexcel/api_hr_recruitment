@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "password": "java@123",
+    "database": "hr_recruit_dev",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "root",
+    "password": "java@123",
+    "database": "hr_recruit_dev",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "root",
+    "password": "java@123",
+    "database": "hr_recruit_dev",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
