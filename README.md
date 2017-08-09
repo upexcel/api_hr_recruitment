@@ -3,7 +3,7 @@
 
 ## Install Dependencies
 ``` $ npm install ```
-### need to do changes in live_config.json && dev_config.json
+### need to create a config directory and inside config directory create a config.json file
 
 ### For configure you own gmail account
 
