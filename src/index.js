@@ -13,6 +13,7 @@ import expressValidator from "express-validator";
 
 const app = express();
 app.server = http.createServer(app);
+
 // logger
 app.use(morgan("dev"));
 app.use(cors());
@@ -44,7 +45,6 @@ const initRoutes = (app) => {
         console.log(chalk.green("included " + routes.length + " route files"));
     });
 };
-
 
 initRoutes(app);
 app.server.listen(process.env.PORT || config.port);

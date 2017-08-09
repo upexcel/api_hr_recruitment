@@ -20,6 +20,7 @@ Object.keys(db).forEach((modelName) => {
         db[modelName].options.associate(db);
     }
 });
+
 sequelize.sync().then(() => {
     db.Tag.findOne({ where: { type: constant().tagType.default, title: "Shortlist" } })
         .then((id) => {
@@ -95,7 +96,6 @@ sequelize.sync().then(() => {
 }, (err) => {
 
 });
-// })
 
 export default Object.assign({}, db, {
     sequelize,
