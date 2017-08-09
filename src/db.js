@@ -8,10 +8,7 @@ const db = {};
 // create your instance of sequelize
 const sequelize = new Sequelize(config.db.name, config.db.username, config.db.password);
 
-migration.up(sequelize.getQueryInterface(),Sequelize)
-    .then((response)=>{console.log(response)})
-
-// load modelsa
+// load models
 Object.keys(models).forEach((modelName) => {
     const model = models[modelName](sequelize, Sequelize.DataTypes);
     db[modelName] = model;
@@ -96,6 +93,8 @@ sequelize.sync().then(() => {
                 db.SystemVariable.create({ variableCode: "#tag_name" });
             }
         });
+}, (err) => {
+
 });
 
 export default Object.assign({}, db, {

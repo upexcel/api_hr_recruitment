@@ -32,8 +32,9 @@ export default function(sequelize, DataTypes) {
             defaultValue: 0
         },
         job_description: {
-            type: DataTypes.TEXT('long'),
-            defaultValue: "" || null
+            type: DataTypes.STRING,
+            defaultValue: "",
+            allowNull:true
         }
     }, {
         hooks: {
