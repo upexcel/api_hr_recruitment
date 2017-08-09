@@ -3,7 +3,7 @@ import _ from "lodash";
 import constant from "../models/constant";
 import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
-import config from "../config";
+import config from "../../config/config.json";
 
 module.exports = {
     tags: function(mongodb, subject, email_date, name, to, from, send_to) {

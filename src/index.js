@@ -8,7 +8,7 @@ import glob from "glob";
 import chalk from "chalk";
 import db from "./mongodb/db.js";
 import bodyParser from "body-parser";
-import config from "./config.js";
+import config from "../config/config.json";
 import expressValidator from "express-validator";
 
 const app = express();
