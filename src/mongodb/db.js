@@ -1,9 +1,6 @@
 import mongoose from "mongoose";
-let db = "hr_recruit_live"
-if (process.env.NODE_ENV == "dev") {
-    db = "hr_recruit_dev"
-}
-let conn = mongoose.createConnection("mongodb://localhost/" + db);
+import config from "../../config/config.json"
+let conn = mongoose.createConnection("mongodb://localhost/" + config.db.name);
 import cronService from "../service/cron.js";
 // the middleware function
 module.exports = function() {

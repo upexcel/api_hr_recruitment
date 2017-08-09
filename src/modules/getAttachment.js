@@ -2,7 +2,7 @@ import db from "../db"
 import path from "path";
 import fs from "fs";
 import base64 from "base64-stream";
-import config from "../config.js";
+import config from "../../config/config.json";
 import google from "googleapis";
 import googleDrive from 'google-drive'
 var mime = require('mime-types');

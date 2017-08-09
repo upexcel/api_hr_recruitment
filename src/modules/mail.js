@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
-import config from "../config.js";
+import config from "../../config/config.json";
 import emailExistence from "email-existence";
 var helper = require('sendgrid').mail;
 
