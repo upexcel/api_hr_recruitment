@@ -10,6 +10,7 @@ const sequelize = new Sequelize(config.db.name, config.db.username, config.db.pa
 
 migration.up(sequelize.getQueryInterface(),Sequelize)
     .then((response)=>{console.log(response)})
+
 // load modelsa
 Object.keys(models).forEach((modelName) => {
     const model = models[modelName](sequelize, Sequelize.DataTypes);

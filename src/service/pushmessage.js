@@ -1,5 +1,5 @@
 import FCM from 'fcm-push';
-import config from '../config.js';
+import config from "../config.js";
 import constant from '../models/constant'
 let pushMessage = (device_info, information) => {
     return new Promise((resolve, reject) => {

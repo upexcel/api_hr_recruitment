@@ -1,8 +1,3 @@
-import Sequelize from "sequelize";
-import config from "../src/config";
-
-const sequelize = new Sequelize(config.db.name, config.db.username, config.db.password);
-
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return new Promise((resolve, reject) => {

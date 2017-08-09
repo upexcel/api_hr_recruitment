@@ -3,7 +3,7 @@
 
 ## Install Dependencies
 ``` $ npm install ```
-### need to do changes in live_config.json && dev_config.json
+### need to create a config directory and inside config directory create a config.json file
 
 ### For configure you own gmail account
 
@@ -62,11 +62,14 @@ CLIENT_SECRET
 "boolean":true,
 "is_silent":true
 ```
+## before start need to run (first time)
+
+```./node_modules/.bin/sequelize init```
 
 ## To run on local use 
 
-```$ npm run dev```
+```$ npm start```
 
 ## to run on server use
 
-``` $ pm2 start npm --name hr_recruitment_live -- run -- live```
+``` $ pm2 start npm --name hr_recruitment_live -- start```

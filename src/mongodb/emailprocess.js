@@ -279,7 +279,13 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
                                                                         .then((device_list) => {
                                                                             if (device_list) {
-                                                                                pushMessage.pushMessage(device_list, body.shedule_for)
+                                                                                let push_message = "";
+                                                                                _.forEach(constant().shedule_for, (val, key) => {
+                                                                                    if (val.value == body.shedule_for) {
+                                                                                        push_message = val.text + " on " + moment(body.shedule_date).format("MMM DD, YYYY") + " at " + body.shedule_time;
+                                                                                    }
+                                                                                })
+                                                                                pushMessage.pushMessage(device_list, push_message)
                                                                                     .then((push_response) => {
                                                                                         if (!push_response.error) {
                                                                                             email.update({ "_id": { "$in": body.mongo_id } }, { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }, { multi: true }).exec(function(err, saved_info) {
@@ -757,22 +763,19 @@ let app_get_candidate = (email, email_id, registration_id) => {
         _.forEach(constant().shedule_for, (val, key) => {
             scheduled_rounds.push(val.value)
         })
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1 }).exec(function(err, response) {
+        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1, "registration_id": 1 }).exec(function(err, response) {
             if (err) {
                 reject({ error: 1, message: err, data: [] })
             } else {
                 if (response) {
-                    _.forEach(constant().shedule_for, (val, key) => {
-                        if (val.value == response.shedule_for) {
-                            rounds.push({ text: val.text, info: val.info, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
-                        } else {
-                            rounds.push({ text: val.text, info: val.info, scheduled_time: "", scheduled_date: "", status: 0 })
-                        }
-                        if (key == constant().shedule_for.length - 1) {
+                    _.each(constant().shedule_for, (val, key) => {
+                        rounds.push((val.value == response.shedule_for) ? { text: val.text, info: val.info, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 } : { text: val.text, info: val.info, scheduled_time: "", scheduled_date: "", status: 0 })
+                        if (key == constant().shedule_for.length - 1 || (val.value == response.shedule_for)) {
                             db.Tag.findTagInfo(response.tag_id[0])
                                 .then((tagInfo) => {
-                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status })
+                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id })
                                 }, (error) => { reject(error) })
+                                return false
                         }
                     })
                 } else {
