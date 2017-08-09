@@ -768,17 +768,14 @@ let app_get_candidate = (email, email_id, registration_id) => {
                 reject({ error: 1, message: err, data: [] })
             } else {
                 if (response) {
-                    _.forEach(constant().shedule_for, (val, key) => {
-                        if (val.value == response.shedule_for) {
-                            rounds.push({ text: val.text, info: val.info, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 })
-                        } else {
-                            rounds.push({ text: val.text, info: val.info, scheduled_time: "", scheduled_date: "", status: 0 })
-                        }
-                        if (key == constant().shedule_for.length - 1) {
+                    _.each(constant().shedule_for, (val, key) => {
+                        rounds.push((val.value == response.shedule_for) ? { text: val.text, info: val.info, scheduled_time: response.shedule_time, scheduled_date: moment(response.shedule_date).format("MMM DD, YYYY"), status: 1 } : { text: val.text, info: val.info, scheduled_time: "", scheduled_date: "", status: 0 })
+                        if (key == constant().shedule_for.length - 1 || (val.value == response.shedule_for)) {
                             db.Tag.findTagInfo(response.tag_id[0])
                                 .then((tagInfo) => {
                                     resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id })
                                 }, (error) => { reject(error) })
+                                return false
                         }
                     })
                 } else {
