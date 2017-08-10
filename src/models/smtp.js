@@ -10,6 +10,7 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.STRING(255),
             unique: false,
         },
+        username: DataTypes.STRING(255),
         password: DataTypes.STRING,
         smtp_server: DataTypes.STRING,
         server_port: DataTypes.INTEGER,

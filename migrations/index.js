@@ -9,7 +9,8 @@ module.exports = {
                 { table: "TAG", field: "default_id", type: Sequelize.INTEGER, value: 0, allowNull: false },
                 { table: "TAG", field: "job_description", type: Sequelize.STRING, value: "", allowNull: false },
                 { table: "IMAP", field: "last_fetched_time", type: Sequelize.DATE, value: new Date(), allowNull: false },
-                { table: "IMAP", field: "total_emails", type: Sequelize.INTEGER, value: 0, allowNull: false }
+                { table: "IMAP", field: "total_emails", type: Sequelize.INTEGER, value: 0, allowNull: false },
+                { table: "SMTP", field: "username", type: Sequelize.STRING(255), value: "", allowNull: false }
             ]
             _.forEach(add_field, (val, key) => {
                 queryInterface.describeTable(val.table).then(attributes => {
