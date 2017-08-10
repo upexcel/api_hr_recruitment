@@ -17,7 +17,7 @@ module.exports = {
                     user: from.email,
                     pass: from.password
                 }
-            }));
+            }),(err)=>{console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",err)});
             mailer.sendMail({
                 from: from.email,
                 to: email,
