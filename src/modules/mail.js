@@ -14,7 +14,7 @@ module.exports = {
                 host: from.smtp_server,
                 port: from.server_port,
                 auth: {
-                    user: from.email,
+                    user: from.username,
                     pass: from.password
                 }
             }));
@@ -25,6 +25,7 @@ module.exports = {
                 template: text || "",
                 html: html
             }, (error, response) => {
+                console.log(error)
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {

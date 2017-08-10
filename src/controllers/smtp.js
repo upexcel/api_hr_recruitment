@@ -11,7 +11,6 @@ export class SmtpController extends BaseAPIController {
     save = (req, res, next) => {
         SmtpProvider.save(this._db.Smtp, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
-                console.log(data)
                 mail.sendMail(data.email, constant().smtp.subject, constant().smtp.text, data, constant().smtp.html)
                     .then((response) => {
                         this._db.Smtp.create(data)
