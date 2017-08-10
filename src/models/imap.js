@@ -35,8 +35,8 @@ export default function(sequelize, DataTypes) {
         },
         last_fetched_time: {
             type: DataTypes.DATE,
-            defaultValue: false,
-            allowNull: new Date()
+            defaultValue: new Date(),
+            allowNull: false
         }
     }, {
         timestamps: true,

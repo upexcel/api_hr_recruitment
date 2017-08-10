@@ -21,9 +21,9 @@ export default function() {
         automatic_mail_subject: "Revert Information",
         automatic_mail_subject_match: "Re: Revert Information",
         shedule_for: [
-            { value: 'first_round', text: "First Round", info: "This round having various pen and paper tests like written-objective , written-subjecive, and Hr round. candiadte is judged on their performance" },
-            { value: 'second_round', text: "Second Round", info: "This round contains three major round (1). Machine Test (2). Technical Interview (3). Logical Round . In machine test their is 5 questions you need to run the code as per questions requirement, in Technical interview and logical interview your knowledge and logic should be tested" },
-            { value: 'third_round', text: "Third Round", info: "This round is for pre talk with Hr to confirm your job, documents varification, and discuss about the salary" }
+            { value: 'first_round', text: "First Round", info: "First round is written test.Which will be divided in two section, first section is objective and second section is subjective questions.Once you clear both these section then there would be HR round." },
+            { value: 'second_round', text: "Second Round", info: "Second round is a Machine Test which contain 5 questions. you have to run code and apply logic as per question requirement." },
+            { value: 'third_round', text: "Third Round", info: "Third round is a Technical Interview & Logical reasoning Round in this your technical knowledge and reasoning ability would be tested" }
         ],
         first_round_slots: ['10:30 am', '11:00 am', '11:30 am', '12:00 pm', '12:30 pm', '01:00 pm', '01:30 pm', '02:00 pm', '02:30 pm', '03:00 pm', '03:30 pm', '04:30 pm'],
         second_round_slots: ['10:30 am', '12:00 pm', '01:30 pm'],
