@@ -10,6 +10,7 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.STRING(255),
             unique: false,
         },
+        username: DataTypes.STRING(255),
         password: DataTypes.STRING,
         smtp_server: DataTypes.STRING,
         server_port: DataTypes.INTEGER,
@@ -43,8 +44,10 @@ export default function(sequelize, DataTypes) {
         classMethods: {
             changeStatus(email) {
                 return new Promise((resolve, reject) => {
+                    console.log(email)
                     this.update({ status: 1 }, { where: { email: email } })
                         .then((data) => {
+                            console.log(data)
                             if (data[0]) {
                                 this.update({ status: 0 }, { where: { $not: { email: email } } })
                                     .then((data) => {
