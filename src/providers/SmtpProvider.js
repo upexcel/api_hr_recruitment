@@ -6,6 +6,7 @@ import emailExistence from "email-existence";
 
 const save = (model, validate, body, validationResult) => {
     return new Promise((resolve, reject) => {
+        validate("username", "username cannot be empty").notEmpty();
         validate("email", "email cannot be empty").notEmpty();
         validate("smtp_server", "smtp_server cannot be empty").notEmpty();
         validate("type", "type cannot be empty").notEmpty();

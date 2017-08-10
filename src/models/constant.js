@@ -31,7 +31,10 @@ export default function() {
         push_notification_message: 'Interview Scheduled',
         old_emails_fetch_days_count: 5,
         registration_message: " <br> your registration_id is:-",
-        ignored_api_log_list: ["/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate"]
+        ignored_api_log_list: ["/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate"],
+        office_location: { long: 28.5960803, lat: 77.3282479 },
+        app_hr_contact_email: "hr@excellencetechnologies.in",
+        app_hr_contact_number: "+91-9811065469",
     };
     return constant;
 }
