@@ -9,15 +9,15 @@ module.exports = {
         return new Promise((resolve, reject) => {
             if (!from.email)
                 from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
+            console.log(from.email)
             var mailer = nodemailer.createTransport(smtpTransport({
                 host: from.smtp_server,
                 port: from.server_port,
-                secure: true,
                 auth: {
-                    user: from.username.toString(),
-                    pass: from.password.toString()
+                    user: from.email,
+                    pass: from.password
                 }
-            }),(err)=>{console.log("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++",err)});
+            }));
             mailer.sendMail({
                 from: from.email,
                 to: email,
