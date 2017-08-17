@@ -609,8 +609,16 @@ let getShedule = (email) => {
         let list_array = [];
         let final_data_list = {}
         let lastDate = moment(new Date()).add(1, 'months');
+        let rounds = []
         getDates(moment(new Date()).add(1, 'days'), lastDate, function(dateArray) {
-            resolve(dateArray)
+            _.forEach(constant().shedule_for, (val, key) => {
+                rounds.push({ round: val.text });
+                if (key == constant().shedule_for.length - 1) {
+                    console.log(dateArray[0].time_slots)
+                    dateArray[0]['rounds'] = rounds
+                    resolve(dateArray)
+                }
+            })
         })
 
         function getDates(startDate, stopDate, callback) {
@@ -775,7 +783,7 @@ let app_get_candidate = (email, email_id, registration_id) => {
                                 .then((tagInfo) => {
                                     resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id, office_location: constant().office_location, app_hr_contact_email: constant().app_hr_contact_email, app_hr_contact_number: constant().app_hr_contact_number })
                                 }, (error) => { reject(error) })
-                                return false
+                            return false
                         }
                     })
                 } else {
