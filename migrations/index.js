@@ -37,6 +37,11 @@ module.exports = {
     },
 
     down: (queryInterface, Sequelize) => {
-        // logic for reverting the changes
+        return new Promise((resolve, reject) => {
+            // logic for reverting the changes
+            queryInterface.bulkDelete('TAG', [{ title: "Ignore" }])
+            queryInterface.bulkDelete('TAG', [{ title: "Schedule" }])
+            queryInterface.sequelize.query('UPDATE `TAG` set `default_id`=`6` where `title`=`Reject`')
+        })
     }
 }
