@@ -26,8 +26,11 @@ Object.keys(db).forEach(function(modelName) {
 
 migration.up(sequelize.getQueryInterface(), Sequelize)
     .then((response) => {
-        db.sequelize = sequelize;
-        db.Sequelize = Sequelize;
+        migration.down(sequelize.getQueryInterface(), Sequelize)
+            .then((data) => {
+                db.sequelize = sequelize;
+                db.Sequelize = Sequelize;
+            })
     });
 
 module.exports = db;

@@ -9,13 +9,13 @@ module.exports = {
         return new Promise((resolve, reject) => {
             if (!from.email)
                 from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
+            console.log(from.email)
             var mailer = nodemailer.createTransport(smtpTransport({
                 host: from.smtp_server,
                 port: from.server_port,
-                secure: true,
                 auth: {
-                    user: from.username.toString(),
-                    pass: from.password.toString()
+                    user: from.username,
+                    pass: from.password
                 }
             }));
             mailer.sendMail({
@@ -25,6 +25,7 @@ module.exports = {
                 template: text || "",
                 html: html
             }, (error, response) => {
+                console.log(error)
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
