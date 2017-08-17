@@ -41,7 +41,6 @@ module.exports = {
             // logic for reverting the changes
             queryInterface.bulkDelete('TAG', [{ title: "Ignore" }])
             queryInterface.bulkDelete('TAG', [{ title: "Schedule" }])
-            queryInterface.sequelize.query('UPDATE TAG set default_id=6 where title=Reject')
         })
     }
 }
