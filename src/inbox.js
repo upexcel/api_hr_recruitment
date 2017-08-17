@@ -238,7 +238,8 @@ module.exports = {
                                             date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
                                             dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
                                         }
-                                        console.log(date, dateFrom)
+                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email:val.email } })
+                                            .then((last_updated_time) => { console.log("last time updated") })
                                         imap.search(['ALL', ['SINCE', dateFrom],
                                             ['BEFORE', date]
                                         ], function(err, results) {
@@ -396,8 +397,6 @@ module.exports = {
                         _.forEach(docs, (email, key) => {
                             imap_emails.push(email.email)
                         })
-                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: { "$in": imap_emails } } }, { multi: true })
-                            .then((last_updated_time) => { console.log("last time updated") })
                     }
                 });
             } else {
