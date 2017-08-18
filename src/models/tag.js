@@ -34,7 +34,7 @@ export default function(sequelize, DataTypes) {
         job_description: {
             type: DataTypes.STRING,
             defaultValue: "",
-            allowNull:true
+            allowNull: true
         }
     }, {
         hooks: {
@@ -107,7 +107,7 @@ export default function(sequelize, DataTypes) {
             }
         },
         associate: (models) => {
-            Tag.belongsTo(models.Template, { foreignKey: 'template_id' })
+            Tag.belongsTo(models.Template, { foreignKey: 'template_id', allowNull: true })
         }
     });
     return Tag;

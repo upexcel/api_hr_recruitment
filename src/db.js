@@ -36,22 +36,22 @@ sequelize.sync().then(() => {
             }
         });
 
-    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Schedule_first_round" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "First Round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule_first_round", type: constant().tagType.default, color: "#ba21d3", default_id: 3 });
+                db.Tag.create({ title: "First Round", type: constant().tagType.default, color: "#ba21d3", default_id: 3 });
             }
         });
-    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Schedule_second_round" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Second Round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule_second_round", type: constant().tagType.default, color: "#ba21d3", default_id: 4 });
+                db.Tag.create({ title: "Second Round", type: constant().tagType.default, color: "#ba21d3", default_id: 4 });
             }
         });
-    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Schedule_third_round" } })
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Third Round" } })
         .then((id) => {
             if (!id) {
-                db.Tag.create({ title: "Schedule_third_round", type: constant().tagType.default, color: "#ba21d3", default_id: 5 });
+                db.Tag.create({ title: "Third Round", type: constant().tagType.default, color: "#ba21d3", default_id: 5 });
             }
         });
     db.Tag.findOne({ where: { type: constant().tagType.default, title: "Genuine Applicant" } })
