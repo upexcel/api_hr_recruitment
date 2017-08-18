@@ -61,11 +61,9 @@ export class UserController extends BaseAPIController {
     }
 
     logs = (req, res, next) => {
-        req.user_activity.find().exec()
-            .then((data)=>{
-                console.log(data)
-                this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data })
-            })
+        this._db.User.logs(req.user_activity)
+            .then((data) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data }) })
+            .catch(this.handleErrorResponse.bind(null, res));
     }
 }
 
