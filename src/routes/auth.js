@@ -17,6 +17,8 @@ export default (app) => {
     /*Route for delete user only by admin*/
     app.route("/user/delete/:id").delete(auth.requiresAdmin, user.deleteUser);
 
+    app.route("/user/log").get(auth.requiresAdmin, user.logs);
+
     app.param("id", user.idResult)
 
     return app;

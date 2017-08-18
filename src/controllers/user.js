@@ -59,6 +59,14 @@ export class UserController extends BaseAPIController {
     idResult = (req, res, next, id) => {
         this.getById(req, res, this._db.User, id, next)
     }
+
+    logs = (req, res, next) => {
+        req.user_activity.find().exec()
+            .then((data)=>{
+                console.log(data)
+                this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data })
+            })
+    }
 }
 
 const controller = new UserController();
