@@ -2,10 +2,10 @@ import _ from 'lodash';
 export default function(sequelize, DataTypes) {
     const Tag = sequelize.define("TAG", {
         email: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING,
         },
         title: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING,
         },
         color: DataTypes.STRING,
         subject: {
@@ -32,7 +32,7 @@ export default function(sequelize, DataTypes) {
             defaultValue: 0
         },
         job_description: {
-            type: DataTypes.STRING(255),
+            type: DataTypes.STRING,
             defaultValue: "",
             allowNull:true
         }
