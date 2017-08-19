@@ -43,6 +43,7 @@ module.exports = {
                             _.forEach(data, (val, key) => {
                                 if ((subject.match(new RegExp(val.subject, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (to.match(new RegExp(val.email, 'gi'))))) {
                                     tagId.push(val.id.toString())
+                                    template_id.push(val.template_id);
                                     if (!is_email_send && val.is_email_send)
                                         is_email_send = val.is_email_send;
                                 }
