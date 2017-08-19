@@ -43,10 +43,6 @@ module.exports = {
                             _.forEach(data, (val, key) => {
                                 if ((subject.match(new RegExp(val.subject, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (to.match(new RegExp(val.email, 'gi'))))) {
                                     tagId.push(val.id.toString())
-                                    template_id.push(val.template_id)
-                                    console.log("++++++++++++++++++++++++++++++++++++++++++")
-                                    console.log(val.is_email_send)
-                                    console.log("++++++++++++++++++++++++++++++++++++++++++")
                                     if (!is_email_send && val.is_email_send)
                                         is_email_send = val.is_email_send;
                                 }
@@ -61,9 +57,6 @@ module.exports = {
                                         .then((html) => {
                                             db.Smtp.findOne({ where: { status: 1 } })
                                                 .then((smtp) => {
-                                                    console.log("=================================")
-                                                    console.log(is_email_send)
-                                                    console.log("=================================")
                                                     if (config.send_automatic_tags_email === true && send_to && is_email_send) {
                                                         data.subject = constant().automatic_mail_subject + " " + data.subject;
                                                         mail.sendMail(to, data.subject, constant().smtp.text, smtp, html)
