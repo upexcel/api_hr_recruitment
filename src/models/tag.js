@@ -31,6 +31,10 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
+        is_email_send:{
+            type:DataTypes.BOOLEAN,
+            defaultValue:0
+        },
         job_description: {
             type: DataTypes.STRING,
             defaultValue: "",
