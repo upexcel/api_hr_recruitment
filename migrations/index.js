@@ -33,6 +33,10 @@ module.exports = {
                     }
                 })
             })
+            queryInterface.sequelize.query("UPDATE TAG SET title='First Round' WHERE title='Schedule_first_round'")
+            queryInterface.sequelize.query("UPDATE TAG SET title='Second Round' WHERE title='Schedule_second_round'")
+            queryInterface.sequelize.query("UPDATE TAG SET title='Third Round' WHERE title='Schedule_third_round'")
+            queryInterface.sequelize.query("UPDATE TAG SET default_id=6 WHERE title='Reject'")
         })
     },
 
