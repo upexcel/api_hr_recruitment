@@ -44,7 +44,6 @@ module.exports = {
                                                         if (err) {
                                                             console.log(err);
                                                         } else {
-                                                            console.log(resp)
                                                             if (resp.length == 0) {
                                                                 UID_arr = results;
                                                             } else {
@@ -56,7 +55,6 @@ module.exports = {
                                                                     }
                                                                 });
                                                             }
-                                                            console.log(UID_arr.length)
                                                             var count = UID_arr.length;
                                                             if (UID_arr[0] != null) {
                                                                 var f = imap.fetch(UID_arr, {
@@ -319,7 +317,7 @@ module.exports = {
                                                         var unread = !(in_array('\\Seen', flag)),
                                                             answered = in_array("\\Answered", flag);
                                                         parser.once("end", function() {
-                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false)
+                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
                                                                 .then((tag) => {
                                                                     count--;
                                                                     if (tag.tagId.length || tag.default_tag_id) {
