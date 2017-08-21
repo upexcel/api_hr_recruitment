@@ -4,9 +4,10 @@ import constant from "../models/constant";
 import mail from "../modules/mail";
 import replace from "../modules/replaceVariable";
 import config from "../config";
+import email_log from "../service/emaillogs"
 
 module.exports = {
-    tags: function(mongodb, subject, email_date, name, to, from, send_to) {
+    tags: function(mongodb, subject, email_date, name, to, from, logs, send_to) {
         return new Promise((resolve, reject) => {
             let count = 0;
             let tagId = [];
@@ -62,11 +63,14 @@ module.exports = {
                                                         data.subject = constant().automatic_mail_subject + " " + data.subject;
                                                         mail.sendMail(to, data.subject, constant().smtp.text, smtp, html)
                                                             .then((response) => {
-                                                                if (response.status) {
-                                                                    resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1 })
-                                                                } else {
-                                                                    resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0 })
-                                                                }
+                                                                email_log.emailLog(logs, response)
+                                                                    .then((data) => {
+                                                                        if (response.status) {
+                                                                            resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1 })
+                                                                        } else {
+                                                                            resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0 })
+                                                                        }
+                                                                    })
                                                             })
 
                                                     } else {

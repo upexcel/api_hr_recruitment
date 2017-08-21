@@ -44,14 +44,20 @@ module.exports = function() {
         collection: 'userActivity',
         strict: false
     })
+    let emailLogs = mongoose.Schema({}, {
+        collection: 'emaillogs',
+        strict: false
+    })
 
     let email = conn.model("EMAIL", emailSchema);
     let user_activity = conn.model('ACTIVITY', userActivity);
+    let email_logs = conn.model('EMAILLOGS', emailLogs)
 
-    cronService.cron(email)
+    cronService.cron(email, email_logs)
     return function(req, res, next) {
         req.email = email;
         req.user_activity = user_activity;
+        req.emailLogs = email_logs;
         next();
     };
 };

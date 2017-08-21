@@ -14,7 +14,7 @@ var MailParser = require("mailparser").MailParser;
 
 
 module.exports = {
-    fetchEmail: function(email, apiCall) {
+    fetchEmail: function(email, logs, apiCall) {
         return new Promise((resolve, reject) => {
             db.Imap.findAll({
                 where: {
@@ -119,7 +119,7 @@ module.exports = {
                                                                             answered = in_array("\\Answered", flag);
 
                                                                         parser.once("end", function() {
-                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, true)
+                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
                                                                                         email_timestamp = new Date().getTime()
@@ -238,7 +238,7 @@ module.exports = {
                                             date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
                                             dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
                                         }
-                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email:val.email } })
+                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
                                             .then((last_updated_time) => { console.log("last time updated") })
                                         imap.search(['ALL', ['SINCE', dateFrom],
                                             ['BEFORE', date]

@@ -38,6 +38,9 @@ export default (app) => {
     /*get Candidate status*/
     app.route("/app_get_candidate").post(fetch_email.app_get_candidate)
 
+    /*getting email logs*/
+    app.route("/get/email/logs/:page/:limit").get(auth.requiresAdmin, fetch_email.logs)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

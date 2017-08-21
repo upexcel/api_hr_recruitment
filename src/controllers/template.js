@@ -5,6 +5,7 @@ import constant from "../models/constant";
 import mail from "../modules/mail";
 import db from "../db";
 import config from "../config";
+import logs from "../service/emaillogs";
 
 export class TemplateController extends BaseAPIController {
 
@@ -85,7 +86,10 @@ export class TemplateController extends BaseAPIController {
                             if (config.is_silent) {
                                 mail.sendMail(req.params.email, template.subject, constant().smtp.text, data, template.body)
                                     .then((response) => {
-                                        this.handleSuccessResponse(req, res, next, response)
+                                        logs.emailLog(req, data.email_status)
+                                            .then((response) => {
+                                                this.handleSuccessResponse(req, res, next, response)
+                                            })
                                     })
                             } else {
                                 this.handleSuccessResponse(req, res, next, { message: "Tempelte Tested" })
