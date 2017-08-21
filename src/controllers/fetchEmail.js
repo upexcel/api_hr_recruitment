@@ -9,6 +9,7 @@ import mail from "../modules/mail";
 import constant from "../models/constant";
 import replaceData from "../modules/replaceVariable";
 import email_process from "../mongodb/emailprocess";
+import logs from "../service/emaillogs";
 
 
 export class FetchController extends BaseAPIController {
@@ -68,7 +69,10 @@ export class FetchController extends BaseAPIController {
                 let { tag_id } = req.params;
                 email_process.assignMultiple(tag_id, req.body, req.email)
                     .then((data) => {
-                        this.handleSuccessResponse(req, res, next, data)
+                        logs.emailLog(req, data.email_status)
+                            .then((response) => {
+                                this.handleSuccessResponse(req, res, next, data)
+                            })
                     })
             })
             .catch(this.handleErrorResponse.bind(null, res));
@@ -134,7 +138,7 @@ export class FetchController extends BaseAPIController {
 
     sendToMany = (req, res, next) => {
         let { subject, body, tag_id, default_id } = req.body;
-        email_process.sendToMany(req.body.emails, subject, body, tag_id, default_id, req.email)
+        email_process.sendToMany(req, req.body.emails, subject, body, tag_id, default_id, req.email)
             .then((response) => {
                 this.handleSuccessResponse(req, res, next, response)
             })
@@ -142,13 +146,13 @@ export class FetchController extends BaseAPIController {
     }
 
     sendToSelectedTag = (req, res, next) => {
-        email_process.sendToSelectedTag(req.body.tag_id, req.email)
+        email_process.sendToSelectedTag(req, req.body.tag_id, req.email)
             .then((result) => { this.handleSuccessResponse(req, res, next, result) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     fetchByButton = (req, res, next) => {
-        inbox.fetchEmail(req.email, 'apiCall')
+        inbox.fetchEmail(req.email, req.emailLogs, 'apiCall')
             .then((data) => { this.handleSuccessResponse(req, res, next, { status: 1, message: "success" }) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -156,6 +160,18 @@ export class FetchController extends BaseAPIController {
     app_get_candidate = (req, res, next) => {
         email_process.app_get_candidate(req.email, req.body.email_id, req.body.registration_id)
             .then((result) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result }) })
+            .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
+    }
+
+    logs = (req, res, next) => {
+        let { page, limit } = req.params;
+        req.emailLogs.find().sort({ _id: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec()
+            .then((result) => {
+                req.emailLogs.count().exec()
+                    .then((count)=>{
+                        this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
+                    })
+            })
             .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
     }
 }

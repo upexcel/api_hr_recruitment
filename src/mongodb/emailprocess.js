@@ -8,6 +8,7 @@ import Attachment from "../modules/getAttachment";
 import moment from 'moment';
 import pushMessage from '../service/pushmessage';
 import crypto from "crypto";
+import logs from "../service/emaillogs";
 
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
     return new Promise((resolve, reject) => {
@@ -293,7 +294,8 @@ let assignMultiple = (tag_id, body, email) => {
                                                                                                     status: 1,
                                                                                                     message: "success",
                                                                                                     data: response,
-                                                                                                    push_status: push_response
+                                                                                                    push_status: push_response,
+                                                                                                    email_status: mail_response
                                                                                                 });
                                                                                             })
                                                                                         } else {
@@ -301,7 +303,8 @@ let assignMultiple = (tag_id, body, email) => {
                                                                                                 status: 1,
                                                                                                 message: "success",
                                                                                                 data: response,
-                                                                                                push_status: push_response
+                                                                                                push_status: push_response,
+                                                                                                email_status: mail_response
                                                                                             });
                                                                                         }
                                                                                     })
@@ -309,7 +312,8 @@ let assignMultiple = (tag_id, body, email) => {
                                                                                 resolve({
                                                                                     status: 1,
                                                                                     message: "success",
-                                                                                    data: response
+                                                                                    data: response,
+                                                                                    email_status: mail_response
                                                                                 })
                                                                             }
                                                                         }, (err) => { reject(err) })
@@ -324,6 +328,7 @@ let assignMultiple = (tag_id, body, email) => {
                                 resolve({
                                     status: 1,
                                     message: "success",
+                                    email_status: { status: 0 }
                                 });
                             }
                         }
@@ -392,7 +397,7 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
     })
 }
 
-let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
+let sendToMany = (req, email_list, subject, body, tag_id, default_id, email) => {
     return new Promise((resolve, reject) => {
         let email_send_success_list = [];
         let email_send_fail_list = [];
@@ -404,7 +409,7 @@ let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
                 if (smtp_email) {
                     if (!tag_id) {
                         emails = email_list;
-                        sendmail(smtp_email.email, function(response) {
+                        sendmail(smtp_email, function(response) {
                             resolve(response)
                         })
                     } else if (tag_id && default_id) {
@@ -431,23 +436,26 @@ let sendToMany = (email_list, subject, body, tag_id, default_id, email) => {
             let to_email = emails.splice(0, 1);
             mail.sendMail(to_email[0], subject, "", from, body)
                 .then((resp) => {
-                    if (resp.status) {
-                        email_send_success_list.push(to_email[0])
-                    } else {
-                        email_send_fail_list.push(to_email[0])
-                    }
-                    if (emails.length) {
-                        sendmail(from, callback)
-                    } else {
-                        callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
-                    }
+                    logs.emailLog(req, resp)
+                        .then((response) => {
+                            if (resp.status) {
+                                email_send_success_list.push(to_email[0])
+                            } else {
+                                email_send_fail_list.push(to_email[0])
+                            }
+                            if (emails.length) {
+                                sendmail(from, callback)
+                            } else {
+                                callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
+                            }
+                        })
                 })
                 .catch((err) => { reject(err) })
         }
     })
 }
 
-let sendToSelectedTag = (id, email) => {
+let sendToSelectedTag = (req, id, email) => {
     return new Promise((resolve, reject) => {
         let email_send_success_list = [];
         let email_send_fail_list = [];
@@ -484,18 +492,21 @@ let sendToSelectedTag = (id, email) => {
                                                         subject = constant().automatic_mail_subject + " " + template.subject;
                                                         mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
                                                             .then((response) => {
-                                                                email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
-                                                                    .then((data1) => {
-                                                                        if (response.status) {
-                                                                            email_send_success_list.push(email_id.sender_mail)
-                                                                        } else {
-                                                                            email_send_fail_list.push(email_id.sender_mail)
-                                                                        }
-                                                                        if (emails.length) {
-                                                                            sendTemplateToEmails(emails, template, smtp, callback)
-                                                                        } else {
-                                                                            callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
-                                                                        }
+                                                                logs.emailLog(req, response)
+                                                                    .then((log_response) => {
+                                                                        email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
+                                                                            .then((data1) => {
+                                                                                if (response.status) {
+                                                                                    email_send_success_list.push(email_id.sender_mail)
+                                                                                } else {
+                                                                                    email_send_fail_list.push(email_id.sender_mail)
+                                                                                }
+                                                                                if (emails.length) {
+                                                                                    sendTemplateToEmails(emails, template, smtp, callback)
+                                                                                } else {
+                                                                                    callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
+                                                                                }
+                                                                            })
                                                                     })
                                                             })
 
@@ -614,7 +625,6 @@ let getShedule = (email) => {
             _.forEach(constant().shedule_for, (val, key) => {
                 rounds.push({ round: val.text });
                 if (key == constant().shedule_for.length - 1) {
-                    console.log(dateArray[0].time_slots)
                     dateArray[0]['rounds'] = rounds
                     resolve(dateArray)
                 }
