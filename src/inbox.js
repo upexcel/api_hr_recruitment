@@ -39,22 +39,24 @@ module.exports = {
                                                 } else if (results) {
                                                     let UID_arr = [];
                                                     email.find({ imap_email: val.dataValues.email }).sort({
-                                                        _id: -1
+                                                        email_timestamp: -1
                                                     }).limit(1).exec(function(err, resp) {
                                                         if (err) {
                                                             console.log(err);
                                                         } else {
+                                                            console.log(resp)
                                                             if (resp.length == 0) {
                                                                 UID_arr = results;
                                                             } else {
                                                                 var row = resp[0];
                                                                 var Last_UID = row.get("uid");
                                                                 _.forEach(results, (val) => {
-                                                                    if (val >= Last_UID) {
+                                                                    if (val > Last_UID) {
                                                                         UID_arr.push(val);
                                                                     }
                                                                 });
                                                             }
+                                                            console.log(UID_arr.length)
                                                             var count = UID_arr.length;
                                                             if (UID_arr[0] != null) {
                                                                 var f = imap.fetch(UID_arr, {
@@ -189,6 +191,7 @@ module.exports = {
                                                                 });
                                                             } else {
                                                                 console.log("Nothing To fetch")
+                                                                resolve({ message: "Nothing To fetch" })
                                                             }
                                                         }
                                                     });
