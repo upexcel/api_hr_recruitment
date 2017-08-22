@@ -39,7 +39,7 @@ module.exports = {
                                                 } else if (results) {
                                                     let UID_arr = [];
                                                     email.find({ imap_email: val.dataValues.email }).sort({
-                                                        _id: -1
+                                                        email_timestamp: -1
                                                     }).limit(1).exec(function(err, resp) {
                                                         if (err) {
                                                             console.log(err);
@@ -50,7 +50,7 @@ module.exports = {
                                                                 var row = resp[0];
                                                                 var Last_UID = row.get("uid");
                                                                 _.forEach(results, (val) => {
-                                                                    if (val >= Last_UID) {
+                                                                    if (val > Last_UID) {
                                                                         UID_arr.push(val);
                                                                     }
                                                                 });
@@ -122,7 +122,7 @@ module.exports = {
                                                                             automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
-                                                                                        email_timestamp = new Date().getTime()
+                                                                                        date = new Date(date).getTime()
                                                                                     }
                                                                                     email.findOne({
                                                                                         uid: uid,
@@ -189,6 +189,7 @@ module.exports = {
                                                                 });
                                                             } else {
                                                                 console.log("Nothing To fetch")
+                                                                resolve({ message: "Nothing To fetch" })
                                                             }
                                                         }
                                                     });

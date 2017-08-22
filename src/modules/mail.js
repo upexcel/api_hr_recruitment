@@ -25,7 +25,6 @@ module.exports = {
                 template: text || "",
                 html: html
             }, (error, response) => {
-                console.log(error)
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
