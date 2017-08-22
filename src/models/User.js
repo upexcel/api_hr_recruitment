@@ -120,6 +120,9 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     user_activity.find().exec()
                         .then((data) => {
+                            if(!data.length){
+                                resolve()
+                            }
                             _.forEach(data, (val, key) => {
                                 val.get('action').reverse()
                                 val.get('json').reverse()

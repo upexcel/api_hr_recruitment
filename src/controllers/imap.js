@@ -25,9 +25,7 @@ export class ImapController extends BaseAPIController {
                                 dataValues.total_emails = connection.messages.total;
                                 db.Imap.create(dataValues)
                                     .then((data) => {
-                                        res.json({
-                                            data
-                                        })
+                                        this.handleSuccessResponse(req, res, next, data)
                                     })
                                     .catch(this.handleErrorResponse.bind(null, res))
                             })
