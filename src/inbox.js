@@ -14,7 +14,7 @@ var MailParser = require("mailparser").MailParser;
 
 
 module.exports = {
-    fetchEmail: function(email, apiCall) {
+    fetchEmail: function(email, logs, apiCall) {
         return new Promise((resolve, reject) => {
             db.Imap.findAll({
                 where: {
@@ -39,7 +39,7 @@ module.exports = {
                                                 } else if (results) {
                                                     let UID_arr = [];
                                                     email.find({ imap_email: val.dataValues.email }).sort({
-                                                        _id: -1
+                                                        email_timestamp: -1
                                                     }).limit(1).exec(function(err, resp) {
                                                         if (err) {
                                                             console.log(err);
@@ -50,7 +50,7 @@ module.exports = {
                                                                 var row = resp[0];
                                                                 var Last_UID = row.get("uid");
                                                                 _.forEach(results, (val) => {
-                                                                    if (val >= Last_UID) {
+                                                                    if (val > Last_UID) {
                                                                         UID_arr.push(val);
                                                                     }
                                                                 });
@@ -119,7 +119,7 @@ module.exports = {
                                                                             answered = in_array("\\Answered", flag);
 
                                                                         parser.once("end", function() {
-                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, true)
+                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
                                                                                         email_timestamp = new Date().getTime()
@@ -189,6 +189,7 @@ module.exports = {
                                                                 });
                                                             } else {
                                                                 console.log("Nothing To fetch")
+                                                                resolve({ message: "Nothing To fetch" })
                                                             }
                                                         }
                                                     });
@@ -238,7 +239,7 @@ module.exports = {
                                             date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
                                             dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
                                         }
-                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email:val.email } })
+                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
                                             .then((last_updated_time) => { console.log("last time updated") })
                                         imap.search(['ALL', ['SINCE', dateFrom],
                                             ['BEFORE', date]
@@ -316,7 +317,7 @@ module.exports = {
                                                         var unread = !(in_array('\\Seen', flag)),
                                                             answered = in_array("\\Answered", flag);
                                                         parser.once("end", function() {
-                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false)
+                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
                                                                 .then((tag) => {
                                                                     count--;
                                                                     if (tag.tagId.length || tag.default_tag_id) {

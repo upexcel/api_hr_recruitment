@@ -13,7 +13,7 @@ export class UserController extends BaseAPIController {
                 if ((user_type == allowed_role.admin || user_type == allowed_role.hr || user_type == allowed_role.guest) && (req.user.id)) {
                     this._db.User.create(user)
                         .then((data) => {
-                            this.handleSuccessResponse(req, res, next, { data: data })
+                            this.handleSuccessResponse(req, res, next, data)
                         }, (err) => {
                             throw new Error(res.json(400, {
                                 error: 1,
@@ -63,7 +63,6 @@ export class UserController extends BaseAPIController {
     logs = (req, res, next) => {
         this._db.User.logs(req.user_activity)
             .then((data) => {
-                console.log(data);
                 this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data })
             })
             .catch(this.handleErrorResponse.bind(null, res));

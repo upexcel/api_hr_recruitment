@@ -16,15 +16,15 @@ const userActivityLogs = (req, response) => {
                 }
             })
             if (api_log_record) {
-                response = response.data ? response.data.dataValues : response.dataValues;
+                let data = response;
+                response = response.data ? response.data : response.dataValues;
                 req.user_activity.findOne({ email: req.user.email }).exec(function(err, result) {
-                    let history = { time: new Date(), requested_api: req.originalUrl, sucsess_response_json: response }
                     if (result) {
-                        req.user_activity.update({ "email": req.user.email }, { "$push": { "action": req.originalUrl.toString(), "time": new Date().toString(), "json": response } }).exec(function(err, result) {
+                        req.user_activity.update({ "email": req.user.email }, { "$push": { "action": req.originalUrl.toString(), "time": new Date().toString(), "json": response || data} }).exec(function(err, result) {
                             resolve("sucess")
                         })
                     } else {
-                        var activity = new req.user_activity({ "email": req.user.email, "action": [req.originalUrl.toString()], time: [new Date().toString()], json: [response] })
+                        var activity = new req.user_activity({ "email": req.user.email, "action": [req.originalUrl.toString()], time: [new Date().toString()], json: [response || data] })
                         activity.save(function(err, result) {
                             resolve("sucess")
                         })

@@ -25,11 +25,10 @@ module.exports = {
                 template: text || "",
                 html: html
             }, (error, response) => {
-                console.log(error)
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
-                    resolve({ message: "messsage send successfully", status: 1 });
+                    resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
                 }
                 mailer.close();
             });
