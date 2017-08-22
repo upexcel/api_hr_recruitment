@@ -316,7 +316,7 @@ module.exports = {
                                                         var unread = !(in_array('\\Seen', flag)),
                                                             answered = in_array("\\Answered", flag);
                                                         parser.once("end", function() {
-                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false)
+                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
                                                                 .then((tag) => {
                                                                     count--;
                                                                     if (tag.tagId.length || tag.default_tag_id) {

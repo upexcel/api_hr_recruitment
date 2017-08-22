@@ -41,6 +41,9 @@ export default (app) => {
     /*getting email logs*/
     app.route("/get/email/logs/:page/:limit").get(auth.requiresAdmin, fetch_email.logs)
 
+    /*searching email logs*/
+    app.route("/search/email/logs/:email/:page/:limit").get(auth.requiresAdmin, fetch_email.searchLogs)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

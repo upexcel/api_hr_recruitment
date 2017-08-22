@@ -168,7 +168,19 @@ export class FetchController extends BaseAPIController {
         req.emailLogs.find().sort({ _id: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec()
             .then((result) => {
                 req.emailLogs.count().exec()
-                    .then((count)=>{
+                    .then((count) => {
+                        this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
+                    })
+            })
+            .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
+    }
+
+    searchLogs = (req, res, next) => {
+        let { page, email, limit } = req.params;
+        req.emailLogs.find({ email: { "$regex": email } }).sort({ _id: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec()
+            .then((result) => {
+                req.emailLogs.count({ email: { "$regex": email } }).exec()
+                    .then((count) => {
                         this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
                     })
             })

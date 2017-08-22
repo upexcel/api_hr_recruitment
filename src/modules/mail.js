@@ -29,7 +29,7 @@ module.exports = {
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
-                    resolve({ message: "messsage send successfully", status: 1, email_response: response });
+                    resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
                 }
                 mailer.close();
             });
