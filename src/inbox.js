@@ -321,7 +321,7 @@ module.exports = {
                                                                 .then((tag) => {
                                                                     count--;
                                                                     if (tag.tagId.length || tag.default_tag_id) {
-                                                                        email_timestamp = new Date().getTime()
+                                                                        email_timestamp = new Date(date).getTime()
                                                                     }
                                                                     email.findOne({
                                                                         uid: uid,
