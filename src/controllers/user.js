@@ -43,14 +43,14 @@ export class UserController extends BaseAPIController {
 
     /*controller for user list*/
     list = (req, res, next) => {
-        this._db.User.userFindAll(req.params.page, req.params.limit)
+        this._db.User.userFindAll(req.user, req.params.page, req.params.limit)
             .then((data) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data }) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
 
     /*Controller for user delete*/
     deleteUser = (req, res, next) => {
-        this._db.User.userDelete(req.params.id)
+        this._db.User.userDelete(req.user, req.params.id)
             .then((data) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data }) })
             .catch(this.handleErrorResponse.bind(null, res));
     }
