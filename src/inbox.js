@@ -122,7 +122,7 @@ module.exports = {
                                                                             automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
-                                                                                        email_timestamp = new Date().getTime()
+                                                                                        date = new Date(date).getTime()
                                                                                     }
                                                                                     email.findOne({
                                                                                         uid: uid,
@@ -321,7 +321,7 @@ module.exports = {
                                                                 .then((tag) => {
                                                                     count--;
                                                                     if (tag.tagId.length || tag.default_tag_id) {
-                                                                        email_timestamp = new Date().getTime()
+                                                                        email_timestamp = new Date(date).getTime()
                                                                     }
                                                                     email.findOne({
                                                                         uid: uid,

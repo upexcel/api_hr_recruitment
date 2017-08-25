@@ -95,9 +95,10 @@ export default function(sequelize, DataTypes) {
                         }, (err) => { reject(err) })
                 })
             },
-            userFindAll(page, limit) {
+            userFindAll(user, page, limit) {
                 return new Promise((resolve, reject) => {
                     this.findAll({
+                            where: { id: { $ne: user.id } },
                             offset: (page - 1) * parseInt(limit),
                             limit: parseInt(limit),
                             order: '`id` DESC'
@@ -107,9 +108,9 @@ export default function(sequelize, DataTypes) {
                         }, (err) => { reject({ error: 1, message: err, data: [] }) })
                 })
             },
-            userDelete(id) {
+            userDelete(user, id) {
                 return new Promise((resolve, reject) => {
-                    this.destroy({ where: { id: id } })
+                    this.destroy({ where: { id: id, $and: { id: { "$ne": user.id } } } })
                         .then((response) => {
                             resolve(response)
                         })
@@ -120,7 +121,7 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     user_activity.find().exec()
                         .then((data) => {
-                            if(!data.length){
+                            if (!data.length) {
                                 resolve()
                             }
                             _.forEach(data, (val, key) => {

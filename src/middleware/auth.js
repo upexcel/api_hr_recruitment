@@ -11,7 +11,7 @@ export class AuthController {
         if (token) {
             jwt.verify(token, "secret_key", (err, docs) => {
                 if (err) {
-                    next(res.status(400).send({ error: "Invalid Token" }));
+                    next(res.status(401).send({ error: "Invalid Token" }));
                 } else {
                     const endTime = moment().unix();
                     const loginTime = docs.exp;
@@ -39,7 +39,7 @@ export class AuthController {
         if (token) {
             jwt.verify(token, "secret_key", (err, docs) => {
                 if (err) {
-                    next(res.status(400).send({ message: "Invalid Token" }));
+                    next(res.status(401).send({ message: "Invalid Token" }));
                 } else {
                     const endTime = moment().unix();
                     const loginTime = docs.exp;
@@ -67,7 +67,7 @@ export class AuthController {
             if (token) {
                 jwt.verify(token, "secret_key", (err, docs) => {
                     if (err) {
-                        next(res.status(400).send({ message: "Invalid Token" }));
+                        next(res.status(401).send({ message: "Invalid Token" }));
                     } else {
                         const endTime = moment().unix();
                         const loginTime = docs.exp;
