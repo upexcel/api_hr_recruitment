@@ -32,7 +32,7 @@ export default function() {
         old_emails_fetch_days_count: 15,
         registration_message: " <br> your registration_id is:-",
         ignored_api_log_list: ["/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate", "/user/log", "/get/email/logs", "/search/email/logs", "/get/shedule"],
-        office_location: { long: 28.5960803, lat: 77.3282479 },
+        office_location: { long: 28.5960769, lat: 77.3277893 },
         app_hr_contact_email: "hr@excellencetechnologies.in",
         app_hr_contact_number: "+91-9811065469",
     };
