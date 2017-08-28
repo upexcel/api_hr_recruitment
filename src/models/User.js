@@ -66,7 +66,8 @@ export default function(sequelize, DataTypes) {
                                 });
                                 resolve({
                                     status: 1,
-                                    token
+                                    token,
+                                    role:details.user_type
                                 });
                             } else {
                                 reject("Invalid Login Details");
