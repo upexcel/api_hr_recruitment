@@ -1,4 +1,4 @@
-loimport fetch_email from "../controllers/fetchEmail";
+import fetch_email from "../controllers/fetchEmail";
 import auth from "../middleware/auth";
 
 export default (app) => {
