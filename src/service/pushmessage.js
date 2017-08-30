@@ -9,13 +9,16 @@ let pushMessage = (device_info, information) => {
             to: device_info.token, // required fill with device token or topics
             notification: {
                 title: constant().push_notification_message,
-                body: information
+                body: information,
+                icon: 'ic_launcher',
+                sound:'default'
             },
             data: {
                 body: {
                     status: 1
                 }
-            }
+            },
+            priority:'high'
         };
         fcm.send(message, function(err, response) {
             if (err) {
