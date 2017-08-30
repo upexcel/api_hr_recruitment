@@ -783,7 +783,7 @@ let app_get_candidate = (email, registration_id) => {
         })
         email.findOne({ shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1, "registration_id": 1, "sender_mail": 1 }).exec(function(err, response) {
             if (err) {
-                reject({ error: 1, message: err, data: [] })
+                reject({ error: 1, message: "Invalid Registration Id", data: [] })
             } else {
                 if (response) {
                     _.each(constant().shedule_for, (val, key) => {
