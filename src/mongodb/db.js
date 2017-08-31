@@ -33,7 +33,8 @@ module.exports = function() {
         shedule_time: { type: String },
         push_message: { type: Array },
         push_status: { type: Boolean },
-        registration_id: { type: Number }
+        registration_id: { type: Number },
+        mobile_no: { type: String }
     }, {
         collection: "emailStored",
         strict: true,
