@@ -29,6 +29,20 @@ export class DeviceController extends BaseAPIController {
                 }));
             })
     }
+
+    updateMobile = (req, res, next) => {
+        req.email.update({ "email": req.body.email_id, registration_id: req.body.registration_id }, { "mobile_no": req.mobile_no }).exec(function(err, response) {
+            if (err) {
+                res.json({
+                    error: 1,
+                    message: err,
+                    data: []
+                })
+            }else{
+                this.handleSuccessResponse(req, res, next, { error: 0, message: 'success' })
+            }
+        })
+    }
 }
 
 const controller = new DeviceController();
