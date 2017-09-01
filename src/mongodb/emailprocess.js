@@ -245,14 +245,14 @@ let assignMultiple = (tag_id, body, email) => {
                     if (data.type == constant().tagType.default && body.shedule_for) {
                         if (body.shedule_for == constant().shedule_for[0].value) {
                             var registration_id = Math.floor((Math.random() * 1000 * 1000) + Math.random() * 10000);
-                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id }
+                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id }
                         } else {
-                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
                         }
                     } else if (data.type == constant().tagType.default) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
+                        where = { "default_tag": tag_id.toString(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
                     } else {
-                        where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                        where = { "$addToSet": { "tag_id": tag_id.toString() } };
                     }
                     email.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec((err) => {
                         if (err) {
