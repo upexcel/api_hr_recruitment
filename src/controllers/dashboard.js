@@ -4,7 +4,6 @@ import dashboard_service from "../service/dashboard";
 export class DashboardController extends BaseAPIController {
     getDashboard = (req, res, next) => {
         dashboard_service.dashboard(this._db, req).then((response) => {
-                console.log(response)
                 res.json(response)
             })
             .catch(this.handleErrorResponse.bind(null, res))

@@ -56,7 +56,6 @@ let dashboard = (db, req) => {
                         } else {
                             job_profile_data.push({ profile: profile_stat, title: profile.title });
                             profile_stat = {};
-                            console.log(job_profile_data)
                             callback(job_profile_data)
                         }
                     }
