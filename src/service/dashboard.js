@@ -49,10 +49,13 @@ let dashboard = (db, req) => {
                     all_count -= count;
                     profile_stat["All"] = all_count;
                     if (key == default_tag.length - 1) {
-                        job_profile_data.push({ profile: profile_stat, title: profile.title })
                         if (job_profile.length) {
+                            job_profile_data.push({ profile: profile_stat, title: profile.title });
+                            profile_stat = {};
                             findJobProfileCount(job_profile, default_tag, callback)
                         } else {
+                            job_profile_data.push({ profile: profile_stat, title: profile.title });
+                            profile_stat = {};
                             callback(job_profile_data)
                         }
                     }
