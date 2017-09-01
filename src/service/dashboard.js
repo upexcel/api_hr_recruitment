@@ -35,7 +35,7 @@ let dashboard = (db, req) => {
 
         function findJobProfileCount(job_profile, default_tag, callback) {
             let profile = job_profile.splice(0, 1)[0];
-            req.email.find({ tag_id: profile.id.toString() }, { default_tag: 1 }).exec(function(err, email) {
+            req.email.find({ tag_id: { "$in": [profile.id.toString()] } }, { default_tag: 1 }).exec(function(err, email) {
                 let all_count = email.length;
                 _.forEach(default_tag, (val, key) => {
                     let count = 0;
