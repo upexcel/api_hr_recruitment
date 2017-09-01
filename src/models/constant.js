@@ -36,7 +36,8 @@ export default function() {
         app_hr_contact_email: "hr@excellencetechnologies.in",
         app_hr_contact_number: "+91-9811065469",
         tag_type: ["Default", "Manual", "Automatic"],
-        user_type: ["Admin", "Guest", "HR"]
+        user_type: ["Admin", "Guest", "HR"],
+        app_custom_link : "<br><br>https://x6vm.app.link/7uI9fxvv3F?%24deeplink_path="
     };
     return constant;
 }
