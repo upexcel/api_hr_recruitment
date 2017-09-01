@@ -259,7 +259,7 @@ let assignMultiple = (tag_id, body, email) => {
                             reject(err);
                         } else {
                             if (data.type == constant().tagType.default && body.shedule_for) {
-                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1 }).exec(function(err, response) {
+                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1 }).exec(function(err, response) {
                                     db.Template.findById(body.tamplate_id)
                                         .then((template) => {
                                             replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
@@ -275,6 +275,8 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     data: response
                                                                 })
                                                             }
+                                                            let custom_link = constant().app_custom_link + response.registration_id || registration_id;
+                                                            replaced_data += custom_link;
                                                             mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
