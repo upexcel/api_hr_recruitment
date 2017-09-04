@@ -22,7 +22,6 @@ export class ImapController extends BaseAPIController {
                     .then((imap) => {
                         imapService.imapConnection(imap)
                             .then((connection) => {
-                                console.log(connection)
                                 dataValues.total_emails = connection.messages.total;
                                 db.Imap.create(dataValues)
                                     .then((data) => {
