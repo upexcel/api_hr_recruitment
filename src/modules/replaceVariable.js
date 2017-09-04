@@ -5,7 +5,6 @@ let date = new Date().getDate() + "-" + (new Date().getMonth() + 1) + "-" + new 
 module.exports = {
     filter: function(body, name, tagId) {
         return new Promise((resolve, reject) => {
-            console.log(name)
             db.Tag.findOne({ where: { id: tagId } })
                 .then((tag) => {
                     if (tag) {

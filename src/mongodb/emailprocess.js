@@ -275,6 +275,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     data: response
                                                                 })
                                                             }
+                                                            template.subject += " On Dated " + body.shedule_date + " At "+ body.shedule_time;
                                                             let custom_link = constant().app_custom_link + response.registration_id || registration_id;
                                                             replaced_data += custom_link;
                                                             mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
