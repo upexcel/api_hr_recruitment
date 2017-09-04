@@ -181,7 +181,10 @@ export class FetchController extends BaseAPIController {
             .then((result) => {
                 req.emailLogs.count({ email: { "$regex": email } }).exec()
                     .then((count) => {
-                        this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
+                        if (count)
+                            this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
+                        else
+                            this.handleSuccessResponse(req, res, next, { error: 0, message: "No Result Found", data: [], count: count })
                     })
             })
             .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
