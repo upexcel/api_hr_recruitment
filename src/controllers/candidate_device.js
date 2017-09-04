@@ -39,7 +39,7 @@ export class DeviceController extends BaseAPIController {
                     data: []
                 })
             } else {
-                res.json({ error: 0, message: 'success' })
+                res.json({ error: 0, message: 'Mobile Number Updated' })
             }
         })
     }

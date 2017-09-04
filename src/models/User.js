@@ -67,7 +67,7 @@ export default function(sequelize, DataTypes) {
                                 resolve({
                                     status: 1,
                                     token,
-                                    role:details.user_type
+                                    role: details.user_type
                                 });
                             } else {
                                 reject("Invalid Login Details");
@@ -118,21 +118,12 @@ export default function(sequelize, DataTypes) {
                         .catch((err) => { reject({ error: 1, messgae: "User Not Found" }) })
                 })
             },
-            logs(user_activity) {
+            logs(user_activity, email) {
+                console.log(email)
                 return new Promise((resolve, reject) => {
-                    user_activity.find().exec()
+                    user_activity.find({ email: email }).exec()
                         .then((data) => {
-                            if (!data.length) {
-                                resolve()
-                            }
-                            _.forEach(data, (val, key) => {
-                                val.get('action').reverse()
-                                val.get('json').reverse()
-                                val.get('time').reverse()
-                                if (key == data.length - 1) {
-                                    resolve(data)
-                                }
-                            })
+                            resolve(data)
                         })
                 });
             }
