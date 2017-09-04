@@ -64,7 +64,10 @@ export class UserController extends BaseAPIController {
         let email = req.params.email_id;
         this._db.User.logs(req.user_activity, email)
             .then((data) => {
-                this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data })
+                if (data.length)
+                    this.handleSuccessResponse(req, res, next, { error: 0, message: "success", data: data })
+                else
+                    this.handleSuccessResponse(req, res, next, { error: 0, message: "No Logs Found", data: data })
             })
             .catch(this.handleErrorResponse.bind(null, res));
     }

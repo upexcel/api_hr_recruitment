@@ -123,9 +123,7 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     user_activity.find({ email: email }).exec()
                         .then((data) => {
-                            if(data.length){
-                                resolve(data)
-                            }
+                            resolve(data)
                         })
                 });
             }
