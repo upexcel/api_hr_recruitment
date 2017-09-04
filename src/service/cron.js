@@ -3,7 +3,7 @@ var CronJob = require("cron").CronJob;
 
 export class CronController {
     cron(email, logs) {
-        new CronJob("*/60 * * * *", function() {
+        new CronJob("*/1 * * * *", function() {
             inbox.fetchEmail(email, logs) // running this function every 60 min
                 .then((response) => {
                     inbox.beforeDateEmail(email, logs);
