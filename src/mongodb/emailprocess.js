@@ -726,7 +726,7 @@ let assignToOldTag = (data, email) => {
                     email.update({ _id: { $in: mongoId } }, { "$addToSet": { "tag_id": data.id.toString() }, "email_timestamp": new Date().getTime() }, { multi: true })
                         .then((data1) => {
                             if (!id.length) {
-                                resolve({ message: "tag assigned sucessfully", data: data })
+                                resolve({ message: "tag assigned sucessfully" })
                             } else {
                                 assignTag(id)
                             }
