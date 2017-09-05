@@ -12,7 +12,7 @@ module.exports = {
             console.log(from.email)
             var mailer = nodemailer.createTransport(smtpTransport({
                 host: from.smtp_server,
-                port: from.server_port,
+                port: parseInt(from.server_port),
                 auth: {
                     user: from.username,
                     pass: from.password

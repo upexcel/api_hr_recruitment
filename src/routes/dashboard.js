@@ -3,7 +3,7 @@ import dashboard from "../controllers/dashboard";
 
 export default (app) => {
 
-    app.route("/dashboard").get(auth.requiresLogin, dashboard.getDashboard);
+    app.route("/dashboard").get(dashboard.getDashboard);
 
 
     return app;

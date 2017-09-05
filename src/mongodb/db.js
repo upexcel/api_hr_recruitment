@@ -34,7 +34,8 @@ module.exports = function() {
         push_message: { type: Array },
         push_status: { type: Boolean },
         registration_id: { type: Number },
-        mobile_no: { type: String }
+        mobile_no: { type: String },
+        updated_time:{type :Date}
     }, {
         collection: "emailStored",
         strict: true,
