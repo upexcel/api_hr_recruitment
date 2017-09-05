@@ -1,159 +1,207 @@
 import constant from '../models/constant';
 import _ from "lodash";
+import moment from "moment";
 
 let dashboard = (db, req) => {
     return new Promise((resolve, reject) => {
-        let profile_stat = {};
-        let job_profile_data = [];
-        let imap_records = [];
-        let tagData = {};
-        let userData = {};
-        let emailLogData = [];
+        let months = []
+        let month_days = []
+        let day_wise_data = []
+        let month_wise_stats = []
+        let round_data = []
+        let rounds = []
         db.Tag.findAll({ where: { "is_job_profile_tag": 1 } }).then((job_profile) => {
-            db.Tag.findAll({ where: { type: "Default" } }).then((default_tag) => {
-                findJobProfileCount(job_profile, default_tag, function(profile_response) {
-                    findEmailcount(function(inbox) {
-                        db.Imap.findAll({}).then((imap_list) => {
-                            findImapData(imap_list, function(imap_stat) {
-                                db.Tag.findAll({}).then((tag_data) => {
-                                    findTagCount(tag_data, function(tag_stat) {
-                                        db.User.findAll({}).then((user_data) => {
-                                            findUserData(user_data, function(user_stat) {
-                                                findEmailLogCount(user_data, function(email_stat) {
-                                                    resolve({ profile: profile_response, inbox: inbox, imap: imap_stat, tag: tag_stat, user: user_stat, email: email_stat })
-                                                })
-                                            })
-                                        })
-                                    })
-                                })
-                            })
-                        })
+            findJobProfileStat(job_profile, function(job_profile_response) {
+                findEmailStats(function(email_per_day_stat) {
+                    job_profile_response["email_stat"] = email_per_day_stat;
+                    candidateSelectionPerMonth(function(selected_candidate_stats) {
+                        job_profile_response["selected_candidate"] = selected_candidate_stats
+                        resolve(job_profile_response)
                     })
                 })
             })
         })
 
-        function findJobProfileCount(job_profile, default_tag, callback) {
+
+        function findJobProfileStat(job_profile, callback) {
             let profile = job_profile.splice(0, 1)[0];
-            req.email.find({ tag_id: profile.id.toString() }, { default_tag: 1 }).exec(function(err, email) {
-                let all_count = email.length;
-                _.forEach(default_tag, (val, key) => {
-                    let count = 0;
-                    _.forEach(email, (val1, key1) => {
-                        if (val1.default_tag == val.id) {
-                            profile_stat[val.title] = ++count;
-                        } else {
-                            profile_stat[val.title] = count
+            let dateTime = new Date();
+            let start = moment(dateTime).add(1, 'days').format("YYYY-MM-DD");
+            let end = moment(start).subtract(1, 'months').format("YYYY-MM-DD");
+            req.email.find({ tag_id: profile.id.toString(), date: { "$gte": end, "$lt": start } }, { date: 1 }).exec(function(err, response) {
+                let day_data = {}
+                let count = 0
+                let data = []
+                month_days = []
+                start = moment(start).subtract(1, 'days').format("YYYY-MM-DD")
+                findMonthDates(start, end, function(dates) {
+                    monthWiseData(profile, function(month_wise_data) {
+                        roundDistribution(profile, function(rounds_description) {
+                            _.forEach(dates, (val, key) => {
+                                count = 0
+                                _.forEach(response, (val1, key1) => {
+                                    if (moment(val).format("YYYY-MM-DD") == moment(val1.date).format("YYYY-MM-DD")) {
+                                        count++
+                                    }
+                                    if (key1 == response.length - 1) {
+                                        data.push(count)
+                                    }
+                                })
+                                if (key == dates.length - 1) {
+                                    if (job_profile.length) {
+                                        day_wise_data.push({ data: data, label: profile.title, dates: dates })
+                                        findJobProfileStat(job_profile, callback)
+                                    } else {
+                                        day_wise_data.push({ data: data, label: profile.title, dates: dates })
+                                        callback({ day_wise: day_wise_data, month_wise: month_wise_data, rounds: rounds_description })
+                                    }
+                                }
+                            })
+                        })
+                    })
+                })
+            })
+        }
+
+        function findMonthDates(start, end, callback) {
+            if (new Date(start) > new Date(end)) {
+                month_days.push(moment(end).format("YYYY-MM-DD"))
+                end = moment(end).add(1, 'days');
+                findMonthDates(start, end, callback)
+            } else {
+                callback(month_days)
+            }
+        }
+
+        function getMonthData(start, end, callback) {
+            if (new Date(end).getMonth() <= new Date(start).getMonth()) {
+                months.push(new Date(end).getMonth());
+                end = moment(end).add(1, 'months').format("YYYY-MM-DD");
+                getMonthData(start, end, callback)
+            } else {
+                callback(months)
+            }
+        }
+
+        function monthWiseData(profile, callback) {
+            let year = new Date().getFullYear()
+            let start = moment(new Date()).format("YYYY-MM-DD");
+            let end = moment(new Date(year, 0, 1)).format("YYYY-MM-DD");
+            let count = 0;
+            let month_data = []
+            let month = []
+            months = []
+            req.email.find({ tag_id: profile.id.toString(), date: { "$gte": end, "$lt": start } }, { date: 1 }).exec(function(err, response) {
+                getMonthData(start, end, function(month_details) {
+                    _.forEach(month_details, (val, key) => {
+                        count = 0
+                        month.push(constant().months_list[val])
+                        _.forEach(response, (val1, key1) => {
+                            if (val1.date.getMonth() == val) {
+                                count++
+                            }
+                            if (key1 == response.length - 1) {
+                                month_data.push(count)
+                            }
+                        })
+                        if (key == month_details.length - 1) {
+                            month_wise_stats.push({ data: month_data, label: profile.title, months: month })
+                            callback(month_wise_stats)
                         }
                     })
-                    all_count -= count;
-                    profile_stat["All"] = all_count;
-                    if (key == default_tag.length - 1) {
-                        if (job_profile.length) {
-                            job_profile_data.push({ profile: profile_stat, title: profile.title });
-                            profile_stat = {};
-                            findJobProfileCount(job_profile, default_tag, callback)
-                        } else {
-                            job_profile_data.push({ profile: profile_stat, title: profile.title });
-                            profile_stat = {};
-                            callback(job_profile_data)
+                })
+            })
+        }
+
+        function roundDistribution(profile, callback) {
+            let count = 0
+            let data = []
+            req.email.find({ tag_id: profile.id.toString() }, { shedule_for: 1 }).exec(function(err, job_profile_data) {
+                getRounds(function(round_info) {
+                    _.forEach(constant().shedule_for, (val, key) => {
+                        count = 0
+                        _.forEach(job_profile_data, (val1, key1) => {
+                            if (val.value == val1.shedule_for) {
+                                count++
+                            }
+                            if (key1 == job_profile_data.length - 1) {
+                                data.push(count)
+                            }
+                        })
+                        if (key == constant().shedule_for.length - 1) {
+                            round_data.push({ data: data, label: profile.title, rounds: rounds })
+                            callback(round_data)
                         }
-                    }
+                    })
                 })
             })
         }
 
-        function findEmailcount(callback) {
-            req.email.find({ tag_id: { "$size": 0 } }, { unread: 1 }).exec(function(err, inbox_data) {
-                let unread = 0;
-                _.forEach(inbox_data, (val, key) => {
-                    if (val.unread) {
-                        ++unread;
-                    }
-                    if (key == inbox_data.length - 1) {
-                        callback({ total: inbox_data.length, unread: unread })
-                    }
-                })
-            })
-        }
-
-        function findImapData(imapData, callback) {
-            let imap = imapData.splice(0, 1)[0];
-            findEmailCountByImap(imap, function(email_count) {
-                imap_records.push({ email: imap.email, email_fetched: email_count, total_email: imap.total_emails, date: imap.last_fetched_time });
-                if (imapData.length) {
-                    findImapData(imapData, callback)
-                } else {
-                    callback(imap_records)
+        function getRounds(callback) {
+            _.forEach(constant().shedule_for, (val, key) => {
+                if (rounds.indexOf(val.text) < 0) {
+                    rounds.push(val.text)
+                }
+                if (key == constant().shedule_for.length - 1) {
+                    callback(rounds)
                 }
             })
         }
 
-        function findEmailCountByImap(imap_email, callback) {
-            req.email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
-                callback(data);
-            })
-        }
-
-        function findTagCount(tag_data, callback) {
-            _.forEach(constant().tag_type, (val, key) => {
-                let count = 0;
-                _.forEach(tag_data, (val1, key1) => {
-                    if (val1.type == val) {
-                        ++count
-                    }
-                    if (key1 == tag_data.length - 1) {
-                        tagData[val] = count;
-                    }
-                })
-                if (key == constant().tag_type.length - 1) {
-                    callback(tagData)
-                }
-            })
-        }
-
-        function findUserData(user_data, callback) {
-            _.forEach(constant().user_type, (val, key) => {
-                let count = 0;
-                _.forEach(user_data, (val1, key1) => {
-                    if (val1.user_type == val) {
-                        ++count
-                    }
-                    if (key1 == user_data.length - 1) {
-                        userData[val] = count;
+        function findEmailStats(callback) {
+            let dateTime = new Date();
+            let start = moment(dateTime).add(1, 'days').format("MMM DD, YYYY HH:mm");
+            let end = moment(start).subtract(1, 'months').format("MMM DD, YYYY HH:mm");
+            let email_data = []
+            let count = 0
+            req.emailLogs.find({ time: { "$gte": end, "$lt": start }, user: constant().user }).exec(function(err, email_response) {
+                _.forEach(month_days, (val, key) => {
+                    count = 0
+                    _.forEach(email_response, (val1, key1) => {
+                        if (moment(val).format("YYYY-MM-DD") == moment(val1.get('time')).format("YYYY-MM-DD")) {
+                            count++
+                        }
+                        if (key1 == email_response.length - 1) {
+                            email_data.push(count)
+                            count = 0
+                        }
+                    })
+                    if (key == month_days.length - 1) {
+                        callback([{ label: "Automatic Mails", data: email_data, dates: month_days }])
                     }
                 })
-                if (key == constant().tag_type.length - 1) {
-                    callback(userData)
-                }
             })
         }
 
-        function findEmailLogCount(user_data, callback) {
-            let user = user_data.splice(0, 1)[0];
-            findLogCount(user, function(log_count) {
-                emailLogData.push({ email_send: log_count, user: user.email });
-                if (user_data.length) {
-                    findEmailLogCount(user_data, callback)
-                } else {
-                    callback(emailLogData)
-                }
-            })
-        }
-
-        function findLogCount(user, callback) {
-            let count = 0;
-            req.emailLogs.find({}).exec(function(err, email_log) {
-                _.forEach(email_log, (val, key) => {
-                    if (val.get('user') == user.email) {
-                        count++
-                    }
-                    if (key == email_log.length - 1) {
-                        callback(count)
-                    }
+        function candidateSelectionPerMonth(callback) {
+            db.Tag.findOne({ where: { title: constant().selected, type: constant().tagType.default } })
+                .then((selected_tag_info) => {
+                    let year = new Date().getFullYear()
+                    let start = moment(new Date()).format("MMM DD, YYYY HH:mm");
+                    let end = moment(new Date(year, 0, 1)).format("MMM DD, YYYY HH:mm");
+                    let count = 0;
+                    let selected_count = [];
+                    let month = []
+                    req.email.find({ updated_time: { "$gte": end, "$lt": start }, default_tag: selected_tag_info.id.toString() }, { updated_time: 1 }).exec(function(err, selected_candidate) {
+                        console.log(selected_candidate.length)
+                        _.forEach(months, (val, key) => {
+                            count = 0
+                            month.push(constant().months_list[val])
+                            _.forEach(selected_candidate, (val1, key1) => {
+                                if (val1.updated_time.getMonth() == val) {
+                                    count++
+                                }
+                                if (key1 == selected_candidate.length - 1) {
+                                    selected_count.push(count)
+                                    count = 0
+                                }
+                            })
+                            if (key == months.length - 1) {
+                                callback([{ label: "Selected Candidate", data: selected_count, month: month}])
+                            }
+                        })
+                    })
                 })
-
-            })
         }
     })
 }
