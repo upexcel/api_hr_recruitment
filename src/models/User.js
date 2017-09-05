@@ -119,11 +119,13 @@ export default function(sequelize, DataTypes) {
                 })
             },
             logs(user_activity, email) {
-                console.log(email)
                 return new Promise((resolve, reject) => {
-                    user_activity.find({ email: email }).exec()
+                    user_activity.findOne({ email: email }).exec()
                         .then((data) => {
-                            resolve(data)
+                            data.get('action').reverse()
+                            data.get('time').reverse()
+                            data.get('json').reverse()
+                            resolve([data])
                         })
                 });
             }
