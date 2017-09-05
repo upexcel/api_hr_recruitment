@@ -14,9 +14,12 @@ let dashboard = (db, req) => {
             findJobProfileStat(job_profile, function(job_profile_response) {
                 findEmailStats(function(email_per_day_stat) {
                     job_profile_response["email_stat"] = email_per_day_stat;
-                    candidateSelectionPerMonth(function(selected_candidate_stats) {
-                        job_profile_response["selected_candidate"] = selected_candidate_stats
-                        resolve(job_profile_response)
+                    candidateSelectionPerMonth(function(selected_candidate_stats_month) {
+                        month_wise_stats.push(selected_candidate_stats_month)
+                        candidateSelectionPerDay(function(selected_candidate_stats_date) {
+                            day_wise_data.push(selected_candidate_stats_date)
+                            resolve(job_profile_response)
+                        })
                     })
                 })
             })
@@ -197,12 +200,42 @@ let dashboard = (db, req) => {
                                 }
                             })
                             if (key == months.length - 1) {
-                                callback([{ label: "Selected Candidate", data: selected_count, month: month}])
+                                callback({ label: "Selected Candidate", data: selected_count, months: month })
                             }
                         })
                     })
                 })
         }
+
+
+        function candidateSelectionPerDay(callback) {
+            db.Tag.findOne({ where: { title: constant().selected, type: constant().tagType.default } })
+                .then((selected_tag_info) => {
+                    let dateTime = new Date();
+                    let start = moment(dateTime).add(1, 'days').format("YYYY-MM-DD");
+                    let end = moment(start).subtract(1, 'months').format("YYYY-MM-DD");
+                    let count = 0;
+                    let selected_count = [];
+                    req.email.find({ updated_time: { "$gte": end, "$lt": start }, default_tag: selected_tag_info.id.toString() }, { updated_time: 1 }).exec(function(err, selected_candidate) {
+                        _.forEach(month_days, (val, key) => {
+                            count = 0
+                            _.forEach(selected_candidate, (val1, key1) => {
+                                if (moment(val1.updated_time).format("YYYY-MM-DD") == val) {
+                                    count++
+                                }
+                                if (key1 == selected_candidate.length - 1) {
+                                    selected_count.push(count)
+                                    count = 0
+                                }
+                            })
+                            if (key == month_days.length - 1) {
+                                callback({ label: "Selected Candidate", data: selected_count, dates: month_days })
+                            }
+                        })
+                    })
+                })
+        }
+
     })
 }
 
