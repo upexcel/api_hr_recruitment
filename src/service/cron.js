@@ -1,5 +1,6 @@
-var inbox = require("../inbox");
-var CronJob = require("cron").CronJob;
+let inbox = require("../inbox");
+let CronJob = require("cron").CronJob;
+import service from "../service/reminder"
 
 export class CronController {
     cron(email, logs) {
@@ -8,6 +9,13 @@ export class CronController {
                 .then((response) => {
                     inbox.beforeDateEmail(email, logs);
                 });
+        }, null, true);
+    }
+
+    reminder(email) {
+        new CronJob('00 00 12 * * 1-5', function() {
+            service.reminderMail(email)
+                .then((data) => console.log(data))
         }, null, true);
     }
 }

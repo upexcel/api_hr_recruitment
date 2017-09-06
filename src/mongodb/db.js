@@ -29,13 +29,14 @@ module.exports = function() {
         attachment: { type: Array },
         is_attachment: { type: Boolean },
         shedule_for: { type: String },
-        shedule_date: { type: String },
+        shedule_date: { type: Date },
         shedule_time: { type: String },
         push_message: { type: Array },
         push_status: { type: Boolean },
         registration_id: { type: Number },
         mobile_no: { type: String },
-        updated_time:{type :Date}
+        updated_time: { type: Date },
+        send_template: { type: String }
     }, {
         collection: "emailStored",
         strict: true,
@@ -55,6 +56,7 @@ module.exports = function() {
     let email_logs = conn.model('EMAILLOGS', emailLogs)
 
     cronService.cron(email, email_logs)
+    cronService.reminder(email)
     return function(req, res, next) {
         req.email = email;
         req.user_activity = user_activity;

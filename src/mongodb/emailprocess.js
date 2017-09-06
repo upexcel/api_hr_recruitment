@@ -245,9 +245,9 @@ let assignMultiple = (tag_id, body, email) => {
                     if (data.type == constant().tagType.default && body.shedule_for) {
                         if (body.shedule_for == constant().shedule_for[0].value) {
                             var registration_id = Math.floor((Math.random() * 1000 * 1000) + Math.random() * 10000);
-                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id, mobile_no: body.mobile_no, updated_time: new Date() }
+                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id, mobile_no: body.mobile_no, updated_time: new Date(), send_template: body.tamplate_id }
                         } else {
-                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, mobile_no: body.mobile_no, updated_time: new Date() }
+                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, mobile_no: body.mobile_no, updated_time: new Date(), send_template: body.tamplate_id }
                         }
                     } else if (data.type == constant().tagType.default) {
                         where = { "default_tag": tag_id.toString(), "shedule_for": "", "shedule_date": "", "shedule_time": "", updated_time: new Date() };
@@ -786,7 +786,7 @@ let app_get_candidate = (email, registration_id) => {
         })
         email.findOne({ shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1, "registration_id": 1, "sender_mail": 1, "mobile_no": 1 }).exec(function(err, response) {
             if (err) {
-                reject({ error: 1, message: "Invalid Registration Id", data: [] })
+                reject({ error: 1, message: "Invalid Registration Number", data: [] })
             } else {
                 if (response) {
                     _.each(constant().shedule_for, (val, key) => {
@@ -800,7 +800,7 @@ let app_get_candidate = (email, registration_id) => {
                         }
                     })
                 } else {
-                    reject({ error: 1, message: "Invalid Registration Id", data: [] })
+                    reject({ error: 1, message: "Invalid Registration Number", data: [] })
                 }
             }
         })
