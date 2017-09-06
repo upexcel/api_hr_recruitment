@@ -800,7 +800,7 @@ let app_get_candidate = (email, registration_id) => {
                         }
                     })
                 } else {
-                    reject({ error: 1, message: "No data Found", data: [] })
+                    reject({ error: 1, message: "Invalid Registration Id", data: [] })
                 }
             }
         })
