@@ -40,7 +40,8 @@ export default function() {
         app_custom_link: "<br><br>https://x6vm.app.link/7uI9fxvv3F?%24deeplink_path=",
         months_list: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         user: "By Cron",
-        selected: "Selected"
+        selected: "Selected",
+        reminder: "Reminder Email, Your Interview is Scheduled On"
     };
     return constant;
 }
