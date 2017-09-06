@@ -13,7 +13,7 @@ export class CronController {
     }
 
     reminder(email) {
-        new CronJob('00 00 18 * * 1-7', function() { // cron is running every day at 12:00 PM
+        new CronJob('00 00 18 * * 1-7', function() { // cron is running every day at 06:00 PM
             service.reminderMail(email)
                 .then((data) => console.log(data))
         }, null, true);
