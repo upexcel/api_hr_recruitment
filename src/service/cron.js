@@ -13,7 +13,7 @@ export class CronController {
     }
 
     reminder(email) {
-        new CronJob('00 00 12 * * 1-5', function() {
+        new CronJob('00 00 12 * * 1-7', function() {
             service.reminderMail(email)
                 .then((data) => console.log(data))
         }, null, true);
