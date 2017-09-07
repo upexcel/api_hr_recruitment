@@ -806,6 +806,26 @@ let app_get_candidate = (email, registration_id) => {
         })
     })
 }
+
+let checkEmailStatus = (req) => {
+    return new Promise((resolve, reject) => {
+        let rounds = [];
+        let flag = 0
+        _.forEach(constant().shedule_for, (val, key) => {
+            rounds.push(val.value)
+        })
+        req.email.findOne({ sender_mail: req.body.email, shedule_for: { $in: rounds } }, { "shedule_for": 1 }).exec(function(err, email_data) {
+            if (err) {
+                reject(err)
+            } else if (!email_data) {
+                flag++
+            } else if (email_data._id == req.body.mongo_id) {
+                flag++
+            }
+            resolve({ flag: flag, message: flag ? "" : "Candidate is Already Sheduled" })
+        })
+    })
+}
 export default {
     fetchEmail,
     findcount,
@@ -819,5 +839,6 @@ export default {
     getShedule,
     assignToOldTag,
     getFetchedMailCount,
-    app_get_candidate
+    app_get_candidate,
+    checkEmailStatus
 }

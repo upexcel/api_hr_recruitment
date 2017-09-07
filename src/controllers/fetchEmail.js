@@ -189,6 +189,12 @@ export class FetchController extends BaseAPIController {
             })
             .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
     }
+
+    emailStatus = (req, res, next) => {
+        email_process.checkEmailStatus(req)
+            .then((response) => this.handleSuccessResponse(req, res, next, response))
+            .catch(this.handleErrorResponse.bind(null, res))
+    }
 }
 
 const controller = new FetchController();
