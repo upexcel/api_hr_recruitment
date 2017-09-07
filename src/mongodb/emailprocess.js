@@ -814,7 +814,7 @@ let checkEmailStatus = (req) => {
         _.forEach(constant().shedule_for, (val, key) => {
             rounds.push(val.value)
         })
-        req.email.findOne({ sender_mail: req.body.email, shedule_for: { $in: rounds } }, { "shedule_for": 1 }).exec(function(err, email_data) {
+        req.email.findOne({ sender_mail: req.body.email, tag_id: req.body.tag_id.toString(), shedule_for: { $in: rounds } }, { "shedule_for": 1 }).exec(function(err, email_data) {
             if (err) {
                 reject(err)
             } else if (!email_data) {
