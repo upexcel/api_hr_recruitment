@@ -191,20 +191,9 @@ export class FetchController extends BaseAPIController {
     }
 
     emailStatus = (req, res, next) => {
-        let rounds = [];
-        let flag = 0
-        _.forEach(constant().shedule_for, (val, key) => {
-            rounds.push(val.value)
-        })
-        req.email.findOne({ sender_mail: req.body.email, shedule_for: { $in: rounds } }, { "shedule_for": 1 }).exec(function(err, email_data) {
-            if (!email_data) {
-                flag++
-            } else if (email_data._id == req.body.mongo_id) {
-                flag++
-            }
-
-            res.json({ flag: flag, message: flag ? "" : "Candidate is Already Sheduled" })
-        })
+        email_process.checkEmailStatus(req)
+            .then((response) => this.handleSuccessResponse(req, res, next, response))
+            .catch(this.handleErrorResponse.bind(null, res))
     }
 }
 
