@@ -66,7 +66,8 @@ export default function(sequelize, DataTypes) {
                                 });
                                 resolve({
                                     status: 1,
-                                    token
+                                    token,
+                                    role: details.user_type
                                 });
                             } else {
                                 reject("Invalid Login Details");
@@ -95,9 +96,10 @@ export default function(sequelize, DataTypes) {
                         }, (err) => { reject(err) })
                 })
             },
-            userFindAll(page, limit) {
+            userFindAll(user, page, limit) {
                 return new Promise((resolve, reject) => {
                     this.findAll({
+                            where: { id: { $ne: user.id } },
                             offset: (page - 1) * parseInt(limit),
                             limit: parseInt(limit),
                             order: '`id` DESC'
@@ -107,30 +109,23 @@ export default function(sequelize, DataTypes) {
                         }, (err) => { reject({ error: 1, message: err, data: [] }) })
                 })
             },
-            userDelete(id) {
+            userDelete(user, id) {
                 return new Promise((resolve, reject) => {
-                    this.destroy({ where: { id: id } })
+                    this.destroy({ where: { id: id, $and: { id: { "$ne": user.id } } } })
                         .then((response) => {
                             resolve(response)
                         })
                         .catch((err) => { reject({ error: 1, messgae: "User Not Found" }) })
                 })
             },
-            logs(user_activity) {
+            logs(user_activity, email) {
                 return new Promise((resolve, reject) => {
-                    user_activity.find().exec()
+                    user_activity.findOne({ email: email }).exec()
                         .then((data) => {
-                            if(!data.length){
-                                resolve()
-                            }
-                            _.forEach(data, (val, key) => {
-                                val.get('action').reverse()
-                                val.get('json').reverse()
-                                val.get('time').reverse()
-                                if (key == data.length - 1) {
-                                    resolve(data)
-                                }
-                            })
+                            data.get('action').reverse()
+                            data.get('time').reverse()
+                            data.get('json').reverse()
+                            resolve([data])
                         })
                 });
             }

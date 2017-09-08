@@ -12,7 +12,7 @@ export default (app) => {
     app.route("/email/countEmail").get(auth.requiresLogin, fetch_email.countEmail);
 
     /* Route for assign Multiple Tag  */
-    app.route("/email/assignMultiple/:tag_id").put(auth.requiresLogin, fetch_email.assignMultiple);
+    app.route("/email/assignMultiple/:tag_id").put(auth.requiresAdminOrHr, fetch_email.assignMultiple);
 
     /* Route for delete Tag  */
     app.route("/email/deleteTag/:tag_id").delete(auth.requiresLogin, fetch_email.deleteTag);
@@ -30,10 +30,10 @@ export default (app) => {
     app.route("/email/fetchByButton").get(auth.requiresLogin, fetch_email.fetchByButton);
 
     /*send mails to a list of emails*/
-    app.route("/email/sendtomany").post(auth.requiresLogin, fetch_email.sendToMany);
+    app.route("/email/sendtomany").post(auth.requiresAdminOrHr, fetch_email.sendToMany);
 
     /*send to a specified Tag*/
-    app.route("/email/send_to_selected_tag").put(auth.requiresLogin, fetch_email.sendToSelectedTag)
+    app.route("/email/send_to_selected_tag").put(auth.requiresAdminOrHr, fetch_email.sendToSelectedTag)
 
     /*get Candidate status*/
     app.route("/app_get_candidate").post(fetch_email.app_get_candidate)
@@ -43,6 +43,9 @@ export default (app) => {
 
     /*searching email logs*/
     app.route("/search/email/logs/:email/:page/:limit").get(auth.requiresAdmin, fetch_email.searchLogs)
+
+    /*Getting email status*/
+    app.route("/get/emailStatus").put(auth.requiresAdmin, fetch_email.emailStatus)
 
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)

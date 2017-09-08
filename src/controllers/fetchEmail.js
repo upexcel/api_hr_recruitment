@@ -158,7 +158,7 @@ export class FetchController extends BaseAPIController {
     }
 
     app_get_candidate = (req, res, next) => {
-        email_process.app_get_candidate(req.email, req.body.email_id, req.body.registration_id)
+        email_process.app_get_candidate(req.email, req.body.registration_id)
             .then((result) => { this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result }) })
             .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
     }
@@ -181,10 +181,19 @@ export class FetchController extends BaseAPIController {
             .then((result) => {
                 req.emailLogs.count({ email: { "$regex": email } }).exec()
                     .then((count) => {
-                        this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
+                        if (count)
+                            this.handleSuccessResponse(req, res, next, { error: 0, message: "", data: result, count: count })
+                        else
+                            this.handleSuccessResponse(req, res, next, { error: 0, message: "No Result Found", data: [], count: count })
                     })
             })
             .catch((err) => { this.handleSuccessResponse(req, res, next, err) })
+    }
+
+    emailStatus = (req, res, next) => {
+        email_process.checkEmailStatus(req)
+            .then((response) => this.handleSuccessResponse(req, res, next, response))
+            .catch(this.handleErrorResponse.bind(null, res))
     }
 }
 

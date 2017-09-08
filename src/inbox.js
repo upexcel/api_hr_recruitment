@@ -122,7 +122,7 @@ module.exports = {
                                                                             automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
-                                                                                        email_timestamp = new Date().getTime()
+                                                                                        date = new Date(date).getTime()
                                                                                     }
                                                                                     email.findOne({
                                                                                         uid: uid,
@@ -239,14 +239,14 @@ module.exports = {
                                             date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
                                             dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
                                         }
-                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
-                                            .then((last_updated_time) => { console.log("last time updated") })
                                         imap.search(['ALL', ['SINCE', dateFrom],
                                             ['BEFORE', date]
                                         ], function(err, results) {
                                             if (err) {
                                                 console.log(err)
                                             } else if (results.length) {
+                                                db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
+                                                    .then((last_updated_time) => { console.log("last time updated") })
                                                 let count = results.length
                                                 var f = imap.fetch(results, {
                                                     bodies: ["HEADER.FIELDS (FROM TO SUBJECT BCC CC DATE)", "TEXT"],
@@ -321,7 +321,7 @@ module.exports = {
                                                                 .then((tag) => {
                                                                     count--;
                                                                     if (tag.tagId.length || tag.default_tag_id) {
-                                                                        email_timestamp = new Date().getTime()
+                                                                        email_timestamp = new Date(date).getTime()
                                                                     }
                                                                     email.findOne({
                                                                         uid: uid,
@@ -376,7 +376,14 @@ module.exports = {
                                                     imap.end();
                                                 });
                                             } else {
-                                                console.log('Nothing to Fetch');
+                                                email.find({ imap_email: val.dataValues.email }).count().exec(function(err, count) {
+                                                    if (count >= response.messages.total) {
+                                                        console.log('Nothing to Fetch');
+                                                    } else {
+                                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
+                                                            .then((last_updated_time) => { console.log("last time updated") })
+                                                    }
+                                                })
                                             }
                                         });
                                     })

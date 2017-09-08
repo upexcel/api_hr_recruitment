@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
-let db = "hr_recruit_live"
-if (process.env.NODE_ENV == "dev") {
-    db = "hr_recruit_dev"
-}
+import config from "../config";
+let db = config.mongodb;
+
 let conn = mongoose.createConnection("mongodb://localhost/" + db);
 import cronService from "../service/cron.js";
 // the middleware function
@@ -30,11 +29,14 @@ module.exports = function() {
         attachment: { type: Array },
         is_attachment: { type: Boolean },
         shedule_for: { type: String },
-        shedule_date: { type: String },
+        shedule_date: { type: Date },
         shedule_time: { type: String },
         push_message: { type: Array },
         push_status: { type: Boolean },
-        registration_id: { type: Number }
+        registration_id: { type: Number },
+        mobile_no: { type: String },
+        updated_time: { type: Date },
+        send_template: { type: String }
     }, {
         collection: "emailStored",
         strict: true,
@@ -54,6 +56,7 @@ module.exports = function() {
     let email_logs = conn.model('EMAILLOGS', emailLogs)
 
     cronService.cron(email, email_logs)
+    cronService.reminder(email)
     return function(req, res, next) {
         req.email = email;
         req.user_activity = user_activity;

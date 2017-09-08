@@ -29,7 +29,7 @@ export class AccountController extends BaseAPIController {
                         if (user && user[0]) {
                             this.handleSuccessResponse(req, res, next, { message: 'password updated successfully' });
                         } else {
-                            next(res.status(400).send({ message: "Data not Found" }))
+                            next(res.status(400).send({ message: "Incorrect Old password" }))
                         }
                     }, (err) => {
                         this.handleErrorResponse.bind(null, err)

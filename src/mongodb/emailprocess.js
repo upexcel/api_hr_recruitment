@@ -65,7 +65,7 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
                 where = { tag_id: { $in: [tag_id] }, default_tag: "" }
             }
         }
-        db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1, "mobile_no": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
                 reject(err);
             } else {
@@ -245,21 +245,21 @@ let assignMultiple = (tag_id, body, email) => {
                     if (data.type == constant().tagType.default && body.shedule_for) {
                         if (body.shedule_for == constant().shedule_for[0].value) {
                             var registration_id = Math.floor((Math.random() * 1000 * 1000) + Math.random() * 10000);
-                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id }
+                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, "registration_id": registration_id, mobile_no: body.mobile_no, updated_time: new Date(), send_template: body.tamplate_id }
                         } else {
-                            where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time }
+                            where = { "default_tag": tag_id.toString(), "shedule_for": body.shedule_for, "shedule_date": body.shedule_date, "shedule_time": body.shedule_time, mobile_no: body.mobile_no, updated_time: new Date(), send_template: body.tamplate_id }
                         }
                     } else if (data.type == constant().tagType.default) {
-                        where = { "default_tag": tag_id.toString(), "email_timestamp": new Date().getTime(), "shedule_for": "", "shedule_date": "", "shedule_time": "" };
+                        where = { "default_tag": tag_id.toString(), "shedule_for": "", "shedule_date": "", "shedule_time": "", updated_time: new Date() };
                     } else {
-                        where = { "$addToSet": { "tag_id": tag_id }, "email_timestamp": new Date().getTime() };
+                        where = { "$addToSet": { "tag_id": tag_id.toString() }, updated_time: new Date() };
                     }
                     email.update({ "_id": { "$in": body.mongo_id } }, where, { multi: true }).exec((err) => {
                         if (err) {
                             reject(err);
                         } else {
                             if (data.type == constant().tagType.default && body.shedule_for) {
-                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1 }).exec(function(err, response) {
+                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1 }).exec(function(err, response) {
                                     db.Template.findById(body.tamplate_id)
                                         .then((template) => {
                                             replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
@@ -275,6 +275,9 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     data: response
                                                                 })
                                                             }
+                                                            template.subject += " On Dated " + body.shedule_date + " At " + body.shedule_time;
+                                                            let custom_link = constant().app_custom_link + response.registration_id || registration_id;
+                                                            replaced_data += custom_link;
                                                             mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
@@ -724,7 +727,7 @@ let assignToOldTag = (data, email) => {
                     email.update({ _id: { $in: mongoId } }, { "$addToSet": { "tag_id": data.id.toString() }, "email_timestamp": new Date().getTime() }, { multi: true })
                         .then((data1) => {
                             if (!id.length) {
-                                resolve({ message: "tag assigned sucessfully", data: data })
+                                resolve({ message: "tag assigned sucessfully" })
                             } else {
                                 assignTag(id)
                             }
@@ -774,16 +777,16 @@ let getFetchedMailCount = (imap_emails, email) => {
     })
 }
 
-let app_get_candidate = (email, email_id, registration_id) => {
+let app_get_candidate = (email, registration_id) => {
     return new Promise((resolve, reject) => {
         let rounds = []
         let scheduled_rounds = []
         _.forEach(constant().shedule_for, (val, key) => {
             scheduled_rounds.push(val.value)
         })
-        email.findOne({ sender_mail: email_id, shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1, "registration_id": 1 }).exec(function(err, response) {
+        email.findOne({ shedule_for: { "$in": scheduled_rounds }, registration_id: registration_id }, { "from": 1, "tag_id": 1, "shedule_date": 1, "shedule_time": 1, "shedule_for": 1, "push_message": 1, "push_status": 1, "registration_id": 1, "sender_mail": 1, "mobile_no": 1 }).exec(function(err, response) {
             if (err) {
-                reject({ error: 1, message: err, data: [] })
+                reject({ error: 1, message: "Invalid Registration Number", data: [] })
             } else {
                 if (response) {
                     _.each(constant().shedule_for, (val, key) => {
@@ -791,15 +794,35 @@ let app_get_candidate = (email, email_id, registration_id) => {
                         if (key == constant().shedule_for.length - 1 || (val.value == response.shedule_for)) {
                             db.Tag.findTagInfo(response.tag_id[0])
                                 .then((tagInfo) => {
-                                    resolve({ name: response.from, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id, office_location: constant().office_location, app_hr_contact_email: constant().app_hr_contact_email, app_hr_contact_number: constant().app_hr_contact_number })
+                                    resolve({ name: response.from, mobile_no: response.mobile_no || null, email: response.sender_mail, subject: tagInfo.subject, job_description: tagInfo.job_description, rounds: rounds, push_message: response.push_message, push_status: response.push_status, registration_id: response.registration_id, office_location: constant().office_location, app_hr_contact_email: constant().app_hr_contact_email, app_hr_contact_number: constant().app_hr_contact_number, job_title: tagInfo.title })
                                 }, (error) => { reject(error) })
                             return false
                         }
                     })
                 } else {
-                    reject({ error: 1, message: "No data Found", data: [] })
+                    reject({ error: 1, message: "Invalid Registration Number", data: [] })
                 }
             }
+        })
+    })
+}
+
+let checkEmailStatus = (req) => {
+    return new Promise((resolve, reject) => {
+        let rounds = [];
+        let flag = 0
+        _.forEach(constant().shedule_for, (val, key) => {
+            rounds.push(val.value)
+        })
+        req.email.findOne({ sender_mail: req.body.email, tag_id: req.body.tag_id.toString(), shedule_for: { $in: rounds } }, { "shedule_for": 1 }).exec(function(err, email_data) {
+            if (err) {
+                reject(err)
+            } else if (!email_data) {
+                flag++
+            } else if (email_data._id == req.body.mongo_id) {
+                flag++
+            }
+            resolve({ flag: flag, message: flag ? "" : "Candidate is Already Sheduled" })
         })
     })
 }
@@ -816,5 +839,6 @@ export default {
     getShedule,
     assignToOldTag,
     getFetchedMailCount,
-    app_get_candidate
+    app_get_candidate,
+    checkEmailStatus
 }

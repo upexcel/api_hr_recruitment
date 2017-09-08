@@ -61,6 +61,12 @@ sequelize.sync().then(() => {
             }
         });
 
+    db.Tag.findOne({ where: { type: constant().tagType.default, title: "Selected" } })
+        .then((id) => {
+            if (!id) {
+                db.Tag.create({ title: "Selected", type: constant().tagType.default, color: "#ef2f50", default_id: 7 });
+            }
+        });
     db.SystemVariable.findOne({ where: { variableCode: "#date" } })
         .then((id) => {
             if (!id) {
