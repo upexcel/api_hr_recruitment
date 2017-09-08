@@ -6,9 +6,6 @@ export class UserController extends BaseAPIController {
 
     /* Controller for User Register  */
     create = (req, res, next) => {
-        console.log(req.body)
-        console.log(req.headers)
-        process.exit(0)
         UserProvider.create(this._db.User, req.checkBody, req.body, req.getValidationResult())
             .then((user) => {
                 let user_type = user.user_type;
