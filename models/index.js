@@ -31,6 +31,9 @@ migration.up(sequelize.getQueryInterface(), Sequelize)
                 db.sequelize = sequelize;
                 db.Sequelize = Sequelize;
             })
-    });
+    }).catch((err) => {
+        console.log("Incorrect Sequelize Db Details update config file");
+        process.exit(0)
+    })
 
 module.exports = db;
