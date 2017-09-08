@@ -100,7 +100,8 @@ sequelize.sync().then(() => {
             }
         });
 }, (err) => {
-
+    console.log("Incorrect Sequelize Db Details");
+    process.exit(0)
 });
 
 export default Object.assign({}, db, {

@@ -32,6 +32,9 @@ module.exports = {
                             resolve("SUCCESS")
                         }
                     }
+                }, (err) => {
+                    console.log("Incorrect Sequelize Db Details");
+                    process.exit(0)
                 })
             })
             queryInterface.sequelize.query("UPDATE TAG SET title='First Round' WHERE title='Schedule_first_round'")

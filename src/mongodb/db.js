@@ -1,7 +1,10 @@
 import mongoose from "mongoose";
 import config from "../config";
 let db = config.mongodb;
-
+if(!db){
+    console.log("Mongodb information is not fount");
+    process.exit(0)
+}
 let conn = mongoose.createConnection("mongodb://localhost/" + db);
 import cronService from "../service/cron.js";
 // the middleware function
