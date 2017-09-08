@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import config from "../config";
 let db = config.mongodb;
 if(!db){
-    console.log("Mongodb information is not fount");
+    console.log("Mongodb information is not fount update config details");
     process.exit(0)
 }
 let conn = mongoose.createConnection("mongodb://localhost/" + db);

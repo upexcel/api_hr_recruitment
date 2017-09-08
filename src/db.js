@@ -100,7 +100,7 @@ sequelize.sync().then(() => {
             }
         });
 }, (err) => {
-    console.log("Incorrect Sequelize Db Details");
+    console.log("Incorrect Sequelize Db Details Update config details");
     process.exit(0)
 });
 
