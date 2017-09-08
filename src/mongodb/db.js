@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
 import config from "../config";
 let db = config.mongodb;
-if(!db){
-    console.log("Mongodb information is not fount update config details");
-    process.exit(0)
-}
+// if(!db){
+//     console.log("Mongodb information is not fount update config details");
+//     process.exit(0)
+// }
 let conn = mongoose.createConnection("mongodb://localhost/" + db);
 import cronService from "../service/cron.js";
 // the middleware function
@@ -39,7 +39,8 @@ module.exports = function() {
         registration_id: { type: Number },
         mobile_no: { type: String },
         updated_time: { type: Date },
-        send_template: { type: String }
+        send_template: { type: String },
+        read_email_time: { type: Date }
     }, {
         collection: "emailStored",
         strict: true,

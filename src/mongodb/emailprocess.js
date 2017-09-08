@@ -822,7 +822,7 @@ let checkEmailStatus = (req) => {
             } else if (email_data._id == req.body.mongo_id) {
                 flag++
             }
-            resolve({ flag: flag, message: flag ? "" : "Candidate is Already Sheduled" })
+            resolve({ flag: flag, message: flag ? "" : "Candidate is Already Scheduled" })
         })
     })
 }
