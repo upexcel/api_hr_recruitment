@@ -10,6 +10,7 @@ let dashboard = (db, req) => {
         let month_wise_stats = []
         let round_data = []
         let rounds = []
+        let read_email = []
         db.Tag.findAll({ where: { "is_job_profile_tag": 1 } }).then((job_profile) => {
             findJobProfileStat(job_profile, function(job_profile_response) {
                 findEmailStats(function(email_per_day_stat) {
@@ -18,6 +19,7 @@ let dashboard = (db, req) => {
                         month_wise_stats.push(selected_candidate_stats_month)
                         candidateSelectionPerDay(function(selected_candidate_stats_date) {
                             day_wise_data.push(selected_candidate_stats_date)
+                            job_profile_response['read_email_data'] = read_email
                             resolve(job_profile_response)
                         })
                     })
@@ -31,7 +33,7 @@ let dashboard = (db, req) => {
             let dateTime = new Date();
             let start = moment(dateTime).add(1, 'days').format("YYYY-MM-DD");
             let end = moment(start).subtract(1, 'months').format("YYYY-MM-DD");
-            req.email.find({ tag_id: profile.id.toString(), date: { "$gte": end, "$lt": start } }, { date: 1 }).exec(function(err, response) {
+            req.email.find({ tag_id: profile.id.toString(), date: { "$gte": end, "$lt": start } }, { date: 1, unread: 1 }).exec(function(err, response) {
                 let day_data = {}
                 let count = 0
                 let data = []
@@ -40,25 +42,28 @@ let dashboard = (db, req) => {
                 findMonthDates(start, end, function(dates) {
                     monthWiseData(profile, function(month_wise_data) {
                         roundDistribution(profile, function(rounds_description) {
-                            _.forEach(dates, (val, key) => {
-                                count = 0
-                                _.forEach(response, (val1, key1) => {
-                                    if (moment(val).format("YYYY-MM-DD") == moment(val1.date).format("YYYY-MM-DD")) {
-                                        count++
-                                    }
-                                    if (key1 == response.length - 1) {
-                                        data.push(count)
+                            readMailPerDay(profile, function(read_email_count) {
+                                read_email.push(read_email_count)
+                                _.forEach(dates, (val, key) => {
+                                    count = 0
+                                    _.forEach(response, (val1, key1) => {
+                                        if (moment(val).format("YYYY-MM-DD") == moment(val1.date).format("YYYY-MM-DD")) {
+                                            count++
+                                        }
+                                        if (key1 == response.length - 1) {
+                                            data.push(count)
+                                        }
+                                    })
+                                    if (key == dates.length - 1) {
+                                        if (job_profile.length) {
+                                            day_wise_data.push({ data: data, label: profile.title, dates: dates })
+                                            findJobProfileStat(job_profile, callback)
+                                        } else {
+                                            day_wise_data.push({ data: data, label: profile.title, dates: dates })
+                                            callback({ day_wise: day_wise_data, month_wise: month_wise_data, rounds: rounds_description })
+                                        }
                                     }
                                 })
-                                if (key == dates.length - 1) {
-                                    if (job_profile.length) {
-                                        day_wise_data.push({ data: data, label: profile.title, dates: dates })
-                                        findJobProfileStat(job_profile, callback)
-                                    } else {
-                                        day_wise_data.push({ data: data, label: profile.title, dates: dates })
-                                        callback({ day_wise: day_wise_data, month_wise: month_wise_data, rounds: rounds_description })
-                                    }
-                                }
                             })
                         })
                     })
@@ -186,7 +191,7 @@ let dashboard = (db, req) => {
                     let selected_count = [];
                     let month = []
                     req.email.find({ updated_time: { "$gte": end, "$lt": start }, default_tag: selected_tag_info.id.toString() }, { updated_time: 1 }).exec(function(err, selected_candidate) {
-                        console.log(selected_candidate.length)
+
                         _.forEach(months, (val, key) => {
                             count = 0
                             month.push(constant().months_list[val])
@@ -234,6 +239,31 @@ let dashboard = (db, req) => {
                         })
                     })
                 })
+        }
+
+        function readMailPerDay(profile, callback) {
+            let email_read_count = []
+            let dateTime = new Date();
+            let count = 0
+            let start = moment(dateTime).add(1, 'days').format("YYYY-MM-DD");
+            let end = moment(start).subtract(1, 'months').format("YYYY-MM-DD");
+            req.email.find({ tag_id: profile.id.toString(), read_email_time: { "$gte": end, "$lt": start } }).exec(function(err, email_data) {
+                _.forEach(month_days, (val, key) => {
+                    count = 0
+                    _.forEach(email_data, (val1, key1) => {
+                        if (moment(val1.read_email_time).format("YYYY-MM-DD") == val) {
+                            count++
+                        }
+                        if (key1 == email_data.length - 1) {
+                            email_read_count.push(count)
+                            count = 0
+                        }
+                    })
+                    if (key == month_days.length - 1) {
+                        callback({ label: profile.title, data: email_read_count, dates: month_days })
+                    }
+                })
+            })
         }
 
     })

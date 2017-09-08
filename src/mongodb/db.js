@@ -39,7 +39,8 @@ module.exports = function() {
         registration_id: { type: Number },
         mobile_no: { type: String },
         updated_time: { type: Date },
-        send_template: { type: String }
+        send_template: { type: String },
+        read_email_time: { type: Date }
     }, {
         collection: "emailStored",
         strict: true,

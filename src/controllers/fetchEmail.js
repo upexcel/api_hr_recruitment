@@ -98,7 +98,7 @@ export class FetchController extends BaseAPIController {
             if (err) {
                 next(new Error(err));
             } else if (status == false) {
-                req.email.update({ _id: mongo_id }, { unread: status }, (error) => {
+                req.email.update({ _id: mongo_id }, { unread: status, read_email_time: new Date() }, (error) => {
                     if (error) {
                         next(new Error(err));
                     } else {
