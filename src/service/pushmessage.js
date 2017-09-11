@@ -10,7 +10,7 @@ let pushMessage = (device_info, information) => {
             notification: {
                 title: constant().push_notification_message,
                 body: information,
-                icon: 'ic_launcher',
+                icon: 'ic_stat_drawing',
                 sound:'default'
             },
             data: {
