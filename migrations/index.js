@@ -11,7 +11,9 @@ module.exports = {
                 { table: "IMAP", field: "last_fetched_time", type: Sequelize.DATE, value: new Date(), allowNull: false },
                 { table: "IMAP", field: "total_emails", type: Sequelize.INTEGER, value: 0, allowNull: false },
                 { table: "SMTP", field: "username", type: Sequelize.STRING(255), value: "", allowNull: false },
-                { table: "TAG", field: "is_email_send", type: Sequelize.BOOLEAN, value: 0, allowNull: false }
+                { table: "TAG", field: "is_email_send", type: Sequelize.BOOLEAN, value: 0, allowNull: false },
+                { table: "IMAP", field: "days_left_to_fetched", type: Sequelize.INTEGER, value: 0, allowNull: true },
+                { table: "IMAP", field: "fetched_date_till", type: Sequelize.DATE, value: 0, allowNull: true }
             ]
             _.forEach(add_field, (val, key) => {
                 queryInterface.describeTable(val.table).then(attributes => {
@@ -22,7 +24,7 @@ module.exports = {
                         }
                     } else if (attributes) {
                         let type = val['type'];
-                        result.push(queryInterface.addColumn(val.table, val.field, { type: type, defaultValue: val.value, allowNull: val['allowNull'] }));
+                        result.push(queryInterface.addColumn(val.table, val.field, { type: type, defaultValue: val.value || null, allowNull: val['allowNull'] }));
                         if (key == add_field.length - 1 && result.length == add_field.length) {
                             resolve("SUCCESS")
                         }
