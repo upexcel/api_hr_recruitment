@@ -622,6 +622,7 @@ module.exports = {
                     });
                 } else {
                     console.log("No Active connection")
+                    resolve()
                 }
             });
         })
