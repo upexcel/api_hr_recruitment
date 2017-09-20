@@ -37,6 +37,14 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.DATE,
             defaultValue: new Date(),
             allowNull: false
+        },
+        days_left_to_fetched:{
+            type:DataTypes.INTEGER,
+            allowNull:true
+        },
+        fetched_date_till:{
+            type:DataTypes.DATE,
+            allowNull:true
         }
     }, {
         timestamps: true,

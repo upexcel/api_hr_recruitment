@@ -47,6 +47,9 @@ export default (app) => {
     /*Getting email status*/
     app.route("/get/emailStatus").put(auth.requiresAdmin, fetch_email.emailStatus)
 
+    /*getting email for last inputed dates*/
+    app.route("/fetch/emails/:days").get(auth.requiresAdmin, fetch_email.fetchByDates)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 
