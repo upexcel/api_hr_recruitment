@@ -10,13 +10,16 @@ let reminderMail = (email) => {
         let start = moment(dateTime).format("YYYY-MM-DD"); //currnet date 
         let end = moment(start).add(1, 'days').format("YYYY-MM-DD"); // next date
         email.find({ shedule_date: { "$gte": start, "$eq": end } }, { "shedule_date": 1, "shedule_time": 1, "tag_id": 1, "from": 1, "send_template": 1, "sender_mail": 1 }).exec(function(err, response) {
-            sendReminder(response, function(reminder_status) {
-                resolve(reminder_status)
-            })
-
+            if (response.length) {
+                sendReminder(response, function(reminder_status) {
+                    resolve(reminder_status)
+                })
+            } else {
+                resolve("No email is sheduled for tomorrow")
+            }
         })
 
-        function sendReminder(mail_data, callback) {  // function for sending reminder
+        function sendReminder(mail_data, callback) { // function for sending reminder
             let user_info = mail_data.splice(0, 1)[0];
             db.Template.findById(parseInt(user_info.send_template)) // finding template that is send to candiadte
                 .then((template_data) => {
