@@ -195,6 +195,12 @@ export class FetchController extends BaseAPIController {
             .then((response) => this.handleSuccessResponse(req, res, next, response))
             .catch(this.handleErrorResponse.bind(null, res))
     }
+
+    fetchByDates = (req, res, next) => {
+        email_process.findEmailByDates(req.params.days, req.email).then((response) => {
+            this.handleSuccessResponse(req, res, next, { status: "SUCCESS" })
+        }).catch((err) => { console.log(err) })
+    }
 }
 
 const controller = new FetchController();

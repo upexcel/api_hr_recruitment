@@ -826,6 +826,16 @@ let checkEmailStatus = (req) => {
         })
     })
 }
+
+let findEmailByDates = (days) => {
+    return new Promise((resolve, reject) => {
+        db.Imap.update({ fetched_date_till: new Date(), days_left_to_fetched: days }, { where: { active: 1 } }).then((data) => {
+            resolve(data)
+        }).catch((err) => {
+            reject(err)
+        })
+    })
+}
 export default {
     fetchEmail,
     findcount,
@@ -840,5 +850,6 @@ export default {
     assignToOldTag,
     getFetchedMailCount,
     app_get_candidate,
-    checkEmailStatus
+    checkEmailStatus,
+    findEmailByDates
 }

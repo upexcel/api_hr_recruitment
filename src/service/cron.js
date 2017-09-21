@@ -5,10 +5,13 @@ import service from "../service/reminder"
 export class CronController {
     cron(email, logs) {
         new CronJob("*/60 * * * *", function() {
-            inbox.fetchEmail(email, logs) // running this function every 60 min
-                .then((response) => {
-                    inbox.beforeDateEmail(email, logs);
-                });
+        inbox.fetchEmail(email, logs) // running this function every 60 min
+            .then((response) => {
+                inbox.skippedDates(email, logs)
+                    .then((data) => {
+                        inbox.beforeDateEmail(email, logs);
+                    })
+            });
         }, null, true);
     }
 
