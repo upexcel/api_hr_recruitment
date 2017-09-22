@@ -9,7 +9,7 @@ export default function() {
         userType: {
             admin: "Admin",
             guest: "Guest",
-            hr: "Hr",
+            hr: "HR",
         },
         smtp: {
             subject: "Smtp test",
@@ -29,7 +29,7 @@ export default function() {
         second_round_slots: ['10:30 am', '12:00 pm', '01:30 pm'],
         third_round_slots: ['03:00 pm', '04:00 pm'],
         push_notification_message: 'Interview Scheduled',
-        old_emails_fetch_days_count: 15,
+        old_emails_fetch_days_count: 5,
         registration_message: " <br> your registration_id is:-",
         ignored_api_log_list: ["/email/inbox/", "/dashboard", "/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate", "/user/log", "/get/email/logs", "/search/email/logs", "/get/shedule"],
         office_location: { long: 28.5960769, lat: 77.3277893 },
