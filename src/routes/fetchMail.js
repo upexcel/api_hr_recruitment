@@ -45,7 +45,7 @@ export default (app) => {
     app.route("/search/email/logs/:email/:page/:limit").get(auth.requiresAdmin, fetch_email.searchLogs)
 
     /*Getting email status*/
-    app.route("/get/emailStatus").put(auth.requiresAdmin, fetch_email.emailStatus)
+    app.route("/get/emailStatus").put(auth.requiresAdminOrHr, fetch_email.emailStatus)
 
     /*getting email for last inputed dates*/
     app.route("/fetch/emails/:days").get(auth.requiresAdmin, fetch_email.fetchByDates)
