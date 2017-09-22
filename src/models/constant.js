@@ -9,7 +9,7 @@ export default function() {
         userType: {
             admin: "Admin",
             guest: "Guest",
-            hr: "Hr",
+            hr: "HR",
         },
         smtp: {
             subject: "Smtp test",
