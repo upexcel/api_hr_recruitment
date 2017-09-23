@@ -41,7 +41,8 @@ module.exports = function() {
         updated_time: { type: Date },
         send_template: { type: String },
         read_email_time: { type: Date },
-        read_by_user: { type: String }
+        read_by_user: { type: String },
+        reminder_send: { type: Boolean }
     }, {
         collection: "emailStored",
         strict: true,
