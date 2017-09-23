@@ -3,8 +3,9 @@ import moment from 'moment'
 import mail from '../modules/mail'
 import replaceData from "../modules/replaceVariable";
 import db from "../db";
+import email_log from "./emaillogs.js";
 
-let reminderMail = (email) => {
+let reminderMail = (email, logs) => {
     return new Promise((resolve, reject) => {
         let dateTime = new Date();
         let start = moment(dateTime).format("YYYY-MM-DD"); //currnet date 
@@ -30,11 +31,14 @@ let reminderMail = (email) => {
                                     let subject = constant().reminder + " " + moment(user_info.shedule_date).format("YYYY-MM-DD") + " at " + user_info.shedule_time // subject for remonder email
                                     mail.sendMail(user_info.sender_mail, subject, "", smtp, replaced_data) // sending email
                                         .then((mail_response) => {
-                                            if (mail_data.length) {
-                                                sendReminder(mail_data, callback)
-                                            } else {
-                                                callback({ message: "Reminder Sent To Selected Users" })
-                                            }
+                                            mail_response['user'] = "Reminder";
+                                            email_log.emailLog(logs, mail_response).then((mail_log) => {
+                                                if (mail_data.length) {
+                                                    sendReminder(mail_data, callback)
+                                                } else {
+                                                    callback({ message: "Reminder Sent To Selected Users" })
+                                                }
+                                            })
                                         })
                                 })
                         })
