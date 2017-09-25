@@ -11,7 +11,11 @@ export class EmailLogs {
                 if (log.emailLogs) {
                     logs = new log.emailLogs({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: log.user.email, subject: data.subject, body: data.body })
                 } else {
-                    logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: "By Cron", subject: data.subject, body: data.body })
+                    console.log(data.user)
+                    if (!data.user)
+                        logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: "By Cron", subject: data.subject, body: data.body })
+                    else
+                        logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: data.user, subject: data.subject, body: data.body })
                 }
                 logs.save(function(err, result) {
                     if (!err)
