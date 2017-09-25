@@ -5,7 +5,6 @@ export class EmailLogs {
     emailLog(log, data) {
         return new Promise((resolve, reject) => {
             let logs = {};
-            console.log(data)
             if (data && data.status) {
                 let email_response = data.email_response.response.split(" ");
                 let time = moment.unix(email_response[3]).format("MMM DD, YYYY HH:mm");

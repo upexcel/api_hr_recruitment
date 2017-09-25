@@ -53,6 +53,68 @@ let reminderMail = (email, logs) => {
     })
 }
 
+
+let sendEmailToPendingCandidate = (cron_service, logs, email) => {
+    return new Promise((resolve, reject) => {
+        cron_service.findOne({ status: 1 }).exec(function(err, cronWorkData) {
+            if (cronWorkData && cronWorkData.get('candidate_list').length) {
+                db.Smtp.findOne({ where: { status: 1 } })
+                    .then((smtp) => {
+                        db.Template.findById(cronWorkData.get('template_id')).then((template) => {
+                            sendTemplateToEmails(cronWorkData.get('candidate_list')[0], template, smtp, function(err, data) {
+                                if (err) {
+                                    reject(err)
+                                } else {
+                                    resolve(data)
+                                }
+                            })
+                        })
+
+                        function sendTemplateToEmails(emails, template, smtp, callback) {
+                            let subject = "";
+                            console.log(emails)
+                            if (!smtp) {
+                                callback("Not active Smtp", null);
+                            }
+                            let email_id = emails;
+                            replaceData.filter(template.body, email_id.from, emails.tag_id)
+                                .then((html) => {
+                                    subject = constant().automatic_mail_subject + " " + template.subject;
+                                    mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
+                                        .then((response) => {
+                                            response['user'] = cronWorkData.get('user');
+                                            email_log.emailLog(logs, response)
+                                                .then((log_response) => {
+                                                    email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
+                                                        .then((data1) => {
+                                                            cron_service.update({ _id: cronWorkData.get('_id') }, { $pull: { candidate_list: emails } }).exec(function(err, updated_cronWork) {
+                                                                if (!err){
+                                                                    console.log(updated_cronWork)
+                                                                    callback(null, "email sent to pending candidate")
+                                                                }
+                                                            })
+                                                        })
+                                                })
+                                        })
+
+                                })
+
+                        }
+                    })
+            } else {
+                cron_service.findOneAndUpdate({ status: 1 }, { $set: { status: 0 } }).exec(function(err, update_status) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        resolve("Nothing in Pending")
+                    }
+                })
+            }
+        })
+    })
+}
+
 export default {
-    reminderMail
+    reminderMail,
+    sendEmailToPendingCandidate
 }

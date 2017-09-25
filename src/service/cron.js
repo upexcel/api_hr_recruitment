@@ -21,6 +21,15 @@ export class CronController {
                 .then((data) => console.log(data))
         }, null, true);
     }
+
+    PendingEmails(cron_service, logs, email){
+        new CronJob("*/1 * * * *", function(){
+            service.sendEmailToPendingCandidate(cron_service, logs, email)
+                .then((response)=>{
+                    console.log(response)
+                })
+        }, null, true)
+    }
 }
 const controller = new CronController();
 export default controller;

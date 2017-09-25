@@ -468,56 +468,17 @@ let sendToSelectedTag = (req, id, email) => {
                     db.Template.findById(data.template_id)
                         .then((template) => {
                             if (template) {
-                                db.Smtp.findOne({ where: { status: 1 } })
-                                    .then((smtp) => {
-                                        email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
-                                            let emails = result;
-                                            if (result.length) {
-                                                sendTemplateToEmails(emails, template, smtp, function(err, data) {
-                                                    if (err) {
-                                                        reject(err)
-                                                    } else {
-                                                        resolve(data)
-                                                    }
-                                                })
-                                            } else {
-                                                reject("No Pending mails")
-                                            }
-
-                                            function sendTemplateToEmails(emails, template, smtp, callback) {
-                                                let subject = "";
-                                                if (!smtp) {
-                                                    callback("Not active Smtp", null);
-                                                }
-                                                let email_id = emails.splice(0, 1)[0];
-                                                replaceData.filter(template.body, email_id.from, id)
-                                                    .then((html) => {
-                                                        subject = constant().automatic_mail_subject + " " + template.subject;
-                                                        mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
-                                                            .then((response) => {
-                                                                logs.emailLog(req, response)
-                                                                    .then((log_response) => {
-                                                                        email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
-                                                                            .then((data1) => {
-                                                                                if (response.status) {
-                                                                                    email_send_success_list.push(email_id.sender_mail)
-                                                                                } else {
-                                                                                    email_send_fail_list.push(email_id.sender_mail)
-                                                                                }
-                                                                                if (emails.length) {
-                                                                                    sendTemplateToEmails(emails, template, smtp, callback)
-                                                                                } else {
-                                                                                    callback(null, { data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
-                                                                                }
-                                                                            })
-                                                                    })
-                                                            })
-
-                                                    })
-
-                                            }
-                                        })
+                                email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                    let data = new req.cronWork({ tag_id: id, candidate_list: result, template_id: template.id, user: req.user.email, status: 1 });
+                                    data.save(function(err, response) {
+                                        if (err) {
+                                            reject(err)
+                                        } else {
+                                            console.log(response)
+                                            resolve("Cron Work Started...")
+                                        }
                                     })
+                                })
                             } else {
                                 reject("No template found")
                             }
