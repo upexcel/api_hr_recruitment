@@ -61,11 +61,22 @@ let sendEmailToPendingCandidate = (cron_service, logs, email) => {
                 db.Smtp.findOne({ where: { status: 1 } })
                     .then((smtp) => {
                         db.Template.findById(cronWorkData.get('template_id')).then((template) => {
-                            sendTemplateToEmails(cronWorkData.get('candidate_list')[0], template, smtp, function(err, data) {
-                                if (err) {
-                                    reject(err)
+                            email.find({ _id: cronWorkData.get('candidate_list')[0]._id, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                if (result) {
+                                    sendTemplateToEmails(cronWorkData.get('candidate_list')[0], template, smtp, function(err, data) {
+                                        if (err) {
+                                            reject(err)
+                                        } else {
+                                            resolve(data)
+                                        }
+                                    })
                                 } else {
-                                    resolve(data)
+                                    cron_service.update({ _id: cronWorkData.get('_id') }, { $pull: { candidate_list: cronWorkData.get('candidate_list')[0] } }).exec(function(err, updated_cronWork) {
+                                        if (!err) {
+                                            console.log(updated_cronWork)
+                                            resolve("Email Sent To candidate")
+                                        }
+                                    })
                                 }
                             })
                         })
@@ -88,7 +99,7 @@ let sendEmailToPendingCandidate = (cron_service, logs, email) => {
                                                     email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
                                                         .then((data1) => {
                                                             cron_service.update({ _id: cronWorkData.get('_id') }, { $pull: { candidate_list: emails } }).exec(function(err, updated_cronWork) {
-                                                                if (!err){
+                                                                if (!err) {
                                                                     console.log(updated_cronWork)
                                                                     callback(null, "email sent to pending candidate")
                                                                 }

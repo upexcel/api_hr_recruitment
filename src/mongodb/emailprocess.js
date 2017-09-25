@@ -474,8 +474,7 @@ let sendToSelectedTag = (req, id, email) => {
                                         if (err) {
                                             reject(err)
                                         } else {
-                                            console.log(response)
-                                            resolve("Cron Work Started...")
+                                            resolve({ status: 0, message: "Send email to pending candidate is started..", data: [] });
                                         }
                                     })
                                 })
