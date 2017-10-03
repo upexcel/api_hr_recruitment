@@ -98,7 +98,7 @@ let sendEmailToPendingCandidate = (cron_service, logs, email) => {
                                                 .then((log_response) => {
                                                     email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
                                                         .then((data1) => {
-                                                            cron_service.update({ _id: cronWorkData.get('_id') }, { $pull: { candidate_list: emails } }).exec(function(err, updated_cronWork) {
+                                                            cron_service.update({ _id: cronWorkData.get('_id') }, { "$pull": { candidate_list: emails } }).exec(function(err, updated_cronWork) {
                                                                 if (!err) {
                                                                     console.log(updated_cronWork)
                                                                     callback(null, "email sent to pending candidate")
