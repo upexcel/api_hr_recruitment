@@ -8,7 +8,6 @@ export class EmailLogs {
             if (data && data.status) {
                 let email_response = data.email_response.response.split(" ");
                 let time = moment.unix(email_response[3]).format("MMM DD, YYYY HH:mm");
-                console.log(time)
                 if (log.emailLogs) {
                     logs = new log.emailLogs({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: log.user.email, subject: data.subject, body: data.body })
                 } else {
