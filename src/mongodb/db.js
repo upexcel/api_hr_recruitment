@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import config from "../config";
 let db = config.mongodb;
-if(!db){
+if (!db) {
     console.log("Mongodb information is not fount update config details");
     process.exit(0)
 }
@@ -40,7 +40,9 @@ module.exports = function() {
         mobile_no: { type: String },
         updated_time: { type: Date },
         send_template: { type: String },
-        read_email_time: { type: Date }
+        read_email_time: { type: Date },
+        read_by_user: { type: String },
+        reminder_send: { type: Boolean }
     }, {
         collection: "emailStored",
         strict: true,
@@ -54,17 +56,25 @@ module.exports = function() {
         collection: 'emaillogs',
         strict: false
     })
+    let cron_work = mongoose.Schema({},{
+        collection: 'cronWork',
+        strict: false
+    })
 
     let email = conn.model("EMAIL", emailSchema);
     let user_activity = conn.model('ACTIVITY', userActivity);
-    let email_logs = conn.model('EMAILLOGS', emailLogs)
+    let email_logs = conn.model('EMAILLOGS', emailLogs);
+    let cronWork = conn.model('CRONSTATUS', cron_work);
 
     cronService.cron(email, email_logs)
-    cronService.reminder(email)
+    cronService.reminder(email, email_logs)
+    cronService.PendingEmails(cronWork, email_logs, email);
+
     return function(req, res, next) {
         req.email = email;
         req.user_activity = user_activity;
         req.emailLogs = email_logs;
+        req.cronWork = cronWork
         next();
     };
 };

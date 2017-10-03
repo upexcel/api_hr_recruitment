@@ -43,26 +43,28 @@ let dashboard = (db, req) => {
                     monthWiseData(profile, function(month_wise_data) {
                         roundDistribution(profile, function(rounds_description) {
                             readMailPerDay(profile, function(read_email_count) {
-                                read_email.push(read_email_count)
-                                _.forEach(dates, (val, key) => {
-                                    count = 0
-                                    _.forEach(response, (val1, key1) => {
-                                        if (moment(val).format("YYYY-MM-DD") == moment(val1.date).format("YYYY-MM-DD")) {
-                                            count++
-                                        }
-                                        if (key1 == response.length - 1) {
-                                            data.push(count)
+                                readMailPerDayByUser(function(read_mail_by_user) {
+                                    read_email.push(read_email_count)
+                                    _.forEach(dates, (val, key) => {
+                                        count = 0
+                                        _.forEach(response, (val1, key1) => {
+                                            if (moment(val).format("YYYY-MM-DD") == moment(val1.date).format("YYYY-MM-DD")) {
+                                                count++
+                                            }
+                                            if (key1 == response.length - 1) {
+                                                data.push(count)
+                                            }
+                                        })
+                                        if (key == dates.length - 1) {
+                                            if (job_profile.length) {
+                                                day_wise_data.push({ data: data, label: profile.title, dates: dates })
+                                                findJobProfileStat(job_profile, callback)
+                                            } else {
+                                                day_wise_data.push({ data: data, label: profile.title, dates: dates })
+                                                callback({ day_wise: day_wise_data, month_wise: month_wise_data, rounds: rounds_description, read_mail_by_user: read_mail_by_user })
+                                            }
                                         }
                                     })
-                                    if (key == dates.length - 1) {
-                                        if (job_profile.length) {
-                                            day_wise_data.push({ data: data, label: profile.title, dates: dates })
-                                            findJobProfileStat(job_profile, callback)
-                                        } else {
-                                            day_wise_data.push({ data: data, label: profile.title, dates: dates })
-                                            callback({ day_wise: day_wise_data, month_wise: month_wise_data, rounds: rounds_description })
-                                        }
-                                    }
                                 })
                             })
                         })
@@ -263,6 +265,57 @@ let dashboard = (db, req) => {
                         callback({ label: profile.title, data: email_read_count, dates: month_days })
                     }
                 })
+            })
+        }
+
+        function readMailPerDayByUser(callback) {
+            let dateTime = new Date();
+            let count = 0
+            let email_count = []
+            let user_mail_read = []
+            let start = moment(dateTime).add(1, 'days').format("YYYY-MM-DD");
+            let end = moment(start).subtract(1, 'months').format("YYYY-MM-DD");
+
+            findUsersEmail(function(emails) {
+                req.email.find({ read_by_user: { $in: emails }, read_email_time: { "$gte": end, "$lt": start } }).exec(function(err, email_data) {
+                    _.forEach(emails, (user_data, user_key) => {
+                        count = 0;
+                        email_count = []
+                        _.forEach(month_days, (val, key) => {
+                            _.forEach(email_data, (val1, key1) => {
+                                if (moment(val1.read_email_time).format("YYYY-MM-DD") == val && val1.read_by_user == user_data) {
+                                    count++
+                                }
+                                if (key1 == email_data.length - 1) {
+                                    email_count.push(count)
+                                    count = 0
+                                }
+                            })
+                            if (key == month_days.length - 1) {
+                                user_mail_read.push({ label: user_data, data: email_count, dates: month_days })
+                            }
+                        })
+                        if (user_key == emails.length - 1) {
+                            callback(user_mail_read)
+                        }
+                    })
+
+                })
+            })
+            callback("sucess")
+        }
+
+        function findUsersEmail(callback) {
+            db.User.findAll({}).then((user_data) => {
+                let users_emails = [];
+                if (user_data.length) {
+                    _.forEach(user_data, (val, key) => {
+                        users_emails.push(val.email)
+                        if (key == user_data.length - 1) {
+                            callback(users_emails)
+                        }
+                    })
+                }
             })
         }
 
