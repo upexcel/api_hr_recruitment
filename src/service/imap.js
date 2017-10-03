@@ -32,7 +32,7 @@ export class imapConnection {
                 password: data.dataValues.password,
                 host: "imap.gmail.com",
                 port: 993,
-                tls: "TLS",
+                tls: "SSL",
             });
             resolve(imap);
         });
