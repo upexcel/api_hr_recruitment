@@ -13,9 +13,9 @@ export class EmailLogs {
                 } else {
                     console.log(data.user)
                     if (!data.user)
-                        logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: "By Cron", subject: data.subject, body: data.body })
+                        logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: new Date(time), user: "By Cron", subject: data.subject, body: data.body })
                     else
-                        logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: time, user: data.user, subject: data.subject, body: data.body })
+                        logs = new log({ email: data.email_response.envelope.to, from: data.email_response.envelope.from, time: new Date(time), user: data.user, subject: data.subject, body: data.body })
                 }
                 logs.save(function(err, result) {
                     if (!err)

@@ -164,7 +164,7 @@ let dashboard = (db, req) => {
             let end = moment(start).subtract(1, 'months').format("MMM DD, YYYY HH:mm");
             let email_data = []
             let count = 0
-            req.emailLogs.find({ time: { "$gte": end, "$lt": start }, user: constant().user }).exec(function(err, email_response) {
+            req.emailLogs.find({ time: { "$gte": new Date(end), "$lt": new Date(start) }, user: constant().user }).exec(function(err, email_response) {
                 _.forEach(month_days, (val, key) => {
                     count = 0
                     _.forEach(email_response, (val1, key1) => {
