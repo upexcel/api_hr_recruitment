@@ -52,11 +52,18 @@ module.exports = function() {
         collection: 'userActivity',
         strict: false
     })
-    let emailLogs = mongoose.Schema({}, {
+    let emailLogs = mongoose.Schema({
+        email: { type: Array },
+        from: { type: String },
+        time: { type: Date },
+        user: { type: String },
+        subject: { type: String },
+        body: { type: String }
+    }, {
         collection: 'emaillogs',
-        strict: false
+        strict: true
     })
-    let cron_work = mongoose.Schema({},{
+    let cron_work = mongoose.Schema({}, {
         collection: 'cronWork',
         strict: false
     })
