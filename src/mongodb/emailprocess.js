@@ -468,7 +468,7 @@ let sendToSelectedTag = (req, id, email) => {
                     db.Template.findById(data.template_id)
                         .then((template) => {
                             if (template) {
-                                email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "is_automatic_email_send": 1, "subject": 1 }).exec(function(err, result) {
+                                email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "subject": 1 }).exec(function(err, result) {
                                     let data = new req.cronWork({ tag_id: id, candidate_list: result, template_id: template.id, user: req.user.email, status: 1 });
                                     data.save(function(err, response) {
                                         if (err) {
