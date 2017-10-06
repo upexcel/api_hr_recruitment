@@ -316,22 +316,22 @@ let dashboard = (db, req) => {
         }
 
         function emailStatByJobProfile(callback) {
-            db.Tag.findAll({ where: { is_job_profile_tag: 1 } }).then((job_profile)=>{
-                findStatByJobProfile(job_profile,function(final_data){
+            db.Tag.findAll({ where: { is_job_profile_tag: 1 } }).then((job_profile) => {
+                findStatByJobProfile(job_profile, function(final_data) {
                     callback(final_data)
                 })
             })
 
         }
 
-        function findStatByJobProfile(job_profile, callback){
+        function findStatByJobProfile(job_profile, callback) {
             let dateTime = new Date();
             let start = moment(dateTime).add(1, 'days').format("MMM DD, YYYY HH:mm");
             let end = moment(start).subtract(1, 'months').format("MMM DD, YYYY HH:mm");
             let email_data = []
             let count = 0
-            let profile = job_profile.splice(0,1)[0];
-            req.emailLogs.find({ time: { "$gte": new Date(end), "$lt": new Date(start) }, tag_id: profile.id.toString() }).exec(function(err, email_response) {
+            let profile = job_profile.splice(0, 1)[0];
+            req.emailLogs.find({ time: { "$gte": new Date(end), "$lt": new Date(start) }, tag_id: profile.id.toString(), user: constant().user }).exec(function(err, email_response) {
                 _.forEach(month_days, (val, key) => {
                     count = 0
                     _.forEach(email_response, (val1, key1) => {
@@ -345,9 +345,9 @@ let dashboard = (db, req) => {
                     })
                     if (key == month_days.length - 1) {
                         email_stat_by_job_profile.push({ label: profile.title, data: email_data, dates: month_days })
-                        if(job_profile.length){
-                           findStatByJobProfile(job_profile, callback) 
-                        }else{
+                        if (job_profile.length) {
+                            findStatByJobProfile(job_profile, callback)
+                        } else {
                             callback(email_stat_by_job_profile)
                         }
                     }
