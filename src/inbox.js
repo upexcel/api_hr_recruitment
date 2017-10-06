@@ -83,7 +83,7 @@ module.exports = {
                                                                         var buffer = "";
                                                                         MailParser(stream).then(mail => {
                                                                             let from, to, sender_mail, date, email_date, email_timestamp, subject;
-                                                                            from = mail.from.value[0].address;
+                                                                            from = mail.from.value[0].name;
                                                                             to = mail.to.value[0].address;
                                                                             sender_mail = mail.from.value[0].address
                                                                             date = mail.date

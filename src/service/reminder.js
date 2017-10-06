@@ -94,6 +94,7 @@ let sendEmailToPendingCandidate = (cron_service, logs, email) => {
                                     mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
                                         .then((response) => {
                                             response['user'] = cronWorkData.get('user');
+                                            response['tag_id'] = emails.tag_id;
                                             email_log.emailLog(logs, response)
                                                 .then((log_response) => {
                                                     email.update({ "_id": email_id._id }, { is_automatic_email_send: 1 })
