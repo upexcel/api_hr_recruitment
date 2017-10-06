@@ -11,6 +11,7 @@ let dashboard = (db, req) => {
         let round_data = []
         let rounds = []
         let read_email = []
+        let user_read_email = [];
         db.Tag.findAll({ where: { "is_job_profile_tag": 1 } }).then((job_profile) => {
             findJobProfileStat(job_profile, function(job_profile_response) {
                 findEmailStats(function(email_per_day_stat) {
@@ -20,7 +21,10 @@ let dashboard = (db, req) => {
                         candidateSelectionPerDay(function(selected_candidate_stats_date) {
                             day_wise_data.push(selected_candidate_stats_date)
                             job_profile_response['read_email_data'] = read_email
-                            resolve(job_profile_response)
+                            jobReadByUser(function(job_read_by_user) {
+                                job_profile_response['read_mail_by_user'] = job_read_by_user;
+                                resolve(job_profile_response)
+                            })
                         })
                     })
                 })
@@ -266,6 +270,46 @@ let dashboard = (db, req) => {
             })
         }
 
+        function jobReadByUser(callback) {
+            db.User.findAll().then((user_data) => {
+                userEmailData(user_data, function(response_user_emails) {
+                    callback(response_user_emails)
+                })
+            })
+        }
+
+        function userEmailData(user_data, callback) {
+            let email_read_count = []
+            let dateTime = new Date();
+            let count = 0
+            let start = moment(dateTime).add(1, 'days').format("YYYY-MM-DD");
+            let end = moment(start).subtract(1, 'months').format("YYYY-MM-DD");
+            let user = user_data.splice(0, 1)[0]
+            let final_list = []
+            req.email.find({ read_email_time: { "$gte": end, "$lt": start }, read_by_user: user.email }, { read_email_time: 1 }).exec(function(err, email_data) {
+                _.forEach(month_days, (val, key) => {
+                    count = 0
+                    _.forEach(email_data, (val1, key1) => {
+                        if (moment(val1.read_email_time).format("YYYY-MM-DD") == val) {
+                            count++
+                        }
+                        if (key1 == email_data.length - 1) {
+                            email_read_count.push(count)
+                            count = 0
+                        }
+                    })
+                    if (key == month_days.length - 1) {
+                        if (user_data.length) {
+                            user_read_email.push({ label: user.email, data: email_read_count, dates: month_days })
+                            userEmailData(user_data, callback)
+                        } else {
+                            user_read_email.push({ label: user.email, data: email_read_count, dates: month_days })
+                            callback(user_read_email)
+                        }
+                    }
+                })
+            })
+        }
     })
 }
 
