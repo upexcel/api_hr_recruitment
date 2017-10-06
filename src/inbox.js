@@ -153,7 +153,6 @@ module.exports = {
                                                                             console.log(err);
                                                                         });
                                                                         stream.on("data", function(chunk) {
-                                                                            // parser.write(chunk.toString("utf8"));
                                                                             buffer += chunk.toString("utf8");
                                                                         });
 
@@ -302,7 +301,6 @@ module.exports = {
                                                                                 if (err) {
                                                                                     console.log("Duplicate Data");
                                                                                 } else {
-                                                                                    console.log(tag)
                                                                                     console.log("data saved successfully");
                                                                                 }
                                                                             });
@@ -318,7 +316,6 @@ module.exports = {
                                                             console.log(err);
                                                         });
                                                         stream.on("data", function(chunk) {
-                                                            // parser.write(chunk.toString("utf8"));
                                                             buffer += chunk.toString("utf8");
                                                         });
 
@@ -480,7 +477,6 @@ module.exports = {
                                                                                         if (err) {
                                                                                             console.log("Duplicate Data");
                                                                                         } else {
-                                                                                            console.log(tag)
                                                                                             console.log("data saved successfully");
                                                                                             resolve()
                                                                                         }
@@ -498,7 +494,6 @@ module.exports = {
                                                                     console.log(err);
                                                                 });
                                                                 stream.on("data", function(chunk) {
-                                                                    // parser.write(chunk.toString("utf8"));
                                                                     buffer += chunk.toString("utf8");
                                                                 });
 
@@ -540,8 +535,7 @@ module.exports = {
                                         })
                                 });
                                 imap.once("error", function(err) {
-                                    console
-                                        .log(err);
+                                    console.log(err);
                                 });
                                 imap.once("end", function() {
                                     console.log("Connection ended");
