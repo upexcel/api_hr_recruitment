@@ -63,6 +63,7 @@ module.exports = {
                                                         data.subject = constant().automatic_mail_subject + " " + data.subject;
                                                         mail.sendMail(to, data.subject, constant().smtp.text, smtp, html)
                                                             .then((response) => {
+                                                                response['tag_id'] = tagId;
                                                                 email_log.emailLog(logs, response)
                                                                     .then((data) => {
                                                                         if (response.status) {

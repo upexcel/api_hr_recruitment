@@ -58,7 +58,8 @@ module.exports = function() {
         time: { type: Date },
         user: { type: String },
         subject: { type: String },
-        body: { type: String }
+        body: { type: String },
+        tag_id: { type: Array }
     }, {
         collection: 'emaillogs',
         strict: true
