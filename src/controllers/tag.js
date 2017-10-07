@@ -34,6 +34,7 @@ export class TagController extends BaseAPIController {
 
     /* Imap data Update*/
     update = (req, res, next) => {
+        let assign = req.body.assign_to_all_emails;
         TagProvider.save(this._db.Imap, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((data) => {
                 this._db.Tag.update(data, {
@@ -43,7 +44,13 @@ export class TagController extends BaseAPIController {
                         }
                     })
                     .then((docs) => {
-                        this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
+                        if (assign) {
+                            this._db.Tag.assignTagDuringUpdate(req.params.tagId, req).then((response) => {
+                                this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
+                            })
+                        } else {
+                            this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
+                        }
                     })
             }).catch(this.handleErrorResponse.bind(null, res));
     }

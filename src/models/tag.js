@@ -31,9 +31,9 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.INTEGER,
             defaultValue: 0
         },
-        is_email_send:{
-            type:DataTypes.BOOLEAN,
-            defaultValue:0
+        is_email_send: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: 0
         },
         job_description: {
             type: DataTypes.STRING,
@@ -108,6 +108,38 @@ export default function(sequelize, DataTypes) {
                         .then((response) => { resolve(response) })
                         .catch((error) => { reject({ error: 1, message: error, data: [] }) })
                 })
+            },
+            assignTagDuringUpdate(tag, req) {
+                return new Promise((resolve, reject) => {
+                    req.email.find({ tag_id: { $ne: tag.toString() } }).then((data) => {
+                        let id = []
+                        _.map(data, (val, key) => {
+                            if ((val.subject.match(new RegExp(req.body.subject, 'gi'))) || ((req.body.to && req.body.from) && (new Date(val.date).getTime() < new Date(req.body.to).getTime() && new Date(val.date).getTime() > new Date(req.body.from).getTime())) || ((req.body.email) && (val.sender_mail.match(new RegExp(req.body.email, 'gi'))))) {
+                                id.push(val._id);
+                                if (key == (_.size(data) - 1)) {
+                                    assignTag(id)
+                                }
+                            } else {
+                                if (key == (_.size(data) - 1)) {
+                                    assignTag(id)
+                                }
+                            }
+
+                        })
+
+                        function assignTag(id) {
+                            let mongoId = id.splice(0, 100)
+                            req.email.update({ _id: { $in: mongoId } }, { "$addToSet": { "tag_id": tag.toString() }, "email_timestamp": new Date().getTime() }, { multi: true })
+                                .then((data1) => {
+                                    if (!id.length) {
+                                        resolve({ message: "tag assigned sucessfully" })
+                                    } else {
+                                        assignTag(id)
+                                    }
+                                })
+                        }
+                    })
+                });
             }
         },
         associate: (models) => {
