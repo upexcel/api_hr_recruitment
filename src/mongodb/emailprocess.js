@@ -800,11 +800,20 @@ let findEmailByDates = (days) => {
 
 let sendToNotReplied = (req) => {
     return new Promise((resolve, reject) => {
+        let sender_mail_array = []
         db.Tag.findOne({ where: { title: constant().tagType.genuine } }).then((default_tag) => {
-            req.email.find({ tag_id: req.body.tag_id.toString(), default_tag: { $ne: default_tag.id.toString() }, "$or": [{ send_template_count: { "$exists": false } }, { send_template_count: { $lte: 3 } }], template_id: { $ne: parseInt(req.body.template_id) } }, { sender_mail: 1, from: 1 }).then((candidate_list) => {
-                let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, tag_id: req.body.tag_id, default_tag: req.body.default_tag, candidate_list: candidate_list, status: 1, work: constant().not_replied, template_id: req.body.template_id })
-                data.save(function(err, response) {
-                    resolve({ no_of_candidate: candidate_list.length, message: "CronWork Is Started..." })
+            req.email.find({ tag_id: req.body.tag_id, default_tag: default_tag.id.toString() }, { sender_mail: 1 }).then((sender_mail_data) => {
+                _.forEach(sender_mail_data, (val, key) => {
+                    sender_mail_array.push(val.sender_mail)
+                    if (key == sender_mail_data.length - 1) {
+                        console.log(sender_mail_data.length)
+                        req.email.find({ tag_id: req.body.tag_id.toString(), sender_mail: { $not: { $in: sender_mail_array } }, default_tag: "", "$or": [{ send_template_count: { "$exists": false } }, { send_template_count: { $lte: 3 } }], template_id: { $ne: parseInt(req.body.template_id) } }, { sender_mail: 1, from: 1 }).then((candidate_list) => {
+                            let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, tag_id: req.body.tag_id, default_tag: req.body.default_tag, candidate_list: candidate_list, status: 1, work: constant().not_replied, template_id: req.body.template_id })
+                            data.save(function(err, response) {
+                                resolve({ no_of_candidate: candidate_list.length, message: "CronWork Is Started..." })
+                            })
+                        })
+                    }
                 })
             })
         })

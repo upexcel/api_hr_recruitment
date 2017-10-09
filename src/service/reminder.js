@@ -148,9 +148,9 @@ let sendEmailToNotRepliedCandidate = (cron_service, logs, email) => {
                                     mail.sendMail(candidate_info.sender_mail, subject, constant().smtp.text, smtp, html).then((mail_response) => {
                                         email_log.emailLog(logs, mail_response)
                                             .then((log_response) => {
-                                                email.update({ _id: candidate_info._id }, { $inc: { send_template_count: 1 }, $push: { template_id: parseInt(cronWorkData.get('template_id')) } }).then((response) => {
-                                                    cron_service.findOneAndUpdate({_id:cronWorkData._id},{ "$pull": { candidate_list: candidate_info } }).then((updated_cronWork)=>{
-                                                        callback(null,updated_cronWork)
+                                                email.update({ _id: candidate_info._id }, { $inc: { send_template_count: 1 }, $push: { template_id: parseInt(cronWorkData.get('template_id')) }, is_automatic_email_send: 1 }).then((response) => {
+                                                    cron_service.findOneAndUpdate({ _id: cronWorkData._id }, { "$pull": { candidate_list: candidate_info } }).then((updated_cronWork) => {
+                                                        callback(null, updated_cronWork)
                                                     })
                                                 })
                                             })
