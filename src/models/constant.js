@@ -43,7 +43,8 @@ export default function() {
         selected: "Selected",
         reminder: "Reminder Email, Your Interview is Scheduled On",
         pending_work: "pending_candidate",
-        not_replied: "not_replied"
+        not_replied: "not_replied",
+        add_html_suffix_email_tracking: '<img src="https://www.google-analytics.com/collect?v=1&&tid=UA-107776727-1&cid=378809633830-fh870ub56cagqv6n62ruj4krj36qn4rk.apps.googleusercontent.com&t=event&ec=email&ea=open&el=recipient_id"/>'
     };
     return constant;
 }
