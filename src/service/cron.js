@@ -26,7 +26,10 @@ export class CronController {
         new CronJob("*/1 * * * *", function(){
             service.sendEmailToPendingCandidate(cron_service, logs, email)
                 .then((response)=>{
-                    console.log(response)
+                    service.sendEmailToNotRepliedCandidate(cron_service, logs, email)
+                        .then((email_status)=>{
+                            console.log(response, email_status)
+                        })
                 })
         }, null, true)
     }

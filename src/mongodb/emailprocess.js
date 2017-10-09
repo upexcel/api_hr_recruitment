@@ -469,7 +469,7 @@ let sendToSelectedTag = (req, id, email) => {
                         .then((template) => {
                             if (template) {
                                 email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "subject": 1, "tag_id": 1 }).exec(function(err, result) {
-                                    let data = new req.cronWork({ tag_id: id, candidate_list: result, template_id: template.id, user: req.user.email, status: 1 });
+                                    let data = new req.cronWork({ tag_id: id, candidate_list: result, template_id: template.id, user: req.user.email, work: constant().pending_work, status: 1 });
                                     data.save(function(err, response) {
                                         if (err) {
                                             reject(err)
@@ -797,6 +797,19 @@ let findEmailByDates = (days) => {
         })
     })
 }
+
+let sendToNotReplied = (req) => {
+    return new Promise((resolve, reject) => {
+        db.Tag.findOne({ where: { title: constant().tagType.genuine } }).then((default_tag) => {
+            req.email.find({ tag_id: req.body.tag_id, default_tag: { $ne: default_tag.id.toString() }, send_template_count: { $lte: 3 }, send_template_count: { $gte: 1 }, template_id: { $ne: parseInt(req.body.template_id) } }, { sender_mail: 1, from: 1 }).then((candidate_list) => {
+                let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, tag_id: req.body.tag_id, default_tag: req.body.default_tag, candidate_list: candidate_list, status: 1, work: constant().not_replied, template_id: req.body.template_id })
+                data.save(function(err, response) {
+                    resolve({ no_of_candidate: candidate_list.length, message: "CronWork Is Started..." })
+                })
+            })
+        })
+    });
+}
 export default {
     fetchEmail,
     findcount,
@@ -812,5 +825,6 @@ export default {
     getFetchedMailCount,
     app_get_candidate,
     checkEmailStatus,
-    findEmailByDates
+    findEmailByDates,
+    sendToNotReplied
 }

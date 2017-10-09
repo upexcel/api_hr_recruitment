@@ -123,7 +123,9 @@ module.exports = {
                                                                                                 default_tag: tag.default_tag_id || "",
                                                                                                 is_attachment: attach || false,
                                                                                                 imap_email: val.dataValues.email,
-                                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject),
+                                                                                                send_template_count: tag.count || 0,
+                                                                                                template_id: tag.template_id || []
                                                                                             });
                                                                                             detail.save(function(err) {
                                                                                                 if (err) {
@@ -295,7 +297,9 @@ module.exports = {
                                                                                 default_tag: tag.default_tag_id || "",
                                                                                 is_attachment: attach || false,
                                                                                 imap_email: val.dataValues.email,
-                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject),
+                                                                                send_template_count: tag.count || 0,
+                                                                                template_id: tag.template_id || []
                                                                             });
                                                                             detail.save(function(err) {
                                                                                 if (err) {
@@ -390,7 +394,7 @@ module.exports = {
                                             let row = val.dataValues;
                                             let left_days;
                                             if (row.days_left_to_fetched) {
-                                                if(!row.fetched_date_till){
+                                                if (!row.fetched_date_till) {
                                                     row.fetched_date_till = new Date();
                                                 }
                                                 date = moment(new Date(row.fetched_date_till)).format("MMM DD, YYYY");
@@ -471,7 +475,9 @@ module.exports = {
                                                                                         default_tag: tag.default_tag_id || "",
                                                                                         is_attachment: attach || false,
                                                                                         imap_email: val.dataValues.email,
-                                                                                        genuine_applicant: GENERIC.Genuine_Applicant(subject)
+                                                                                        genuine_applicant: GENERIC.Genuine_Applicant(subject),
+                                                                                        send_template_count: tag.count || 0,
+                                                                                        template_id: tag.template_id || []
                                                                                     });
                                                                                     detail.save(function(err) {
                                                                                         if (err) {
