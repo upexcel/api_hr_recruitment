@@ -41,7 +41,9 @@ export default function() {
         months_list: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         user: "By Cron",
         selected: "Selected",
-        reminder: "Reminder Email, Your Interview is Scheduled On"
+        reminder: "Reminder Email, Your Interview is Scheduled On",
+        pending_work: "pending_candidate",
+        not_replied: "not_replied"
     };
     return constant;
 }

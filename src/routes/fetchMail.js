@@ -50,6 +50,9 @@ export default (app) => {
     /*getting email for last inputed dates*/
     app.route("/fetch/emails/:days").get(auth.requiresAdmin, fetch_email.fetchByDates)
 
+    /*send email to not replied candidate*/
+    app.route("/sendToNotReplied").post(auth.requiresAdminOrHr, fetch_email.sendToNotReplied)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

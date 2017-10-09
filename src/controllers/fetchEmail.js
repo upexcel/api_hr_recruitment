@@ -201,6 +201,12 @@ export class FetchController extends BaseAPIController {
             this.handleSuccessResponse(req, res, next, { status: "SUCCESS" })
         }).catch((err) => { console.log(err) })
     }
+
+    sendToNotReplied = (req, res, next) => {
+        email_process.sendToNotReplied(req).then((response)=>{
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
 }
 
 const controller = new FetchController();

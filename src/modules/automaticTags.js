@@ -67,7 +67,7 @@ module.exports = {
                                                                 email_log.emailLog(logs, response)
                                                                     .then((data) => {
                                                                         if (response.status) {
-                                                                            resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1 })
+                                                                            resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1, count: 1, template_id: template_id[0] })
                                                                         } else {
                                                                             resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0 })
                                                                         }

@@ -42,7 +42,9 @@ module.exports = function() {
         send_template: { type: String },
         read_email_time: { type: Date },
         read_by_user: { type: String },
-        reminder_send: { type: Boolean }
+        reminder_send: { type: Boolean },
+        send_template_count: { type: Number },
+        template_id: { type: Array }
     }, {
         collection: "emailStored",
         strict: true,
@@ -59,7 +61,7 @@ module.exports = function() {
         user: { type: String },
         subject: { type: String },
         body: { type: String },
-        tag_id: { type: Array }
+        tag_id: { type: Array },
     }, {
         collection: 'emaillogs',
         strict: true
