@@ -53,6 +53,9 @@ export default (app) => {
     /*send email to not replied candidate*/
     app.route("/sendToNotReplied").post(auth.requiresAdminOrHr, fetch_email.sendToNotReplied)
 
+    /*send email by selection*/
+    app.route("/email/by_seclection").post(auth.requiresAdminOrHr, fetch_email.sendBySelection)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

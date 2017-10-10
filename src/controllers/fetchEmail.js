@@ -203,7 +203,13 @@ export class FetchController extends BaseAPIController {
     }
 
     sendToNotReplied = (req, res, next) => {
-        email_process.sendToNotReplied(req).then((response)=>{
+        email_process.sendToNotReplied(req).then((response) => {
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
+
+    sendBySelection = (req, res, next) => {
+        email_process.sendBySelection(req).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })
     }

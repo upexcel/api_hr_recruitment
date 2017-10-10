@@ -3,12 +3,13 @@ import smtpTransport from "nodemailer-smtp-transport";
 import config from "../config";
 import emailExistence from "email-existence";
 import constant from "../models/constant";
+import moment from "moment";
 let helper = require('sendgrid').mail;
 
 module.exports = {
     sendMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
-            html += constant().add_html_suffix_email_tracking;
+            html += constant().add_html_suffix_email_tracking + "&tid=" + config.TRACKING_ID + "&cid=" + config.CLIENT_ID + "&t=event&ec=" + subject + "_  " + moment().format("YYYY-MM-DD") + "&ea=open&el=" + email + "\"/>";
             if (!from.email)
                 from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
             let mailer = nodemailer.createTransport(smtpTransport({
