@@ -170,8 +170,67 @@ let sendEmailToNotRepliedCandidate = (cron_service, logs, email) => {
         })
     });
 }
+
+let sendToSelected = (cron_service, logs, email) => {
+    return new Promise((resolve, reject) => {
+        cron_service.findOne({ status: 1, work: constant().selectedCandidate }).then((cronWorkData) => {
+            if (cronWorkData != null ? cronWorkData.get('candidate_list').length : false) {
+                db.Smtp.findOne({ where: { status: 1 } }).then((smtp) => {
+                    let email = cronWorkData.get('candidate_list')[0];
+                    mail.sendMail(email, cronWorkData.get('subject'), constant().smtp.text, smtp, cronWorkData.get('body')).then((mail_response) => {
+                        email_log.emailLog(logs, mail_response)
+                            .then((log_response) => {
+                                cron_service.findOneAndUpdate({ _id: cronWorkData._id }, { "$pull": { candidate_list: email } }).then((updated_cronWork) => {
+                                    resolve("SUCCESS")
+                                })
+                            })
+                    })
+                })
+            } else {
+                if (!cronWorkData) {
+                    resolve("Nothing In Pending")
+                } else {
+                    cron_service.findOneAndUpdate({ _id: cronWorkData.get('_id') }, { status: 0 }).then((updated_cronWork) => {
+                        resolve("Nothing In Pending")
+                    })
+                }
+            }
+        })
+    });
+}
+
+let sendToAll = (cron_service, logs, email) => {
+    return new Promise((resolve, reject) => {
+        cron_service.findOne({ status: 1, work: constant().sendToAll }).then((cronWorkData) => {
+            if (cronWorkData != null ? cronWorkData.get('candidate_list').length : false) {
+                db.Smtp.findOne({ where: { status: 1 } }).then((smtp) => {
+                    let email_data = cronWorkData.get('candidate_list')[0];
+                    console.log(email_data)
+                    mail.sendMail(email_data, cronWorkData.get('subject'), constant().smtp.text, smtp, cronWorkData.get('body')).then((mail_response) => {
+                        email_log.emailLog(logs, mail_response)
+                            .then((log_response) => {
+                                cron_service.findOneAndUpdate({ _id: cronWorkData._id }, { "$pull": { candidate_list: email_data } }).then((updated_cronWork) => {
+                                    resolve("SUCCESS")
+                                })
+                            })
+                    })
+                })
+            } else {
+                if (!cronWorkData) {
+                    resolve("Nothing In Pending")
+                } else {
+                    cron_service.findOneAndUpdate({ _id: cronWorkData.get('_id') }, { status: 0 }).then((updated_cronWork) => {
+                        resolve("Nothing In Pending")
+                    })
+                }
+            }
+        })
+    });
+}
 export default {
     reminderMail,
     sendEmailToPendingCandidate,
-    sendEmailToNotRepliedCandidate
+    sendEmailToNotRepliedCandidate,
+    sendToSelected,
+    sendToAll
 }

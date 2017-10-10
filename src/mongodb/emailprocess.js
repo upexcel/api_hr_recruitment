@@ -402,58 +402,25 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
 
 let sendToMany = (req, email_list, subject, body, tag_id, default_id, email) => {
     return new Promise((resolve, reject) => {
-        let email_send_success_list = [];
-        let email_send_fail_list = [];
-        let result = [];
-        let emails = [];
         let where;
-        db.Smtp.findOne({ where: { status: 1 } })
-            .then((smtp_email) => {
-                if (smtp_email) {
-                    if (!tag_id) {
-                        emails = email_list;
-                        sendmail(smtp_email, function(response) {
+        let emails = [];
+        if (tag_id && default_id) {
+            where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
+        } else {
+            where = { tag_id: { "$in": [tag_id.toString()] }, "default_tag": "" };
+        }
+        if (tag_id) {
+            email.find({ "$and": [where] }).exec(function(err, data) {
+                _.forEach(data, (val, key) => {
+                    emails.push(val.sender_mail)
+                    if (key == data.length - 1) {
+                        let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, candidate_list: emails, status: 1, work: constant().sendToAll, template_id: req.body.template_id })
+                        data.save(function(err, response) {
                             resolve(response)
                         })
-                    } else if (tag_id && default_id) {
-                        where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
-                    } else {
-                        where = { tag_id: { "$in": [tag_id.toString()] } };
                     }
-                    if (tag_id) {
-                        email.find({ "$and": [where] }).exec(function(err, data) {
-                            _.forEach(data, (val, key) => {
-                                emails.push(val.sender_mail)
-                            })
-                            sendmail(smtp_email, function(response) {
-                                resolve(response)
-                            })
-                        })
-                    }
-                } else {
-                    reject("No active smtp email found!!")
-                }
-            })
-
-        function sendmail(from, callback) {
-            let to_email = emails.splice(0, 1);
-            mail.sendMail(to_email[0], subject, "", from, body)
-                .then((resp) => {
-                    logs.emailLog(req, resp)
-                        .then((response) => {
-                            if (resp.status) {
-                                email_send_success_list.push(to_email[0])
-                            } else {
-                                email_send_fail_list.push(to_email[0])
-                            }
-                            if (emails.length) {
-                                sendmail(from, callback)
-                            } else {
-                                callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
-                            }
-                        })
                 })
-                .catch((err) => { reject(err) })
+            })
         }
     })
 }
@@ -819,6 +786,16 @@ let sendToNotReplied = (req) => {
         })
     });
 }
+
+let sendBySelection = (req) => {
+    return new Promise((resolve, reject) => {
+        let sender_mail_array = []
+        let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, candidate_list: req.body.emails, status: 1, work: constant().selectedCandidate, template_id: req.body.template_id })
+        data.save(function(err, response) {
+            resolve({ no_of_candidate: req.body.emails.length, message: "CronWork Is Started..." })
+        })
+    })
+}
 export default {
     fetchEmail,
     findcount,
@@ -835,5 +812,6 @@ export default {
     app_get_candidate,
     checkEmailStatus,
     findEmailByDates,
-    sendToNotReplied
+    sendToNotReplied,
+    sendBySelection
 }

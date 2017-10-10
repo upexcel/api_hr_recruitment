@@ -22,13 +22,19 @@ export class CronController {
         }, null, true);
     }
 
-    PendingEmails(cron_service, logs, email){
-        new CronJob("*/1 * * * *", function(){
+    PendingEmails(cron_service, logs, email) {
+        new CronJob("*/1 * * * *", function() {
             service.sendEmailToPendingCandidate(cron_service, logs, email)
-                .then((response)=>{
+                .then((response) => {
                     service.sendEmailToNotRepliedCandidate(cron_service, logs, email)
-                        .then((email_status)=>{
-                            console.log(response, email_status)
+                        .then((email_status) => {
+                            service.sendToSelected(cron_service, logs, email)
+                                .then((selected_response) => {
+                                    service.sendToAll(cron_service, logs, email)
+                                        .then((send_to_all_response) => {
+                                            console.log(response, email_status, selected_response, send_to_all_response)
+                                        })
+                                })
                         })
                 })
         }, null, true)
