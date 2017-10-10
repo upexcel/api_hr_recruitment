@@ -10,6 +10,7 @@ module.exports = {
     sendMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
             html += constant().add_html_suffix_email_tracking + "&tid=" + config.TRACKING_ID + "&cid=" + config.CLIENT_ID + "&t=event&ec=" + subject + "_  " + moment().format("YYYY-MM-DD") + "&ea=open&el=" + email + "\"/>";
+            console.log(html)
             if (!from.email)
                 from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
             let mailer = nodemailer.createTransport(smtpTransport({
