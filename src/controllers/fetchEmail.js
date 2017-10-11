@@ -213,6 +213,12 @@ export class FetchController extends BaseAPIController {
             this.handleSuccessResponse(req, res, next, response)
         })
     }
+
+    cron_status = (req, res, next)=>{
+        email_process.cron_status(req).then((response) => {
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
 }
 
 const controller = new FetchController();

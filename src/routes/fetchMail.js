@@ -56,6 +56,9 @@ export default (app) => {
     /*send email by selection*/
     app.route("/email/by_seclection").post(auth.requiresAdminOrHr, fetch_email.sendBySelection)
 
+    /*count of pending work*/
+    app.route("/email/cron_status").post(auth.requiresAdminOrHr, fetch_email.cron_status)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 
