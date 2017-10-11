@@ -23,7 +23,7 @@ export class CronController {
     }
 
     PendingEmails(cron_service, logs, email) {
-        new CronJob("*/100 * * * *", function() {
+        new CronJob("*/1 * * * *", function() {
             service.sendEmailToPendingCandidate(cron_service, logs, email)
                 .then((response) => {
                     service.sendEmailToNotRepliedCandidate(cron_service, logs, email)
