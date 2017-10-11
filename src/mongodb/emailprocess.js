@@ -119,7 +119,6 @@ const findcount = (mongodb) => {
                             })
                             findCount(tagId, function(data) {
                                 findAttachmentMailsCount(function(attachment_count) {
-                                    // console.log(attachment_count)
                                     data.push(attachment_count)
                                     count1 = []
                                     let mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count, type: constant().tagType.automatic }
