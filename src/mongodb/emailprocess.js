@@ -804,7 +804,6 @@ let cron_status = (req) => {
     })
 
     function findCronStatus(data, callback) {
-        let final_response = []
         findPendingCandidate(data, function(pending_candidate_status) {
             sendToAll(data, function(send_to_all_status) {
                 notRepliedCandidate(data, function(notRepliedCandidate) {
@@ -813,8 +812,7 @@ let cron_status = (req) => {
                         send_to_all_status:send_to_all_status,
                         notRepliedCandidate:notRepliedCandidate
                     }
-                   final_response.push(response)
-                   callback(final_response)
+                   callback(response)
                 })
             })
         })
