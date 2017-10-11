@@ -18,9 +18,7 @@ let dashboard = (db, req) => {
                 findEmailStats(function(email_per_day_stat) {
                     job_profile_response["email_stat"] = email_per_day_stat;
                     candidateSelectionPerMonth(function(selected_candidate_stats_month) {
-                        month_wise_stats.push(selected_candidate_stats_month)
                         candidateSelectionPerDay(function(selected_candidate_stats_date) {
-                            day_wise_data.push(selected_candidate_stats_date)
                             job_profile_response['read_email_data'] = read_email
                             jobReadByUser(function(job_read_by_user) {
                                 job_profile_response['read_mail_by_user'] = job_read_by_user;
@@ -132,20 +130,22 @@ let dashboard = (db, req) => {
         function roundDistribution(profile, callback) {
             let count = 0
             let data = []
-            req.email.find({ tag_id: profile.id.toString() }, { shedule_for: 1 }).exec(function(err, job_profile_data) {
+            let default_data = []
+            req.email.find({ tag_id: profile.id.toString() }, { default_tag: 1 }).exec(function(err, job_profile_data) {
                 getRounds(function(round_info) {
-                    _.forEach(constant().shedule_for, (val, key) => {
+                    _.forEach(round_info, (val, key) => {
                         count = 0
                         _.forEach(job_profile_data, (val1, key1) => {
-                            if (val.value == val1.shedule_for) {
+                            if (val.id.toString() == val1.default_tag) {
                                 count++
                             }
                             if (key1 == job_profile_data.length - 1) {
+                                default_data.push(val.title)
                                 data.push(count)
                             }
                         })
                         if (key == constant().shedule_for.length - 1) {
-                            round_data.push({ data: data, label: profile.title, rounds: rounds })
+                            round_data.push({ data: data, label: profile.title+" ( "+job_profile_data.length+" )", rounds: default_data })
                             callback(round_data)
                         }
                     })
@@ -154,13 +154,8 @@ let dashboard = (db, req) => {
         }
 
         function getRounds(callback) {
-            _.forEach(constant().shedule_for, (val, key) => {
-                if (rounds.indexOf(val.text) < 0) {
-                    rounds.push(val.text)
-                }
-                if (key == constant().shedule_for.length - 1) {
-                    callback(rounds)
-                }
+            db.Tag.findAll({where:{type:constant().tagType.default}}).then((default_tag)=>{
+                callback(default_tag)
             })
         }
 
