@@ -10,7 +10,7 @@ import pushMessage from '../service/pushmessage';
 import crypto from "crypto";
 import logs from "../service/emaillogs";
 
-const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db) => {
+const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db, is_attach) => {
     return new Promise((resolve, reject) => {
         let message;
         let default_tag_id = []
@@ -31,15 +31,22 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             if (default_id) {
                 where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
             } else {
-                where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                if (!is_attach) {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                } else {
+                    where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [], is_attachment: true }
+                }
             }
         } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
             if (default_id) {
                 where = { 'subject': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
             } else {
-                where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                if (!is_attach) {
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                } else {
+                    where = { 'subject': { "$regex": keyword, '$options': 'i' }, "tag_id": [], is_attachment: true }
+                }
             }
-
         } else
         if ((type == "email") && tag_id) {
             if (default_tag_id.indexOf(default_id) >= 0) {
@@ -54,8 +61,11 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
                 where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
             }
         } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-
-            where = { tag_id: { $size: 0 } };
+            if (!is_attach) {
+                where = { tag_id: { $size: 0 }, is_attachment: 0 };
+            } else {
+                where = { tag_id: { $size: 0 }, is_attachment: 1 };
+            }
         } else {
             if (default_tag_id.indexOf(default_id) >= 0) {
                 where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
@@ -90,12 +100,17 @@ const findcount = (mongodb) => {
                 _.forEach(tags, (val, key) => {
                     tagId.push(val)
                 })
-                db.Tag.findAll({ where: { type: constant().tagType.automatic, is_job_profile_tag: 1 } })
+                db.Tag.findAll({
+                        where: { type: constant().tagType.automatic, is_job_profile_tag: 1 },
+                        order: [
+                            ['priority', 'ASC']
+                        ]
+                    })
                     .then((candidate) => {
                         _.forEach(candidate, (val, key) => {
                             candidate_list.push(val)
                         })
-                        mongodb.find({ tag_id: [] }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                        mongodb.find({ tag_id: [], is_attachment: false }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
                             mails_total_count = result.length;
                             _.forEach(result, (val, key) => {
                                 if (val.unread === true) {
@@ -103,30 +118,49 @@ const findcount = (mongodb) => {
                                 }
                             })
                             findCount(tagId, function(data) {
-                                count1 = []
-                                let mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count, type: constant().tagType.automatic }
-                                data.push(mails)
-                                let default_id1 = [];
-                                _.forEach(data, (val, key) => {
-                                    delete val.subchild
-                                    final_data.push(val)
-                                })
-                                db.Tag.findAll({ where: { type: constant().tagType.default } })
-                                    .then((default_tag) => {
-                                        _.forEach(default_tag, (val, key) => {
-                                            if (val.title != constant().tagType.genuine) {
-                                                default_id1.push(val);
-                                            }
-                                        })
-                                        findCount(candidate_list, function(data1) {
-                                            let array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
-                                            resolve({ data: array })
-                                        })
+                                findAttachmentMailsCount(function(attachment_count) {
+                                    // console.log(attachment_count)
+                                    data.push(attachment_count)
+                                    count1 = []
+                                    let mails = { title: "Mails", id: 0, unread: mails_unread_count, count: mails_total_count, type: constant().tagType.automatic }
+                                    data.push(mails)
+                                    let default_id1 = [];
+                                    _.forEach(data, (val, key) => {
+                                        delete val.subchild
+                                        final_data.push(val)
                                     })
+                                    db.Tag.findAll({ where: { type: constant().tagType.default } })
+                                        .then((default_tag) => {
+                                            _.forEach(default_tag, (val, key) => {
+                                                if (val.title != constant().tagType.genuine) {
+                                                    default_id1.push(val);
+                                                }
+                                            })
+                                            findCount(candidate_list, function(data1) {
+                                                let array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
+                                                resolve({ data: array })
+                                            })
+                                        })
+                                })
                             })
                         })
                     })
             })
+
+        function findAttachmentMailsCount(callback) {
+            mongodb.find({ tag_id: [], is_attachment: true }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
+                let attachment_mail_total_count = result.length;
+                let attachment_mail_unread_count = 0;
+                _.forEach(result, (val, key) => {
+                    if (val.unread === true) {
+                        attachment_mail_unread_count++;
+                    }
+                    if (key == result.length - 1) {
+                        callback({ title: "Attachment", id: null, unread: attachment_mail_unread_count, count: attachment_mail_total_count, type: constant().tagType.automatic })
+                    }
+                })
+            })
+        }
 
         function findDefaultCount(default_tag_id, callback) {
             if (default_tag_id.length == 0) {
@@ -343,7 +377,7 @@ let assignMultiple = (tag_id, body, email) => {
     })
 }
 
-let fetchById = (type, keyword, selected, default_id, tag_id) => {
+let fetchById = (type, keyword, selected, default_id, tag_id, is_attach) => {
     return new Promise((resolve, reject) => {
         db.Tag.findAll({ where: { type: constant().tagType.default } })
             .then((default_tag) => {
@@ -351,41 +385,52 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
                 _.forEach(default_tag, (val, key) => {
                     default_tag_id.push(val.id.toString())
                 })
-                let where = '';
+                let where = ""
                 if ((type == "email") && (!selected) && (!isNaN(tag_id) == false)) {
 
                     where = { 'sender_mail': { "$regex": keyword, '$options': 'i' } }
                 } else if ((type == "subject") && (!selected) && (!isNaN(tag_id) == false)) {
 
                     where = { 'subject': { "$regex": keyword, '$options': 'i' } }
-                } else if ((type == "email") && (selected == true) && (!isNaN(tag_id) == false)) {
+                } else if ((type == "email") && (selected == true) && ((!isNaN(tag_id) == false))) {
                     if (default_id) {
                         where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
                     } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                        if (!is_attach) {
+                            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                        } else {
+                            where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, "tag_id": [], is_attachment: true }
+                        }
                     }
                 } else if ((type == "subject") && (selected == true) && (!isNaN(tag_id) == false)) {
                     if (default_id) {
                         where = { 'subject': { "$regex": keyword, '$options': 'i' }, "default_tag": default_id }
                     } else {
-                        where = { 'subject': { "$regex": keyword, '$options': 'i' }, 'tag_id': [] }
+                        if (!is_attach) {
+                            where = { 'subject': { "$regex": keyword, '$options': 'i' }, "tag_id": [] }
+                        } else {
+                            where = { 'subject': { "$regex": keyword, '$options': 'i' }, "tag_id": [], is_attachment: true }
+                        }
                     }
                 } else
                 if ((type == "email") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, "tag_id": { $in: [tag_id] } }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
                     } else {
-                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] }, default_tag: "" }
+                        where = { 'sender_mail': { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
                     }
                 } else if ((type == "subject") && tag_id) {
                     if (default_tag_id.indexOf(default_id) >= 0) {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': { $in: [tag_id] } }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'default_tag': default_id, 'tag_id': tag_id }
                     } else {
-                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': { $in: [tag_id] }, default_tag: "" }
+                        where = { "subject": { "$regex": keyword, '$options': 'i' }, 'tag_id': tag_id, default_tag: "" }
                     }
                 } else if (!tag_id || !isNaN(tag_id) == false || tag_id <= 0) {
-
-                    where = { tag_id: { $size: 0 } };
+                    if (!is_attach) {
+                        where = { tag_id: { $size: 0 }, is_attachment: 0 };
+                    } else {
+                        where = { tag_id: { $size: 0 }, is_attachment: 1 };
+                    }
                 } else {
                     if (default_tag_id.indexOf(default_id) >= 0) {
                         where = { default_tag: default_id, tag_id: { $in: [tag_id] } }
@@ -808,11 +853,11 @@ let cron_status = (req) => {
             sendToAll(data, function(send_to_all_status) {
                 notRepliedCandidate(data, function(notRepliedCandidate) {
                     let response = {
-                        pending_candidate_status:pending_candidate_status,
-                        send_to_all_status:send_to_all_status,
-                        notRepliedCandidate:notRepliedCandidate
+                        pending_candidate_status: pending_candidate_status,
+                        send_to_all_status: send_to_all_status,
+                        notRepliedCandidate: notRepliedCandidate
                     }
-                   callback(response)
+                    callback(response)
                 })
             })
         })
@@ -821,14 +866,14 @@ let cron_status = (req) => {
     function findPendingCandidate(data, callback) {
         req.cronWork.find({ status: 1, work: constant().pending_work, tag_id: data.tag_id.toString }).then((pending_candidate) => {
             let count = 0;
-            if(pending_candidate.length){
-                _.forEach(pending_candidate, (val, key)=>{
+            if (pending_candidate.length) {
+                _.forEach(pending_candidate, (val, key) => {
                     count += val.get('candidate_list').length;
-                    if(key == pending_candidate.length -1){
+                    if (key == pending_candidate.length - 1) {
                         callback(count)
                     }
                 })
-            }else{
+            } else {
                 callback(count)
             }
         })
@@ -837,15 +882,15 @@ let cron_status = (req) => {
     function sendToAll(data, callback) {
         req.cronWork.find({ status: 1, work: constant().sendToAll, tag_id: data.tag_id.toString }).then((pending_candidate) => {
             let count = 0;
-            if(pending_candidate.length){
+            if (pending_candidate.length) {
                 let count = 0;
-                _.forEach(pending_candidate, (val, key)=>{
+                _.forEach(pending_candidate, (val, key) => {
                     count += val.get('candidate_list').length;
-                    if(key == pending_candidate.length -1){
+                    if (key == pending_candidate.length - 1) {
                         callback(count)
                     }
                 })
-            }else{
+            } else {
                 callback(count)
             }
         })
@@ -854,14 +899,14 @@ let cron_status = (req) => {
     function notRepliedCandidate(data, callback) {
         req.cronWork.find({ status: 1, work: constant().not_replied, tag_id: data.tag_id.toString }).then((pending_candidate) => {
             let count = 0;
-            if(pending_candidate.length){
-                _.forEach(pending_candidate, (val, key)=>{
+            if (pending_candidate.length) {
+                _.forEach(pending_candidate, (val, key) => {
                     count += val.get('candidate_list').length;
-                    if(key == pending_candidate.length -1){
+                    if (key == pending_candidate.length - 1) {
                         callback(count)
                     }
                 })
-            }else{
+            } else {
                 callback(count)
             }
         })
