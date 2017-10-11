@@ -402,58 +402,25 @@ let fetchById = (type, keyword, selected, default_id, tag_id) => {
 
 let sendToMany = (req, email_list, subject, body, tag_id, default_id, email) => {
     return new Promise((resolve, reject) => {
-        let email_send_success_list = [];
-        let email_send_fail_list = [];
-        let result = [];
-        let emails = [];
         let where;
-        db.Smtp.findOne({ where: { status: 1 } })
-            .then((smtp_email) => {
-                if (smtp_email) {
-                    if (!tag_id) {
-                        emails = email_list;
-                        sendmail(smtp_email, function(response) {
+        let emails = [];
+        if (tag_id && default_id) {
+            where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
+        } else {
+            where = { tag_id: { "$in": [tag_id.toString()] }, "default_tag": "" };
+        }
+        if (tag_id) {
+            email.find({ "$and": [where] }).exec(function(err, data) {
+                _.forEach(data, (val, key) => {
+                    emails.push(val.sender_mail)
+                    if (key == data.length - 1) {
+                        let data = new req.cronWork({ body: req.body.body, tag_id: tag_id.toString(), subject: req.body.subject, user: req.user.email, candidate_list: emails, status: 1, work: constant().sendToAll, template_id: req.body.template_id })
+                        data.save(function(err, response) {
                             resolve(response)
                         })
-                    } else if (tag_id && default_id) {
-                        where = { "tag_id": { "$in": [tag_id.toString()] }, "default_tag": default_id.toString() };
-                    } else {
-                        where = { tag_id: { "$in": [tag_id.toString()] } };
                     }
-                    if (tag_id) {
-                        email.find({ "$and": [where] }).exec(function(err, data) {
-                            _.forEach(data, (val, key) => {
-                                emails.push(val.sender_mail)
-                            })
-                            sendmail(smtp_email, function(response) {
-                                resolve(response)
-                            })
-                        })
-                    }
-                } else {
-                    reject("No active smtp email found!!")
-                }
-            })
-
-        function sendmail(from, callback) {
-            let to_email = emails.splice(0, 1);
-            mail.sendMail(to_email[0], subject, "", from, body)
-                .then((resp) => {
-                    logs.emailLog(req, resp)
-                        .then((response) => {
-                            if (resp.status) {
-                                email_send_success_list.push(to_email[0])
-                            } else {
-                                email_send_fail_list.push(to_email[0])
-                            }
-                            if (emails.length) {
-                                sendmail(from, callback)
-                            } else {
-                                callback({ data: [{ email_send_success_list: email_send_success_list, email_send_fail_list: email_send_fail_list, message: "mail sent successfully" }] })
-                            }
-                        })
                 })
-                .catch((err) => { reject(err) })
+            })
         }
     })
 }
@@ -469,7 +436,7 @@ let sendToSelectedTag = (req, id, email) => {
                         .then((template) => {
                             if (template) {
                                 email.find({ 'tag_id': { $in: [id.toString()] }, "$or": [{ is_automatic_email_send: 0 }, { is_automatic_email_send: { "$exists": false } }] }, { "_id": 1, "sender_mail": 1, "from": 1, "subject": 1, "tag_id": 1 }).exec(function(err, result) {
-                                    let data = new req.cronWork({ tag_id: id, candidate_list: result, template_id: template.id, user: req.user.email, status: 1 });
+                                    let data = new req.cronWork({ tag_id: id.toString(), candidate_list: result, template_id: template.id, user: req.user.email, work: constant().pending_work, status: 1 });
                                     data.save(function(err, response) {
                                         if (err) {
                                             reject(err)
@@ -797,6 +764,110 @@ let findEmailByDates = (days) => {
         })
     })
 }
+
+let sendToNotReplied = (req) => {
+    return new Promise((resolve, reject) => {
+        let sender_mail_array = []
+        db.Tag.findOne({ where: { title: constant().tagType.genuine } }).then((default_tag) => {
+            req.email.find({ tag_id: req.body.tag_id, default_tag: default_tag.id.toString() }, { sender_mail: 1 }).then((sender_mail_data) => {
+                _.forEach(sender_mail_data, (val, key) => {
+                    sender_mail_array.push(val.sender_mail)
+                    if (key == sender_mail_data.length - 1) {
+                        req.email.find({ tag_id: req.body.tag_id.toString(), sender_mail: { $not: { $in: sender_mail_array } }, default_tag: "", "$or": [{ send_template_count: { "$exists": false } }, { send_template_count: { $lte: 3 } }], template_id: { $ne: parseInt(req.body.template_id) } }, { sender_mail: 1, from: 1 }).then((candidate_list) => {
+                            let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, tag_id: req.body.tag_id, default_tag: req.body.default_tag, candidate_list: candidate_list, status: 1, work: constant().not_replied, template_id: req.body.template_id })
+                            data.save(function(err, response) {
+                                resolve({ no_of_candidate: candidate_list.length, message: "CronWork Is Started..." })
+                            })
+                        })
+                    }
+                })
+            })
+        })
+    });
+}
+
+let sendBySelection = (req) => {
+    return new Promise((resolve, reject) => {
+        let sender_mail_array = []
+        let data = new req.cronWork({ body: req.body.body, subject: req.body.subject, user: req.user.email, candidate_list: req.body.emails, status: 1, work: constant().selectedCandidate, template_id: req.body.template_id })
+        data.save(function(err, response) {
+            resolve({ no_of_candidate: req.body.emails.length, message: "CronWork Is Started..." })
+        })
+    })
+}
+
+let cron_status = (req) => {
+    return new Promise((resolve, reject) => {
+        findCronStatus(req.body, function(response) {
+            resolve(response)
+        })
+    })
+
+    function findCronStatus(data, callback) {
+        findPendingCandidate(data, function(pending_candidate_status) {
+            sendToAll(data, function(send_to_all_status) {
+                notRepliedCandidate(data, function(notRepliedCandidate) {
+                    let response = {
+                        pending_candidate_status:pending_candidate_status,
+                        send_to_all_status:send_to_all_status,
+                        notRepliedCandidate:notRepliedCandidate
+                    }
+                   callback(response)
+                })
+            })
+        })
+    }
+
+    function findPendingCandidate(data, callback) {
+        req.cronWork.find({ status: 1, work: constant().pending_work, tag_id: data.tag_id.toString }).then((pending_candidate) => {
+            let count = 0;
+            if(pending_candidate.length){
+                _.forEach(pending_candidate, (val, key)=>{
+                    count += val.get('candidate_list').length;
+                    if(key == pending_candidate.length -1){
+                        callback(count)
+                    }
+                })
+            }else{
+                callback(count)
+            }
+        })
+    }
+
+    function sendToAll(data, callback) {
+        req.cronWork.find({ status: 1, work: constant().sendToAll, tag_id: data.tag_id.toString }).then((pending_candidate) => {
+            let count = 0;
+            if(pending_candidate.length){
+                let count = 0;
+                _.forEach(pending_candidate, (val, key)=>{
+                    count += val.get('candidate_list').length;
+                    if(key == pending_candidate.length -1){
+                        callback(count)
+                    }
+                })
+            }else{
+                callback(count)
+            }
+        })
+    }
+
+    function notRepliedCandidate(data, callback) {
+        req.cronWork.find({ status: 1, work: constant().not_replied, tag_id: data.tag_id.toString }).then((pending_candidate) => {
+            let count = 0;
+            if(pending_candidate.length){
+                _.forEach(pending_candidate, (val, key)=>{
+                    count += val.get('candidate_list').length;
+                    if(key == pending_candidate.length -1){
+                        callback(count)
+                    }
+                })
+            }else{
+                callback(count)
+            }
+        })
+    }
+}
+
 export default {
     fetchEmail,
     findcount,
@@ -812,5 +883,8 @@ export default {
     getFetchedMailCount,
     app_get_candidate,
     checkEmailStatus,
-    findEmailByDates
+    findEmailByDates,
+    sendToNotReplied,
+    sendBySelection,
+    cron_status
 }

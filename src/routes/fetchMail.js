@@ -50,6 +50,15 @@ export default (app) => {
     /*getting email for last inputed dates*/
     app.route("/fetch/emails/:days").get(auth.requiresAdmin, fetch_email.fetchByDates)
 
+    /*send email to not replied candidate*/
+    app.route("/sendToNotReplied").post(auth.requiresAdminOrHr, fetch_email.sendToNotReplied)
+
+    /*send email by selection*/
+    app.route("/email/by_seclection").post(auth.requiresAdminOrHr, fetch_email.sendBySelection)
+
+    /*count of pending work*/
+    app.route("/email/cron_status").post(auth.requiresAdminOrHr, fetch_email.cron_status)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

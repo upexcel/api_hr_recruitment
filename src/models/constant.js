@@ -41,7 +41,15 @@ export default function() {
         months_list: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
         user: "By Cron",
         selected: "Selected",
-        reminder: "Reminder Email, Your Interview is Scheduled On"
+        reminder: "Reminder Email, Your Interview is Scheduled On",
+        pending_work: "pending_candidate",
+        not_replied: "not_replied",
+        add_html_suffix_email_tracking: '<img src="https://www.google-analytics.com/collect?v=1',
+        selectedCandidate: 'selected_candidate',
+        sendToAll: 'send_to_all',
+        app_name:"ExcellenceHrRecruit",
+        campaign_name:"seenReply",
+        campaign_source:"ExcellenceTechnosoftPvtLtd"
     };
     return constant;
 }
