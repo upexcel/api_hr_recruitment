@@ -23,6 +23,9 @@ export default (app) => {
     /*Get shedules*/
     app.route("/get/shedule").get(auth.requiresAdminOrHr, tag.getShedule);
 
+    /*set priority of job profile*/
+    app.route("/update/priority").put(auth.requiresAdminOrHr, tag.updatePriority);
+
     app.param("tagId", tag.idResult);
 
     return app;

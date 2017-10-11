@@ -96,7 +96,7 @@ export class TagController extends BaseAPIController {
 
     /* Get all tag */
     getAllTag = (req, res, next) => {
-        this._db.Tag.findAll({ order: '`id` ASC' })
+        this._db.Tag.findAll({ order: '`priority` ASC' })
             .then((data) => this.handleSuccessResponse(req, res, next, data))
             .catch(this.handleErrorResponse.bind(null, res));
     }
@@ -127,6 +127,13 @@ export class TagController extends BaseAPIController {
         email_process.getShedule(req.email)
             .then((result) => { this.handleSuccessResponse(req, res, next, result) })
             .catch(this.handleErrorResponse)
+    }
+
+    /*updatePriority*/
+    updatePriority = (req, res, next) =>{
+        this._db.Tag.updatePriority(req.body).then((response)=>{
+            this.handleSuccessResponse(req, res, next, response)
+        })
     }
 
 }
