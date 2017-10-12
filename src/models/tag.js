@@ -39,6 +39,11 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.STRING,
             defaultValue: "",
             allowNull: true
+        },
+        priority: {
+            type: DataTypes.STRING,
+            defaultValue: 0,
+            allowNull: true
         }
     }, {
         hooks: {
@@ -140,6 +145,24 @@ export default function(sequelize, DataTypes) {
                         }
                     })
                 });
+            },
+            updatePriority(body) {
+                return new Promise((resolve, reject) => {
+                    update_priority(body, function(response) {
+                        resolve(response)
+                    })
+                });
+
+                function update_priority(body, callback) {
+                    let data = body.splice(0, 1)[0];
+                    Tag.update({ priority: data.priority }, { where: { id: data.id } }).then((update_response) => {
+                        if(body.length){
+                            update_priority(body, callback)
+                        }else{
+                            callback("new priority is set")
+                        }
+                    })
+                }
             }
         },
         associate: (models) => {

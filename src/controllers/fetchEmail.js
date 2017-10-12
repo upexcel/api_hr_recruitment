@@ -16,10 +16,10 @@ export class FetchController extends BaseAPIController {
     /* Get INBOX data */
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
-        let { type, keyword, selected, default_id } = req.body;
+        let { type, keyword, selected, default_id, is_attach } = req.body;
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
-                email_process.fetchEmail(page, tag_id, limit, type, keyword, selected, default_id, default_tag, req.email)
+                email_process.fetchEmail(page, tag_id, limit, type, keyword, selected, default_id, default_tag, req.email,is_attach)
                     .then((data, message) => {
                         this.handleSuccessResponse(req, res, next, {
                             data: data,
@@ -129,8 +129,8 @@ export class FetchController extends BaseAPIController {
 
 
     findByTagId = (req, res, next, tag_id) => {
-        let { type, keyword, selected, default_id } = req.body;
-        email_process.fetchById(type, keyword, selected, default_id, tag_id)
+        let { type, keyword, selected, default_id ,is_attach} = req.body;
+        email_process.fetchById(type, keyword, selected, default_id, tag_id, is_attach)
             .then((data) => {
                 this.getCount(req, res, next, data)
             })
@@ -214,7 +214,7 @@ export class FetchController extends BaseAPIController {
         })
     }
 
-    cron_status = (req, res, next)=>{
+    cron_status = (req, res, next) => {
         email_process.cron_status(req).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })
