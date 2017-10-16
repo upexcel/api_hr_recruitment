@@ -72,11 +72,12 @@ const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, de
             } else if (default_tag_id.indexOf(tag_id) >= 0) {
                 where = { default_tag: tag_id }
             } else {
-                where = { tag_id: { $in: [tag_id] }, default_tag: "" }
+                where = { tag_id: { $in: [tag_id] }, default_tag: ""}
             }
         }
-        db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1, "mobile_no": 1 }).sort({ date: -1 }).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
+        db.find(where, { "_id": 1, "date": 1, "email_date": 1, "is_automatic_email_send": 1, "from": 1, "sender_mail": 1, "subject": 1, "unread": 1, "attachment": 1, "tag_id": 1, "is_attachment": 1, "default_tag": 1, "mobile_no": 1 },{sort: { date: -1 }}).skip((page - 1) * parseInt(limit)).limit(parseInt(limit)).exec((err, data) => {
             if (err) {
+                console.log(err)
                 reject(err);
             } else {
                 resolve(data, message);
