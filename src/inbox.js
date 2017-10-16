@@ -204,6 +204,7 @@ module.exports = {
                 "active": true
             }
         }).then(function(docs, err) {
+            let count = 0;
             if (docs[0] != null) {
                 _.forEach(docs, (val, key) => {
                     imapService.imapCredential(val)
@@ -230,7 +231,7 @@ module.exports = {
                                             } else if (results.length) {
                                                 db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
                                                     .then((last_updated_time) => { console.log("last time updated") })
-                                                let count = results.length
+                                                count = results.length
                                                 var f = imap.fetch(results, {
                                                     bodies: "",
                                                     struct: true
