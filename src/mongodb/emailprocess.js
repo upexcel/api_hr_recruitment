@@ -103,9 +103,7 @@ const findcount = (mongodb) => {
                 })
                 db.Tag.findAll({
                         where: { type: constant().tagType.automatic, is_job_profile_tag: 1 },
-                        order: [
-                            ['priority', 'ASC']
-                        ]
+                        order: '`priority` ASC'
                     })
                     .then((candidate) => {
                         _.forEach(candidate, (val, key) => {
