@@ -156,7 +156,6 @@ const findcount = (mongodb) => {
                             attachment_mail_unread_count++;
                         }
                         if (key == result.length - 1) {
-                            console.log("=======================")
                             callback({ title: "Attachment", id: null, unread: attachment_mail_unread_count, count: attachment_mail_total_count, type: constant().tagType.automatic })
                         }
                     })
