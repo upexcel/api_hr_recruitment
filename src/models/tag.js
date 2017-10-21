@@ -118,19 +118,23 @@ export default function(sequelize, DataTypes) {
                 return new Promise((resolve, reject) => {
                     req.email.find({ tag_id: { $ne: tag.toString() } }).then((data) => {
                         let id = []
-                        _.map(data, (val, key) => {
-                            if ((val.subject.match(new RegExp(req.body.subject, 'gi'))) || ((req.body.to && req.body.from) && (new Date(val.date).getTime() < new Date(req.body.to).getTime() && new Date(val.date).getTime() > new Date(req.body.from).getTime())) || ((req.body.email) && (val.sender_mail.match(new RegExp(req.body.email, 'gi'))))) {
-                                id.push(val._id);
-                                if (key == (_.size(data) - 1)) {
-                                    assignTag(id)
+                        if (data.length) {
+                            _.map(data, (val, key) => {
+                                if ((val.subject.match(new RegExp(req.body.subject, 'gi'))) || ((req.body.to && req.body.from) && (new Date(val.date).getTime() < new Date(req.body.to).getTime() && new Date(val.date).getTime() > new Date(req.body.from).getTime())) || ((req.body.email) && (val.sender_mail.match(new RegExp(req.body.email, 'gi'))))) {
+                                    id.push(val._id);
+                                    if (key == (_.size(data) - 1)) {
+                                        assignTag(id)
+                                    }
+                                } else {
+                                    if (key == (_.size(data) - 1)) {
+                                        assignTag(id)
+                                    }
                                 }
-                            } else {
-                                if (key == (_.size(data) - 1)) {
-                                    assignTag(id)
-                                }
-                            }
 
-                        })
+                            })
+                        }else{
+                            resolve();
+                        }
 
                         function assignTag(id) {
                             let mongoId = id.splice(0, 100)
@@ -156,9 +160,9 @@ export default function(sequelize, DataTypes) {
                 function update_priority(body, callback) {
                     let data = body.splice(0, 1)[0];
                     Tag.update({ priority: data.priority }, { where: { id: data.id } }).then((update_response) => {
-                        if(body.length){
+                        if (body.length) {
                             update_priority(body, callback)
-                        }else{
+                        } else {
                             callback("new priority is set")
                         }
                     })
