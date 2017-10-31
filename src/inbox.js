@@ -99,7 +99,6 @@ module.exports = {
                                                                                 })
                                                                                 let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
                                                                                 let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                                sender_mail = email.replace(/[<>]/g, "");
                                                                                 if (!sender_mail) {
                                                                                     sender_mail = mail.from.value[0].address;
                                                                                 }
