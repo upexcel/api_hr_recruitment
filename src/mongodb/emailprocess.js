@@ -147,7 +147,6 @@ const findcount = (mongodb) => {
 
         function findAttachmentMailsCount(callback) {
             mongodb.find({ tag_id: [], is_attachment: true }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
-                console.log(result)
                 let attachment_mail_total_count = result.length;
                 let attachment_mail_unread_count = 0;
                 if (attachment_mail_total_count) {
@@ -725,30 +724,34 @@ let getFetchedMailCount = (imap_emails, email) => {
         function findCount(emails, callback) {
             let imap_data = "";
             let imap_email = emails.splice(0, 1)[0]
-            email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
-                imap_data = {
-                    active: imap_email.active,
-                    createdAt: imap_email.createdAt,
-                    email: imap_email.email,
-                    id: imap_email.id,
-                    imap_server: imap_email.imap_server,
-                    password: imap_email.password,
-                    server_port: imap_email.port,
-                    status: imap_email.status,
-                    type: imap_email.type,
-                    updatedAt: imap_email.updatedAt,
-                    fetched_email_count: data,
-                    fetched_mail_till: moment(imap_email.last_fetched_time).format("DD,MM,YYYY"),
-                    total_emails: imap_email.total_emails,
-                    days_left_to_fetched: imap_email.days_left_to_fetched
-                }
-                result.push(imap_data)
-                if (emails.length) {
-                    findCount(emails, callback)
-                } else {
-                    callback(result)
-                }
-            })
+            if (!imap_email) {
+                callback({})
+            } else {
+                email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
+                    imap_data = {
+                        active: imap_email.active,
+                        createdAt: imap_email.createdAt,
+                        email: imap_email.email,
+                        id: imap_email.id,
+                        imap_server: imap_email.imap_server,
+                        password: imap_email.password,
+                        server_port: imap_email.port,
+                        status: imap_email.status,
+                        type: imap_email.type,
+                        updatedAt: imap_email.updatedAt,
+                        fetched_email_count: data,
+                        fetched_mail_till: moment(imap_email.last_fetched_time).format("DD,MM,YYYY"),
+                        total_emails: imap_email.total_emails,
+                        days_left_to_fetched: imap_email.days_left_to_fetched
+                    }
+                    result.push(imap_data)
+                    if (emails.length) {
+                        findCount(emails, callback)
+                    } else {
+                        callback(result)
+                    }
+                })
+            }
         }
     })
 }
