@@ -147,7 +147,6 @@ const findcount = (mongodb) => {
 
         function findAttachmentMailsCount(callback) {
             mongodb.find({ tag_id: [], is_attachment: true }, { tag_id: 1, default_tag: 1, unread: 1 }).exec(function(err, result) {
-                console.log(result)
                 let attachment_mail_total_count = result.length;
                 let attachment_mail_unread_count = 0;
                 if (attachment_mail_total_count) {

@@ -15,7 +15,8 @@ export class ImapController extends BaseAPIController {
                 let tag = {
                     dataValues: {
                         email: dataValues.email,
-                        password: dataValues.password
+                        password: dataValues.password,
+                        last_fetched_time:dataValues.last_fetched_time
                     }
                 }
                 imapService.imapCredential(tag)

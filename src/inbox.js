@@ -85,19 +85,27 @@ module.exports = {
                                                                             let from, to, sender_mail, date, email_date, email_timestamp, subject;
                                                                             from = mail.from.value[0].name;
                                                                             to = mail.to.value[0].address;
-                                                                            sender_mail = mail.from.value[0].address
                                                                             date = mail.date
                                                                             email_date = mail.date
                                                                             email_timestamp = new Date(mail.date).getTime()
                                                                             subject = mail.subject;
-                                                                            if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
-                                                                                   let fwdedFrom = mail.text.split("\n");
-                                                                                   let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
-                                                                                   let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                                   sender_mail =email.replace(/[<>]/g, "") ;
-                                                                                   from = name;
-                                                                                   subject= (fwdedFrom[3].split(":"))[1];
-                                                                                 }   
+                                                                            if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
+                                                                                let fwdedFrom = mail.text.split("\n");
+                                                                                let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+                                                                                _.forEach(email_ids, (val, key) => {
+                                                                                    if (!val.slice(-26) == "@excellencetechnologies.in") {
+                                                                                        sender_mail = val;
+                                                                                    }
+                                                                                })
+                                                                                let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
+                                                                                let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
+                                                                                sender_mail = email.replace(/[<>]/g, "");
+                                                                                if (!sender_mail) {
+                                                                                    sender_mail = mail.from.value[0].address;
+                                                                                }
+                                                                                from = name;
+                                                                                subject = (fwdedFrom[3].split(":"))[1];
+                                                                            }
                                                                             let body = mail.html || mail.text || mail.textAsHtml
                                                                             automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
@@ -139,7 +147,6 @@ module.exports = {
                                                                                                 if (err) {
                                                                                                     console.log("Duplicate Data");
                                                                                                 } else {
-                                                                                                    console.log(tag)
                                                                                                     console.log("data saved successfully");
                                                                                                     if (!count && apiCall && (key == docs.length - 1)) {
                                                                                                         resolve({ message: "All data fetched successfully" });
@@ -273,14 +280,14 @@ module.exports = {
                                                             email_date = mail.date
                                                             email_timestamp = new Date(mail.date).getTime()
                                                             subject = mail.subject;
-                                                            if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
-                                                                    let fwdedFrom = mail.text.split("\n");
-                                                                    let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
-                                                                    let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                    sender_mail =email.replace(/[<>]/g, "") ;
-                                                                    from = name;
-                                                                    subject= (fwdedFrom[3].split(":"))[1];
-                                                               }       
+                                                            if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
+                                                                let fwdedFrom = mail.text.split("\n");
+                                                                let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
+                                                                let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
+                                                                sender_mail = email.replace(/[<>]/g, "");
+                                                                from = name;
+                                                                subject = (fwdedFrom[3].split(":"))[1];
+                                                            }
                                                             let body = mail.html || mail.text || mail.textAsHtml
                                                             automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
                                                                 .then((tag) => {
@@ -459,14 +466,14 @@ module.exports = {
                                                                     email_date = mail.date
                                                                     email_timestamp = new Date(mail.date).getTime()
                                                                     subject = mail.subject;
-                                                                     if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
-                                                                            let fwdedFrom = mail.text.split("\n");
-                                                                            let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
-                                                                            let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                            sender_mail =email.replace(/[<>]/g, "") ;
-                                                                            from = name;
-                                                                            subject= (fwdedFrom[3].split(":"))[1];
-                                                                       }  
+                                                                    if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
+                                                                        let fwdedFrom = mail.text.split("\n");
+                                                                        let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
+                                                                        let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
+                                                                        sender_mail = email.replace(/[<>]/g, "");
+                                                                        from = name;
+                                                                        subject = (fwdedFrom[3].split(":"))[1];
+                                                                    }
                                                                     let body = mail.html || mail.text || mail.textAsHtml
                                                                     automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                         .then((tag) => {
