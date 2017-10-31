@@ -85,19 +85,27 @@ module.exports = {
                                                                             let from, to, sender_mail, date, email_date, email_timestamp, subject;
                                                                             from = mail.from.value[0].name;
                                                                             to = mail.to.value[0].address;
-                                                                            sender_mail = mail.from.value[0].address
                                                                             date = mail.date
                                                                             email_date = mail.date
                                                                             email_timestamp = new Date(mail.date).getTime()
                                                                             subject = mail.subject;
-                                                                            if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
-                                                                                   let fwdedFrom = mail.text.split("\n");
-                                                                                   let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
-                                                                                   let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                                   sender_mail =email.replace(/[<>]/g, "") ;
-                                                                                   from = name;
-                                                                                   subject= (fwdedFrom[3].split(":"))[1];
-                                                                                 }   
+                                                                            if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
+                                                                                let fwdedFrom = mail.text.split("\n");
+                                                                                let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+                                                                                _.forEach(email_ids, (val, key) => {
+                                                                                    if (!val.slice(-26) == "@excellencetechnologies.in") {
+                                                                                        sender_mail = val;
+                                                                                    }
+                                                                                })
+                                                                                let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
+                                                                                let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
+                                                                                sender_mail = email.replace(/[<>]/g, "");
+                                                                                if (!sender_mail) {
+                                                                                    sender_mail = mail.from.value[0].address;
+                                                                                }
+                                                                                from = name;
+                                                                                subject = (fwdedFrom[3].split(":"))[1];
+                                                                            }
                                                                             let body = mail.html || mail.text || mail.textAsHtml
                                                                             automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                                 .then((tag) => {
@@ -139,7 +147,6 @@ module.exports = {
                                                                                                 if (err) {
                                                                                                     console.log("Duplicate Data");
                                                                                                 } else {
-                                                                                                    console.log(tag)
                                                                                                     console.log("data saved successfully");
                                                                                                     if (!count && apiCall && (key == docs.length - 1)) {
                                                                                                         resolve({ message: "All data fetched successfully" });
@@ -207,186 +214,202 @@ module.exports = {
         });
     },
     beforeDateEmail: function(email) {
-        db.Imap.findAll({
-            where: {
-                "active": true
-            }
-        }).then(function(docs, err) {
-            let count = 0;
-            if (docs[0] != null) {
-                _.forEach(docs, (val, key) => {
-                    imapService.imapCredential(val)
-                        .then((imap) => {
-                            var headers = {};
-                            imap.once("ready", function() {
-                                imapService.imapConnection(imap)
-                                    .then((response) => {
-                                        let date = '';
-                                        let dateFrom = '';
-                                        var row = val.dataValues;
-                                        if (row && row.last_fetched_time) {
-                                            date = moment(new Date(row.last_fetched_time)).format("MMM DD, YYYY");
-                                            dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
-                                        } else {
-                                            date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
-                                            dateFrom = moment(date).subtract(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
-                                        }
-                                        imap.search(['ALL', ['SINCE', dateFrom],
-                                            ['BEFORE', date]
-                                        ], function(err, results) {
-                                            if (err) {
-                                                console.log(err)
-                                            } else if (results.length) {
-                                                db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
-                                                    .then((last_updated_time) => { console.log("last time updated") })
-                                                count = results.length
-                                                var f = imap.fetch(results, {
-                                                    bodies: "",
-                                                    struct: true
-                                                });
-                                                f.on("message", function(msg, seqno) {
-                                                    let flag = "";
-                                                    let uid = "";
-                                                    let unread
-                                                    let answered
-                                                    let attach;
-
-                                                    msg.once("attributes", function(attrs) {
-                                                        flag = attrs.flags;
-                                                        uid = attrs.uid;
-                                                        unread = !(in_array('\\Seen', flag));
-                                                        answered = in_array("\\Answered", flag);
-                                                        if (attrs.struct[0].type == "mixed") {
-                                                            attach = true;
-                                                        }
+        return new Promise((resolve, reject) => {
+            db.Imap.findAll({
+                where: {
+                    "active": true
+                }
+            }).then(function(docs, err) {
+                let count = 0;
+                if (docs[0] != null) {
+                    _.forEach(docs, (val, key) => {
+                        imapService.imapCredential(val)
+                            .then((imap) => {
+                                var headers = {};
+                                imap.once("ready", function() {
+                                    imapService.imapConnection(imap)
+                                        .then((response) => {
+                                            let date = '';
+                                            let dateFrom = '';
+                                            var row = val.dataValues;
+                                            if (row && row.last_fetched_time) {
+                                                date = moment(new Date(row.last_fetched_time)).format("MMM DD, YYYY");
+                                                let current_date = moment(new Date()).subtract(1, 'days').format("MMM DD, YYYY");
+                                                if (new Date() <= new Date(date)) {
+                                                    dateFrom = moment(new Date()).subtract(1, 'days').format('MMM DD, YYYY');
+                                                } else {
+                                                    dateFrom = moment(date).add(constant().old_emails_fetch_days_count, 'days').format('MMM DD, YYYY');
+                                                }
+                                            }
+                                            imap.search(['ALL', ['SINCE', date],
+                                                ['BEFORE', dateFrom]
+                                            ], function(err, results) {
+                                                if (err) {
+                                                    console.log(err)
+                                                } else if (results.length) {
+                                                    if(new Date() <= new Date(dateFrom)){
+                                                        dateFrom = moment(new Date()).subtract(1, 'days').format('YYYY-MM-DD');   
+                                                    }
+                                                    db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
+                                                        .then((last_updated_time) => { console.log("last time updated") })
+                                                    count = results.length
+                                                    var f = imap.fetch(results, {
+                                                        bodies: "",
+                                                        struct: true
                                                     });
+                                                    f.on("message", function(msg, seqno) {
+                                                        let flag = "";
+                                                        let uid = "";
+                                                        let unread
+                                                        let answered
+                                                        let attach;
+
+                                                        msg.once("attributes", function(attrs) {
+                                                            flag = attrs.flags;
+                                                            uid = attrs.uid;
+                                                            unread = !(in_array('\\Seen', flag));
+                                                            answered = in_array("\\Answered", flag);
+                                                            if (attrs.struct[0].type == "mixed") {
+                                                                attach = true;
+                                                            }
+                                                        });
 
 
-                                                    msg.on("body", function(stream) {
-                                                        var buffer = "";
-                                                        MailParser(stream).then(mail => {
-                                                            let from, to, sender_mail, date, email_date, email_timestamp, subject;
-                                                            from = mail.from.value[0].name;
-                                                            to = mail.to.value[0].address;
-                                                            sender_mail = mail.from.value[0].address
-                                                            date = mail.date
-                                                            email_date = mail.date
-                                                            email_timestamp = new Date(mail.date).getTime()
-                                                            subject = mail.subject;
-                                                            if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
+                                                        msg.on("body", function(stream) {
+                                                            var buffer = "";
+                                                            MailParser(stream).then(mail => {
+                                                                let from, to, sender_mail, date, email_date, email_timestamp, subject;
+                                                                from = mail.from.value[0].name;
+                                                                to = mail.to.value[0].address;
+                                                                sender_mail = mail.from.value[0].address
+                                                                date = mail.date
+                                                                email_date = mail.date
+                                                                email_timestamp = new Date(mail.date).getTime()
+                                                                subject = mail.subject;
+                                                                if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
                                                                     let fwdedFrom = mail.text.split("\n");
-                                                                    let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
-                                                                    let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                    sender_mail =email.replace(/[<>]/g, "") ;
-                                                                    from = name;
-                                                                    subject= (fwdedFrom[3].split(":"))[1];
-                                                               }       
-                                                            let body = mail.html || mail.text || mail.textAsHtml
-                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
-                                                                .then((tag) => {
-                                                                    if (tag.tagId.length || tag.default_tag_id) {
-                                                                        date = new Date(date).getTime()
-                                                                    }
-                                                                    email.findOne({
-                                                                        uid: uid,
-                                                                        imap_email: val.dataValues.email
-                                                                    }, function(err, data) {
-                                                                        --count;
-                                                                        if (err) {
-                                                                            console.log(err)
-                                                                        }
-                                                                        if (!data) {
-                                                                            let detail = new email({
-                                                                                email_id: seqno,
-                                                                                from: from,
-                                                                                to: to,
-                                                                                sender_mail: sender_mail,
-                                                                                date: date,
-                                                                                email_date: email_date,
-                                                                                email_timestamp: email_timestamp,
-                                                                                subject: subject,
-                                                                                unread: true,
-                                                                                answered: answered,
-                                                                                uid: uid,
-                                                                                body: body,
-                                                                                tag_id: tag.tagId,
-                                                                                is_automatic_email_send: tag.is_automatic_email_send || 0,
-                                                                                default_tag: tag.default_tag_id || "",
-                                                                                is_attachment: attach || false,
-                                                                                imap_email: val.dataValues.email,
-                                                                                genuine_applicant: GENERIC.Genuine_Applicant(subject),
-                                                                                send_template_count: tag.count || 0,
-                                                                                template_id: tag.template_id || []
-                                                                            });
-                                                                            detail.save(function(err) {
-                                                                                if (err) {
-                                                                                    console.log("Duplicate Data");
-                                                                                } else {
-                                                                                    console.log("data saved successfully");
-                                                                                }
-                                                                            });
-                                                                        } else {
-                                                                            if (count) {
-                                                                                console.log("Data already saved");
-                                                                            }
+                                                                    let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+                                                                    _.forEach(email_ids, (val, key) => {
+                                                                        if (!val.slice(-26) == "@excellencetechnologies.in") {
+                                                                            sender_mail = val;
                                                                         }
                                                                     })
-                                                                })
+                                                                    let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
+                                                                    let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
+                                                                    sender_mail = email.replace(/[<>]/g, "");
+                                                                    if (!sender_mail) {
+                                                                        sender_mail = mail.from.value[0].address;
+                                                                    }
+                                                                    from = name;
+                                                                    subject = (fwdedFrom[3].split(":"))[1];
+                                                                }
+                                                                let body = mail.html || mail.text || mail.textAsHtml
+                                                                automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
+                                                                    .then((tag) => {
+                                                                        if (tag.tagId.length || tag.default_tag_id) {
+                                                                            date = new Date(date).getTime()
+                                                                        }
+                                                                        email.findOne({
+                                                                            uid: uid,
+                                                                            imap_email: val.dataValues.email
+                                                                        }, function(err, data) {
+                                                                            --count;
+                                                                            if (err) {
+                                                                                console.log(err)
+                                                                            }
+                                                                            if (!data) {
+                                                                                let detail = new email({
+                                                                                    email_id: seqno,
+                                                                                    from: from,
+                                                                                    to: to,
+                                                                                    sender_mail: sender_mail,
+                                                                                    date: date,
+                                                                                    email_date: email_date,
+                                                                                    email_timestamp: email_timestamp,
+                                                                                    subject: subject,
+                                                                                    unread: true,
+                                                                                    answered: answered,
+                                                                                    uid: uid,
+                                                                                    body: body,
+                                                                                    tag_id: tag.tagId,
+                                                                                    is_automatic_email_send: tag.is_automatic_email_send || 0,
+                                                                                    default_tag: tag.default_tag_id || "",
+                                                                                    is_attachment: attach || false,
+                                                                                    imap_email: val.dataValues.email,
+                                                                                    genuine_applicant: GENERIC.Genuine_Applicant(subject),
+                                                                                    send_template_count: tag.count || 0,
+                                                                                    template_id: tag.template_id || []
+                                                                                });
+                                                                                detail.save(function(err) {
+                                                                                    if (err) {
+                                                                                        console.log("Duplicate Data");
+                                                                                    } else {
+                                                                                        console.log("data saved successfully");
+                                                                                    }
+                                                                                });
+                                                                            } else {
+                                                                                if (count) {
+                                                                                    console.log("Data already saved");
+                                                                                }
+                                                                            }
+                                                                        })
+                                                                    })
 
-                                                        }).catch(err => {
-                                                            console.log(err);
-                                                        });
-                                                        stream.on("data", function(chunk) {
-                                                            buffer += chunk.toString("utf8");
-                                                        });
+                                                            }).catch(err => {
+                                                                console.log(err);
+                                                            });
+                                                            stream.on("data", function(chunk) {
+                                                                buffer += chunk.toString("utf8");
+                                                            });
 
-                                                        stream.once("end", function() {
+                                                            stream.once("end", function() {
 
+                                                            });
                                                         });
                                                     });
-                                                });
-                                                f.once("error", function(err) {
-                                                    console.log("Fetch error: " + err);
-                                                });
-                                                f.once("end", function() {
-                                                    console.log("Done fetching all messages!");
-                                                    imap.end();
-                                                });
-                                            } else {
-                                                email.find({ imap_email: val.dataValues.email }).count().exec(function(err, count) {
-                                                    if (count >= response.messages.total) {
-                                                        console.log('Nothing to Fetch');
-                                                    } else {
-                                                        db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
-                                                            .then((last_updated_time) => { console.log("last time updated") })
-                                                    }
-                                                })
-                                            }
-                                        });
-                                    })
-                                    .then((error) => {
-                                        console.log(error)
-                                    })
+                                                    f.once("error", function(err) {
+                                                        console.log("Fetch error: " + err);
+                                                    });
+                                                    f.once("end", function() {
+                                                        console.log("Done fetching all messages!");
+                                                        imap.end();
+                                                    });
+                                                } else {
+                                                    email.find({ imap_email: val.dataValues.email }).count().exec(function(err, count) {
+                                                        if (count >= response.messages.total) {
+                                                            console.log('Nothing to Fetch');
+                                                        } else {
+                                                            db.Imap.update({ last_fetched_time: dateFrom }, { where: { email: val.email } })
+                                                                .then((last_updated_time) => { console.log("last time updated") })
+                                                        }
+                                                    })
+                                                }
+                                            });
+                                        })
+                                        .then((error) => {
+                                            console.log(error)
+                                        })
+                                });
+                                imap.once("error", function(err) {
+                                    console
+                                        .log(err);
+                                });
+                                imap.once("end", function() {
+                                    console.log("Connection ended");
+                                });
+                                imap.connect();
                             });
-                            imap.once("error", function(err) {
-                                console
-                                    .log(err);
-                            });
-                            imap.once("end", function() {
-                                console.log("Connection ended");
-                            });
-                            imap.connect();
-                        });
-                    if (!count && (key == docs.length - 1)) {
-                        let imap_emails = [];
-                        _.forEach(docs, (email, key) => {
-                            imap_emails.push(email.email)
-                        })
-                    }
-                });
-            } else {
-                console.log("No Active connection")
-            }
+                        if (!count && (key == docs.length - 1)) {
+                            let imap_emails = [];
+                            _.forEach(docs, (email, key) => {
+                                imap_emails.push(email.email)
+                            })
+                        }
+                    });
+                } else {
+                    console.log("No Active connection")
+                }
+            });
         });
     },
 
@@ -459,14 +482,23 @@ module.exports = {
                                                                     email_date = mail.date
                                                                     email_timestamp = new Date(mail.date).getTime()
                                                                     subject = mail.subject;
-                                                                     if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
-                                                                            let fwdedFrom = mail.text.split("\n");
-                                                                            let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
-                                                                            let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
-                                                                            sender_mail =email.replace(/[<>]/g, "") ;
-                                                                            from = name;
-                                                                            subject= (fwdedFrom[3].split(":"))[1];
-                                                                       }  
+                                                                    if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
+                                                                        let fwdedFrom = mail.text.split("\n");
+                                                                        let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+                                                                        _.forEach(email_ids, (val, key) => {
+                                                                            if (!val.slice(-26) == "@excellencetechnologies.in") {
+                                                                                sender_mail = val;
+                                                                            }
+                                                                        })
+                                                                        let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
+                                                                        let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
+                                                                        sender_mail = email.replace(/[<>]/g, "");
+                                                                        if (!sender_mail) {
+                                                                            sender_mail = mail.from.value[0].address;
+                                                                        }
+                                                                        from = name;
+                                                                        subject = (fwdedFrom[3].split(":"))[1];
+                                                                    }
                                                                     let body = mail.html || mail.text || mail.textAsHtml
                                                                     automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
                                                                         .then((tag) => {
