@@ -282,9 +282,18 @@ module.exports = {
                                                             subject = mail.subject;
                                                             if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
                                                                 let fwdedFrom = mail.text.split("\n");
+                                                                let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+                                                                _.forEach(email_ids, (val, key) => {
+                                                                    if (!val.slice(-26) == "@excellencetechnologies.in") {
+                                                                        sender_mail = val;
+                                                                    }
+                                                                })
                                                                 let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
                                                                 let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
                                                                 sender_mail = email.replace(/[<>]/g, "");
+                                                                if (!sender_mail) {
+                                                                    sender_mail = mail.from.value[0].address;
+                                                                }
                                                                 from = name;
                                                                 subject = (fwdedFrom[3].split(":"))[1];
                                                             }
@@ -468,9 +477,18 @@ module.exports = {
                                                                     subject = mail.subject;
                                                                     if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
                                                                         let fwdedFrom = mail.text.split("\n");
+                                                                        let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
+                                                                        _.forEach(email_ids, (val, key) => {
+                                                                            if (!val.slice(-26) == "@excellencetechnologies.in") {
+                                                                                sender_mail = val;
+                                                                            }
+                                                                        })
                                                                         let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
                                                                         let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
                                                                         sender_mail = email.replace(/[<>]/g, "");
+                                                                        if (!sender_mail) {
+                                                                            sender_mail = mail.from.value[0].address;
+                                                                        }
                                                                         from = name;
                                                                         subject = (fwdedFrom[3].split(":"))[1];
                                                                     }
