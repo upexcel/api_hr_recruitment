@@ -725,7 +725,7 @@ let getFetchedMailCount = (imap_emails, email) => {
             let imap_data = "";
             let imap_email = emails.splice(0, 1)[0]
             if (!imap_email) {
-                resolve({})
+                callback({})
             } else {
                 email.find({ imap_email: imap_email.email }).count().exec(function(err, data) {
                     imap_data = {
