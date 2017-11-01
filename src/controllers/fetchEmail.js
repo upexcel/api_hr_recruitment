@@ -214,14 +214,20 @@ export class FetchController extends BaseAPIController {
         email_process.sendBySelection(req).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })
-    },
+    }
     
     insert_note = (req, res, next) => {
         email_process.insert_note(req).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })
-    },
-
+    }
+    
+    update_note = (req, res, next) => {
+        email_process.update_note(req).then((response) => {
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
+    
     cron_status = (req, res, next) => {
         email_process.cron_status(req).then((response) => {
             this.handleSuccessResponse(req, res, next, response)

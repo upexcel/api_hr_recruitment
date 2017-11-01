@@ -62,6 +62,9 @@ export default (app) => {
     /*insert candidates notes*/
     app.route("/candidate_notes/insert").post(auth.requiresAdminOrHr, fetch_email.insert_note)
 
+    /*update candidates notes*/
+    app.route("/candidate_notes/update").post(auth.requiresAdminOrHr, fetch_email.update_note)
+    
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

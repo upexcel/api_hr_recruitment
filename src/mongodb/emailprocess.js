@@ -849,8 +849,24 @@ let sendBySelection = (req) => {
 
 let insert_note = (req) => {
     return new Promise((resolve, reject) => {
-        req.email.update({"_id":req.body.mongo_id},{"$push":{"notes":{ $each: [{ note:req.body.note, date:req.body.note_date,time:req.bod0y.note_time,assignee:req.user.email } ]}}}).exec(function(err, result) {
-             resolve({ error:0, message: "Note inserted" })
+        req.email.update({ "_id": req.body.mongo_id }, { "$push": { "notes": { $each: [{ note: req.body.note, date: moment(new Date()).format("DD-MM-YYYY"), time: moment(new Date()).format("hh:mm:ss a"), assignee: req.user.email }] } } }).exec(function(err, result) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve({ error: 0, message: "Note inserted", response: result })
+            }
+        })
+    })
+}
+
+let update_note = (req) => {
+    return new Promise((resolve, reject) => {
+        req.email.update({ "_id": req.body.mongo_id,"notes.date":req.body.note_date,"notes.time":req.body.note_time }, { $set: { "notes.$.note": req.body.note, "notes.$.date": moment(new Date()).format("DD-MM-YYYY"), "notes.$.time": moment(new Date()).format("hh:mm:ss a")  } }).exec(function(err, result) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve({ error: 0, message: "Note updated", response: result })
+            }
         })
     })
 }
@@ -947,5 +963,6 @@ export default {
     sendToNotReplied,
     sendBySelection,
     insert_note,
+    update_note,
     cron_status
 }
