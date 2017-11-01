@@ -19,7 +19,7 @@ export class FetchController extends BaseAPIController {
         let { type, keyword, selected, default_id, is_attach } = req.body;
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
-                email_process.fetchEmail(page, tag_id, limit, type, keyword, selected, default_id, default_tag, req.email,is_attach)
+                email_process.fetchEmail(page, tag_id, limit, type, keyword, selected, default_id, default_tag, req.email, is_attach)
                     .then((data, message) => {
                         this.handleSuccessResponse(req, res, next, {
                             data: data,
@@ -129,7 +129,7 @@ export class FetchController extends BaseAPIController {
 
 
     findByTagId = (req, res, next, tag_id) => {
-        let { type, keyword, selected, default_id ,is_attach} = req.body;
+        let { type, keyword, selected, default_id, is_attach } = req.body;
         email_process.fetchById(type, keyword, selected, default_id, tag_id, is_attach)
             .then((data) => {
                 this.getCount(req, res, next, data)
@@ -235,6 +235,12 @@ export class FetchController extends BaseAPIController {
     archiveEmails = (req, res, next) => {
         email_process.archiveEmails(req.body, req.email, req.archived).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
+        })
+    }
+
+    markAsUnread = (req, res, next) => {
+        req.email.update({ _id: req.body.mongo_id }, { unread: true }).then((response) => {
+            this.handleSuccessResponse(req, res, next, { message: "marked as unread" })
         })
     }
 }
