@@ -2,7 +2,6 @@ import _ from "lodash";
 module.exports = {
     findEmail: function(mail) {
         return new Promise((resolve, reject) => {
-            console.log(mail.to)
             let from, to, sender_mail, date, email_date, email_timestamp, subject;
             from = mail.from.value[0].name;
             to = mail.to.value[0].address;

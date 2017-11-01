@@ -23,7 +23,6 @@ module.exports = {
             let domain_name = from.email.replace(/.*@/, "");
             let name = from.email.replace(/@[^@]+$/, '');
             let unique_id = name + `+${Math.random().toString(36).substr(2, 9)}@` + domain_name;
-            console.log(unique_id)
 
             mailer.sendMail({
                 from: from.email,
@@ -34,7 +33,6 @@ module.exports = {
                 replyTo: automatic ? unique_id: from.email
             }, (error, response) => {
                 if (error) {
-                    console.log(error)
                     reject("Invalid Smtp Information");
                 } else {
                     resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html, reply_to: unique_id});
