@@ -221,7 +221,6 @@ export class FetchController extends BaseAPIController {
     }
 
     archiveEmails = (req, res, next) => {
-        console.log(req.body)
         email_process.archiveEmails(req.body, req.email, req.archived).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })

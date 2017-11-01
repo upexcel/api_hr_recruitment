@@ -924,7 +924,6 @@ let archiveEmails = (body, source, target) => {
         source.find({ tag_id: body.tag_id }).then((mails) => {
             target.insertMany(mails).then((write_reponse) => {
                 source.remove({ tag_id: body.tag_id || [] }).then((response) => {
-                    console.log(response)
                     resolve({ status: 1, message: "All Emails are moved to Archived" })
                 })
             })
