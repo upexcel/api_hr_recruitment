@@ -62,6 +62,9 @@ export default (app) => {
     /*Archive emails*/
     app.route("/email/archive").put(auth.requiresAdmin, fetch_email.archiveEmails)
 
+    /*Mark as unread*/
+    app.route("/email/markAsUnread").put(auth.requiresAdminOrHr, fetch_email.markAsUnread)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 
