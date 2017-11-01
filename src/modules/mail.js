@@ -31,39 +31,44 @@ module.exports = {
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
+                    console.log(response)
                     resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
                 }
                 mailer.close();
             });
         })
     },
-    sendUsingSendGrid: function(to_emails, subject, html, from, body) {
+    sendScheduledMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
-            let sg = require('sendgrid')(config.SMTP_PASS);
-            let request = sg.emptyRequest({
-                method: 'POST',
-                path: '/v3/mail/send',
-                body: {
-                    personalizations: [{
-                        to: to_emails,
-                        subject: subject
-                    }],
-                    send_at: Math.floor((new Date().getTime() / 1000) + 60),
-                    from: {
-                        email: from
-                    },
-                    content: [{
-                        type: 'text/plain',
-                        value: body
-                    }],
+            html += constant().add_html_suffix_email_tracking + "&tid=" + config.TRACKING_ID + "&cid=" + config.CLIENT_ID + "&t=event&ec=" + subject + "_  " + moment().format("YYYY-MM-DD") + "&ea=open&el=" + email + "\"/>";
+            console.log(html)
+            if (!from.email)
+                from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
+            let mailer = nodemailer.createTransport(smtpTransport({
+                host: from.smtp_server,
+                port: parseInt(from.server_port),
+                auth: {
+                    user: from.username,
+                    pass: from.password
                 }
-            });
-
-            sg.API(request, function(error, response) {
+            }));
+            mailer.sendMail({
+                from: from.email,
+                to: email,
+                subject: subject,
+                template: text || "",
+                html: html,
+                cc: constant().app_hr_contact_email,
+                bcc:constant().admin_mail
+            }, (error, response) => {
                 if (error) {
-                    console.log('Error response received');
+                    reject("Invalid Smtp Information");
+                } else {
+                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    console.log(response)
+                    resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
                 }
-                resolve({ message: "messsage send successfully", status: 1 });
+                mailer.close();
             });
         })
     }

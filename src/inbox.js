@@ -90,7 +90,10 @@ module.exports = {
                                                                             email_date = mail.date
                                                                             email_timestamp = new Date(mail.date).getTime()
                                                                             subject = mail.subject;
+                                                                            console.log(mail)
                                                                             if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
+                                                                                   console.log("1");
+                                                                                   console.log(mail);
                                                                                    let fwdedFrom = mail.text.split("\n");
                                                                                    let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
                                                                                    let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
@@ -274,6 +277,8 @@ module.exports = {
                                                             email_timestamp = new Date(mail.date).getTime()
                                                             subject = mail.subject;
                                                             if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
+                                                                    console.log("2");
+                                                                    console.log(mail);
                                                                     let fwdedFrom = mail.text.split("\n");
                                                                     let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
                                                                     let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];
@@ -460,6 +465,8 @@ module.exports = {
                                                                     email_timestamp = new Date(mail.date).getTime()
                                                                     subject = mail.subject;
                                                                      if(((mail.subject).substring(0, 3)=="Fwd")&&((mail.from.value[0].address).slice(-26)=="@excellencetechnologies.in")){
+                                                                            console.log("3");
+                                                                            console.log(mail);
                                                                             let fwdedFrom = mail.text.split("\n");
                                                                             let email = (fwdedFrom[1].split(" "))[(fwdedFrom[1].split(" ")).length - 1];
                                                                             let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + email))[0];

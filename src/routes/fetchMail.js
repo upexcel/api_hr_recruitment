@@ -58,6 +58,9 @@ export default (app) => {
 
     /*count of pending work*/
     app.route("/email/cron_status").post(auth.requiresAdminOrHr, fetch_email.cron_status)
+    
+    /*insert candidates notes*/
+    app.route("/candidate_notes/insert").post(auth.requiresAdminOrHr, fetch_email.insert_note)
 
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)

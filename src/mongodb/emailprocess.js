@@ -315,7 +315,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                             template.subject += " On Dated " + body.shedule_date + " At " + body.shedule_time;
                                                             let custom_link = constant().app_custom_link + response.registration_id || registration_id;
                                                             replaced_data += custom_link;
-                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
+                                                            mail.sendScheduledMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
                                                                         .then((device_list) => {
@@ -844,6 +844,14 @@ let sendBySelection = (req) => {
     })
 }
 
+let insert_note = (req) => {
+    return new Promise((resolve, reject) => {
+        req.email.update({"_id":req.body.mongo_id},{"$push":{"notes":{ $each: [{ note:req.body.note, date:req.body.note_date,time:req.bod0y.note_time,assignee:req.user.email } ]}}}).exec(function(err, result) {
+             resolve({ error:0, message: "Note inserted" })
+        })
+    })
+}
+
 let cron_status = (req) => {
     return new Promise((resolve, reject) => {
         findCronStatus(req.body, function(response) {
@@ -935,5 +943,6 @@ export default {
     findEmailByDates,
     sendToNotReplied,
     sendBySelection,
+    insert_note,
     cron_status
 }
