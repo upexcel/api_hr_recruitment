@@ -45,6 +45,7 @@ module.exports = function() {
         reminder_send: { type: Boolean },
         send_template_count: { type: Number },
         template_id: { type: Array },
+        notes: { type: Array },
         reply_to_id: { type: String }
     }, {
         collection: "emailStored",

@@ -41,6 +41,7 @@ module.exports = {
             });
         })
     },
+
     sendUsingSendGrid: function(to_emails, subject, html, from, body) {
         return new Promise((resolve, reject) => {
             let sg = require('sendgrid')(config.SMTP_PASS);
@@ -68,6 +69,39 @@ module.exports = {
                     console.log('Error response received');
                 }
                 resolve({ message: "messsage send successfully", status: 1 });
+            });
+        })
+    },
+    
+    sendScheduledMail: function(email, subject, text, from, html) {
+        return new Promise((resolve, reject) => {
+            html += constant().add_html_suffix_email_tracking + "&tid=" + config.TRACKING_ID + "&cid=" + config.CLIENT_ID + "&t=event&ec=" + subject + "_  " + moment().format("YYYY-MM-DD") + "&ea=open&el=" + email + "\"/>";
+            console.log(html)
+            if (!from.email)
+                from = (from.Instance || from.data) ? from.Instance.dataValues : from.dataValues;
+            let mailer = nodemailer.createTransport(smtpTransport({
+                host: from.smtp_server,
+                port: parseInt(from.server_port),
+                auth: {
+                    user: from.username,
+                    pass: from.password
+                }
+            }));
+            mailer.sendMail({
+                from: from.email,
+                to: email,
+                subject: subject,
+                template: text || "",
+                html: html,
+                cc: constant().app_hr_contact_email,
+                bcc: constant().admin_mail
+            }, (error, response) => {
+                if (error) {
+                    reject("Invalid Smtp Information");
+                } else {
+                    resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
+                }
+                mailer.close();
             });
         })
     }

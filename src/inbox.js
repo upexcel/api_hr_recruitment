@@ -253,7 +253,6 @@ module.exports = {
                                                             }
                                                         });
 
-
                                                         msg.on("body", function(stream) {
                                                             var buffer = "";
                                                             MailParser(stream).then(mail => {
