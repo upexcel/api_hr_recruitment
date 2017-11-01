@@ -37,6 +37,38 @@ module.exports = {
             });
         })
     },
+
+    sendUsingSendGrid: function(to_emails, subject, html, from, body) {
+        return new Promise((resolve, reject) => {
+            let sg = require('sendgrid')(config.SMTP_PASS);
+            let request = sg.emptyRequest({
+                method: 'POST',
+                path: '/v3/mail/send',
+                body: {
+                    personalizations: [{
+                        to: to_emails,
+                        subject: subject
+                    }],
+                    send_at: Math.floor((new Date().getTime() / 1000) + 60),
+                    from: {
+                        email: from
+                    },
+                    content: [{
+                        type: 'text/plain',
+                        value: body
+                    }],
+                }
+            });
+
+            sg.API(request, function(error, response) {
+                if (error) {
+                    console.log('Error response received');
+                }
+                resolve({ message: "messsage send successfully", status: 1 });
+            });
+        })
+    },
+    
     sendScheduledMail: function(email, subject, text, from, html) {
         return new Promise((resolve, reject) => {
             html += constant().add_html_suffix_email_tracking + "&tid=" + config.TRACKING_ID + "&cid=" + config.CLIENT_ID + "&t=event&ec=" + subject + "_  " + moment().format("YYYY-MM-DD") + "&ea=open&el=" + email + "\"/>";
@@ -58,7 +90,7 @@ module.exports = {
                 template: text || "",
                 html: html,
                 cc: constant().app_hr_contact_email,
-                bcc:constant().admin_mail
+                bcc: constant().admin_mail
             }, (error, response) => {
                 if (error) {
                     reject("Invalid Smtp Information");

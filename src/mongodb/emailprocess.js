@@ -298,7 +298,7 @@ let assignMultiple = (tag_id, body, email) => {
                                 email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1 }).exec(function(err, response) {
                                     db.Template.findById(body.tamplate_id)
                                         .then((template) => {
-                                            replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
+                                            replaceData.schedule_filter(template.body, response.from, response.tag_id[response.tag_id.length - 1], body.scheduled_date, body.scheduled_time)
                                                 .then((replaced_data) => {
                                                     if (body.shedule_for == constant().shedule_for[0].value)
                                                         replaced_data = replaced_data + constant().registration_message + registration_id
@@ -861,11 +861,15 @@ let insert_note = (req) => {
 
 let update_note = (req) => {
     return new Promise((resolve, reject) => {
-        req.email.update({ "_id": req.body.mongo_id,"notes.date":req.body.note_date,"notes.time":req.body.note_time }, { $set: { "notes.$.note": req.body.note, "notes.$.date": moment(new Date()).format("DD-MM-YYYY"), "notes.$.time": moment(new Date()).format("hh:mm:ss a")  } }).exec(function(err, result) {
+        req.email.update({ "_id": req.body.mongo_id, "notes.date": req.body.note_date, "notes.time": req.body.note_time }, { $set: { "notes.$.note": req.body.note, "notes.$.date": moment(new Date()).format("DD-MM-YYYY"), "notes.$.time": moment(new Date()).format("hh:mm:ss a") } }).exec(function(err, result) {
             if (err) {
                 reject(err)
             } else {
-                resolve({ error: 0, message: "Note updated", response: result })
+                if (result.nModified) {
+                    resolve({ error: 0, message: "Note updated" })
+                } else {
+                    resolve({ error: 0, message: "Note not found" })
+                }
             }
         })
     })
