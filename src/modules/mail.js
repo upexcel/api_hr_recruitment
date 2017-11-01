@@ -31,7 +31,6 @@ module.exports = {
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
-                    console.log(response)
                     resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
                 }
                 mailer.close();
@@ -64,8 +63,6 @@ module.exports = {
                 if (error) {
                     reject("Invalid Smtp Information");
                 } else {
-                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-                    console.log(response)
                     resolve({ message: "messsage send successfully", status: 1, email_response: response, subject: subject, body: html });
                 }
                 mailer.close();

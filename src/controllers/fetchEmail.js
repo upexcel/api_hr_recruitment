@@ -17,8 +17,6 @@ export class FetchController extends BaseAPIController {
     fetch = (req, res, next) => {
         let { page, tag_id, limit } = req.params;
         let { type, keyword, selected, default_id, is_attach } = req.body;
-        console.log(req.params);
-        console.log(req.body)
         this._db.Tag.findAll({ where: { type: "Default" } })
             .then((default_tag) => {
                 email_process.fetchEmail(page, tag_id, limit, type, keyword, selected, default_id, default_tag, req.email,is_attach)
