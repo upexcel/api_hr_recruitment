@@ -919,6 +919,18 @@ let cron_status = (req) => {
     }
 }
 
+let archiveEmails = (body, source, target) => {
+    return new Promise((resolve, reject) => {
+        source.find({ tag_id: body.tag_id }).then((mails) => {
+            target.insertMany(mails).then((write_reponse) => {
+                source.remove({ tag_id: body.tag_id || [] }).then((response) => {
+                    resolve({ status: 1, message: "All Emails are moved to Archived" })
+                })
+            })
+        })
+    })
+}
+
 
 export default {
     fetchEmail,
@@ -938,5 +950,6 @@ export default {
     findEmailByDates,
     sendToNotReplied,
     sendBySelection,
-    cron_status
+    cron_status,
+    archiveEmails
 }

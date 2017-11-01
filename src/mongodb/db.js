@@ -71,10 +71,16 @@ module.exports = function() {
         strict: false
     })
 
+    let archive_emails = mongoose.Schema({}, {
+        collection: 'archivedMails',
+        strict: false
+    })
+
     let email = conn.model("EMAIL", emailSchema);
     let user_activity = conn.model('ACTIVITY', userActivity);
     let email_logs = conn.model('EMAILLOGS', emailLogs);
     let cronWork = conn.model('CRONSTATUS', cron_work);
+    let archivedMails = conn.model('ARCHIVED', archive_emails);
 
     cronService.cron(email, email_logs)
     cronService.reminder(email, email_logs)
@@ -84,7 +90,8 @@ module.exports = function() {
         req.email = email;
         req.user_activity = user_activity;
         req.emailLogs = email_logs;
-        req.cronWork = cronWork
+        req.cronWork = cronWork;
+        req.archived = archivedMails
         next();
     };
 };
