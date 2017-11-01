@@ -18,8 +18,6 @@ export default function() {
             text: "Template",
             passwordMessage: 'New Password Generated'
         },
-        automatic_mail_subject: "Revert Information",
-        automatic_mail_subject_match: "Re: Revert Information",
         shedule_for: [
             { value: 'first_round', text: "First Round", info: "First round is written test.Which will be divided in two section, first section is objective and second section is subjective questions.Once you clear both these section then there would be HR round." },
             { value: 'second_round', text: "Second Round", info: "Second round is a Machine Test which contain 5 questions. you have to run code and apply logic as per question requirement." },

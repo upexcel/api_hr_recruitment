@@ -135,7 +135,7 @@ const findcount = (mongodb) => {
                                                 }
                                             })
                                             findCount(candidate_list, function(data1) {
-                                                let array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
+                                                let array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }]
                                                 resolve({ data: array })
                                             })
                                         })

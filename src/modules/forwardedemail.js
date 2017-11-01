@@ -12,7 +12,6 @@ module.exports = {
             if (((mail.subject).substring(0, 3) == "Fwd") && ((mail.from.value[0].address).slice(-26) == "@excellencetechnologies.in")) {
                 let email_ids = mail.text.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+)/gi)
                 let fwdedFrom = mail.text.split("\n");
-                console.log(fwdedFrom)
                 let name = ((fwdedFrom[1].split((fwdedFrom[1].split(" "))[0] + " "))[1].split(" " + "<" + email_ids[0] + ">"))[0];
                 sender_mail = email_ids[0]
                 let data = {

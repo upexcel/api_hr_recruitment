@@ -85,7 +85,7 @@ module.exports = {
                                                                                 .then((email_data_to_store) => {
                                                                                     let { from, to, sender_mail, date, email_date, email_timestamp, subject } = email_data_to_store;
                                                                                     let body = mail.html || mail.text || mail.textAsHtml
-                                                                                    automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
+                                                                                    automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, to, true)
                                                                                         .then((tag) => {
                                                                                             if (tag.tagId.length || tag.default_tag_id) {
                                                                                                 date = new Date(date).getTime()
@@ -119,7 +119,8 @@ module.exports = {
                                                                                                         imap_email: val.dataValues.email,
                                                                                                         genuine_applicant: GENERIC.Genuine_Applicant(subject),
                                                                                                         send_template_count: tag.count || 0,
-                                                                                                        template_id: tag.template_id || []
+                                                                                                        template_id: tag.template_id || [],
+                                                                                                        reply_to_id: tag.reply_to_id
                                                                                                     });
                                                                                                     detail.save(function(err) {
                                                                                                         if (err) {
@@ -260,7 +261,7 @@ module.exports = {
                                                                     .then((email_data_to_store) => {
                                                                         let { from, to, sender_mail, date, email_date, email_timestamp, subject } = email_data_to_store;
                                                                         let body = mail.html || mail.text || mail.textAsHtml
-                                                                        automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, false, false)
+                                                                        automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, to, false, false)
                                                                             .then((tag) => {
                                                                                 if (tag.tagId.length || tag.default_tag_id) {
                                                                                     date = new Date(date).getTime()
@@ -434,7 +435,7 @@ module.exports = {
                                                                         .then((email_data_to_store) => {
                                                                             let { from, to, sender_mail, date, email_date, email_timestamp, subject } = email_data_to_store;
                                                                             let body = mail.html || mail.text || mail.textAsHtml
-                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, true)
+                                                                            automaticTag.tags(email, subject, date, from, sender_mail, val.dataValues.email, logs, to, true)
                                                                                 .then((tag) => {
                                                                                     if (tag.tagId.length || tag.default_tag_id) {
                                                                                         date = new Date(date).getTime()

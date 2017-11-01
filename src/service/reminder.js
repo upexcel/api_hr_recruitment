@@ -90,7 +90,7 @@ let sendEmailToPendingCandidate = (cron_service, logs, email) => {
                             let email_id = emails;
                             replaceData.filter(template.body, email_id.from, emails.tag_id)
                                 .then((html) => {
-                                    subject = constant().automatic_mail_subject + " " + template.subject;
+                                    subject = template.subject;
                                     mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
                                         .then((response) => {
                                             response['user'] = cronWorkData.get('user');
