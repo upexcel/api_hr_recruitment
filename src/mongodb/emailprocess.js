@@ -135,7 +135,7 @@ const findcount = (mongodb) => {
                                                 }
                                             })
                                             findCount(candidate_list, function(data1) {
-                                                let array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }, { subject_for_genuine: constant().automatic_mail_subject }]
+                                                let array = [{ title: "candidate", data: data1 }, { title: "inbox", data: final_data }]
                                                 resolve({ data: array })
                                             })
                                         })
@@ -298,7 +298,7 @@ let assignMultiple = (tag_id, body, email) => {
                                 email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1 }).exec(function(err, response) {
                                     db.Template.findById(body.tamplate_id)
                                         .then((template) => {
-                                            replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
+                                            replaceData.schedule_filter(template.body, response.from, response.tag_id[response.tag_id.length - 1], body.scheduled_date, body.scheduled_time)
                                                 .then((replaced_data) => {
                                                     if (body.shedule_for == constant().shedule_for[0].value)
                                                         replaced_data = replaced_data + constant().registration_message + registration_id
@@ -314,7 +314,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                             template.subject += " On Dated " + body.shedule_date + " At " + body.shedule_time;
                                                             let custom_link = constant().app_custom_link + response.registration_id || registration_id;
                                                             replaced_data += custom_link;
-                                                            mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
+                                                            mail.sendScheduledMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
                                                                     db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
                                                                         .then((device_list) => {
@@ -847,6 +847,34 @@ let sendBySelection = (req) => {
     })
 }
 
+let insert_note = (req) => {
+    return new Promise((resolve, reject) => {
+        req.email.update({ "_id": req.body.mongo_id }, { "$push": { "notes": { $each: [{ note: req.body.note, date: moment(new Date()).format("DD-MM-YYYY"), time: moment(new Date()).format("hh:mm:ss a"), assignee: req.user.email }] } } }).exec(function(err, result) {
+            if (err) {
+                reject(err)
+            } else {
+                resolve({ error: 0, message: "Note inserted", response: result })
+            }
+        })
+    })
+}
+
+let update_note = (req) => {
+    return new Promise((resolve, reject) => {
+        req.email.update({ "_id": req.body.mongo_id, "notes.date": req.body.note_date, "notes.time": req.body.note_time }, { $set: { "notes.$.note": req.body.note, "notes.$.date": moment(new Date()).format("DD-MM-YYYY"), "notes.$.time": moment(new Date()).format("hh:mm:ss a") } }).exec(function(err, result) {
+            if (err) {
+                reject(err)
+            } else {
+                if (result.nModified) {
+                    resolve({ error: 0, message: "Note updated" })
+                } else {
+                    resolve({ error: 0, message: "Note not found" })
+                }
+            }
+        })
+    })
+}
+
 let cron_status = (req) => {
     return new Promise((resolve, reject) => {
         findCronStatus(req.body, function(response) {
@@ -919,6 +947,18 @@ let cron_status = (req) => {
     }
 }
 
+let archiveEmails = (body, source, target) => {
+    return new Promise((resolve, reject) => {
+        source.find({ tag_id: body.tag_id }).then((mails) => {
+            target.insertMany(mails).then((write_reponse) => {
+                source.remove({ tag_id: body.tag_id || [] }).then((response) => {
+                    resolve({ status: 1, message: "All Emails are moved to Archived" })
+                })
+            })
+        })
+    })
+}
+
 
 export default {
     fetchEmail,
@@ -938,5 +978,8 @@ export default {
     findEmailByDates,
     sendToNotReplied,
     sendBySelection,
-    cron_status
+    insert_note,
+    update_note,
+    cron_status,
+    archiveEmails
 }

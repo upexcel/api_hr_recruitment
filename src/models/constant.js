@@ -18,8 +18,6 @@ export default function() {
             text: "Template",
             passwordMessage: 'New Password Generated'
         },
-        automatic_mail_subject: "Revert Information",
-        automatic_mail_subject_match: "Re: Revert Information",
         shedule_for: [
             { value: 'first_round', text: "First Round", info: "First round is written test.Which will be divided in two section, first section is objective and second section is subjective questions.Once you clear both these section then there would be HR round." },
             { value: 'second_round', text: "Second Round", info: "Second round is a Machine Test which contain 5 questions. you have to run code and apply logic as per question requirement." },
@@ -33,7 +31,7 @@ export default function() {
         registration_message: " <br> your registration_id is:-",
         ignored_api_log_list: ["/email/inbox/", "/dashboard", "/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate", "/user/log", "/get/email/logs", "/search/email/logs", "/get/shedule"],
         office_location: { long: 28.5960769, lat: 77.3277893 },
-        app_hr_contact_email: "hr@excellencetechnologies.in",
+        app_hr_contact_email: "saurabhk_etech@excellencetechnologies.in",
         app_hr_contact_number: "+91-9811065469",
         tag_type: ["Default", "Manual", "Automatic"],
         user_type: ["Admin", "Guest", "HR"],
@@ -49,7 +47,8 @@ export default function() {
         sendToAll: 'send_to_all',
         app_name:"ExcellenceHrRecruit",
         campaign_name:"seenReply",
-        campaign_source:"ExcellenceTechnosoftPvtLtd"
+        campaign_source:"ExcellenceTechnosoftPvtLtd",
+        admin_mail:"sumit@excellencetechnologies.in"
     };
     return constant;
 }

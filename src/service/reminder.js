@@ -90,14 +90,14 @@ let sendEmailToPendingCandidate = (cron_service, logs, email) => {
                             let email_id = emails;
                             replaceData.filter(template.body, email_id.from, emails.tag_id)
                                 .then((html) => {
-                                    subject = constant().automatic_mail_subject + " " + template.subject;
-                                    mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html)
+                                    subject = template.subject;
+                                    mail.sendMail(email_id.sender_mail, subject, constant().smtp.text, smtp, html, true)
                                         .then((response) => {
                                             response['user'] = cronWorkData.get('user');
                                             response['tag_id'] = emails.tag_id;
                                             email_log.emailLog(logs, response)
                                                 .then((log_response) => {
-                                                    email.update({ "_id": email_id._id }, { is_automatic_email_send: 1, send_template_count: 1, template_id: [template.id] })
+                                                    email.update({ "_id": email_id._id }, { is_automatic_email_send: 1, send_template_count: 1, template_id: [template.id],reply_to_id:response.reply_to })
                                                         .then((data1) => {
                                                             cron_service.update({ _id: cronWorkData.get('_id') }, { "$pull": { candidate_list: emails } }).exec(function(err, updated_cronWork) {
                                                                 if (!err) {

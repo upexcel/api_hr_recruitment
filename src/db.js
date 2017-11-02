@@ -93,6 +93,18 @@ sequelize.sync().then(() => {
                 db.SystemVariable.create({ variableCode: "#logo" });
             }
         });
+    db.SystemVariable.findOne({ where: { variableCode: "#scheduled_date" } })
+        .then((id) => {
+            if (!id) {
+                db.SystemVariable.create({ variableCode: "#scheduled_date" });
+            }
+        });
+    db.SystemVariable.findOne({ where: { variableCode: "#scheduled_time" } })
+        .then((id) => {
+            if (!id) {
+                db.SystemVariable.create({ variableCode: "#scheduled_time" });
+            }
+        });         
     db.SystemVariable.findOne({ where: { variableCode: "#tag_name" } })
         .then((id) => {
             if (!id) {
