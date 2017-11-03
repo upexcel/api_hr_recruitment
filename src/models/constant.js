@@ -47,7 +47,8 @@ export default function() {
         sendToAll: 'send_to_all',
         app_name:"ExcellenceHrRecruit",
         campaign_name:"seenReply",
-        campaign_source:"ExcellenceTechnosoftPvtLtd"
+        campaign_source:"ExcellenceTechnosoftPvtLtd",
+        slack_message: "Interview is Scheduled for !!"
     };
     return constant;
 }

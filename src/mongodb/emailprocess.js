@@ -9,6 +9,7 @@ import moment from 'moment';
 import pushMessage from '../service/pushmessage';
 import crypto from "crypto";
 import logs from "../service/emaillogs";
+import slack from '../service/sendSlackNotification';
 
 const fetchEmail = (page, tag_id, limit, type, keyword, selected, default_id, default_tag, db, is_attach) => {
     return new Promise((resolve, reject) => {
@@ -295,7 +296,7 @@ let assignMultiple = (tag_id, body, email) => {
                             reject(err);
                         } else {
                             if (data.type == constant().tagType.default && body.shedule_for) {
-                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1 }).exec(function(err, response) {
+                                email.findOne({ "_id": { "$in": body.mongo_id } }, { "attachment": 1, "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1, "from": 1 }).exec(function(err, response) {
                                     db.Template.findById(body.tamplate_id)
                                         .then((template) => {
                                             replaceData.filter(template.body, response.from, response.tag_id[response.tag_id.length - 1])
@@ -316,48 +317,53 @@ let assignMultiple = (tag_id, body, email) => {
                                                             replaced_data += custom_link;
                                                             mail.sendMail(response.sender_mail, template.subject, "", smtp, replaced_data)
                                                                 .then((mail_response) => {
-                                                                    db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
-                                                                        .then((device_list) => {
-                                                                            if (device_list) {
-                                                                                let push_message = "";
-                                                                                _.forEach(constant().shedule_for, (val, key) => {
-                                                                                    if (val.value == body.shedule_for) {
-                                                                                        push_message = val.text + " on " + moment(body.shedule_date).format("MMM DD, YYYY") + " at " + body.shedule_time;
-                                                                                    }
-                                                                                })
-                                                                                pushMessage.pushMessage(device_list, push_message)
-                                                                                    .then((push_response) => {
-                                                                                        if (!push_response.error) {
-                                                                                            email.update({ "_id": { "$in": body.mongo_id } }, { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }, { multi: true }).exec(function(err, saved_info) {
-                                                                                                resolve({
-                                                                                                    status: 1,
-                                                                                                    message: "success",
-                                                                                                    data: response,
-                                                                                                    push_status: push_response,
-                                                                                                    email_status: mail_response
-                                                                                                });
+                                                                    db.Tag.findById(parseInt(response.tag_id[0])).then((tag_info) => {
+                                                                        let slack_message = constant().slack_message + "\n" + "Job Profile: " + tag_info.title + "\n" + "Candidate Name: " + response.from + "\n" + " On Dated " + body.shedule_date + " At " + body.shedule_time + "\n" + "Cv: " + response.attachment[0].link;
+                                                                        slack.slackNotification(slack_message).then((response) => {
+                                                                            db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
+                                                                                .then((device_list) => {
+                                                                                    if (device_list) {
+                                                                                        let push_message = "";
+                                                                                        _.forEach(constant().shedule_for, (val, key) => {
+                                                                                            if (val.value == body.shedule_for) {
+                                                                                                push_message = val.text + " on " + moment(body.shedule_date).format("MMM DD, YYYY") + " at " + body.shedule_time;
+                                                                                            }
+                                                                                        })
+                                                                                        pushMessage.pushMessage(device_list, push_message)
+                                                                                            .then((push_response) => {
+                                                                                                if (!push_response.error) {
+                                                                                                    email.update({ "_id": { "$in": body.mongo_id } }, { "$addToSet": { "push_message": constant().push_notification_message + " " + body.shedule_for }, "push_status": 1 }, { multi: true }).exec(function(err, saved_info) {
+                                                                                                        resolve({
+                                                                                                            status: 1,
+                                                                                                            message: "success",
+                                                                                                            data: response,
+                                                                                                            push_status: push_response,
+                                                                                                            email_status: mail_response
+                                                                                                        });
+                                                                                                    })
+                                                                                                } else {
+                                                                                                    resolve({
+                                                                                                        status: 1,
+                                                                                                        message: "success",
+                                                                                                        data: response,
+                                                                                                        push_status: push_response,
+                                                                                                        email_status: mail_response
+                                                                                                    });
+                                                                                                }
                                                                                             })
-                                                                                        } else {
-                                                                                            resolve({
-                                                                                                status: 1,
-                                                                                                message: "success",
-                                                                                                data: response,
-                                                                                                push_status: push_response,
-                                                                                                email_status: mail_response
-                                                                                            });
-                                                                                        }
-                                                                                    })
-                                                                            } else {
-                                                                                resolve({
-                                                                                    status: 1,
-                                                                                    message: "success",
-                                                                                    data: response,
-                                                                                    email_status: mail_response
-                                                                                })
-                                                                            }
-                                                                        }, (err) => { reject(err) })
+                                                                                    } else {
+                                                                                        resolve({
+                                                                                            status: 1,
+                                                                                            message: "success",
+                                                                                            data: response,
+                                                                                            email_status: mail_response
+                                                                                        })
+                                                                                    }
+                                                                                }, (err) => { reject(err) })
 
-                                                                }, (err) => { reject(err) })
+                                                                        }, (err) => { reject(err) })
+                                                                    })
+                                                                })
                                                         })
                                                 })
 
