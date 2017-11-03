@@ -26,7 +26,7 @@ export class SlackController extends BaseAPIController {
 
     /*get slack data*/
     getSlackData = (req, res, next) => {
-        this._db.Slack.findAll().then((response) => {
+        this._db.Slack.slackData().then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })
     }
