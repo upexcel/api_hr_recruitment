@@ -58,7 +58,13 @@ export default (app) => {
 
     /*count of pending work*/
     app.route("/email/cron_status").post(auth.requiresAdminOrHr, fetch_email.cron_status)
+    
+    /*insert candidates notes*/
+    app.route("/candidate_notes/insert").post(auth.requiresAdminOrHr, fetch_email.insert_note)
 
+    /*update candidates notes*/
+    app.route("/candidate_notes/update").post(auth.requiresAdminOrHr, fetch_email.update_note)
+    
     /*Archive emails*/
     app.route("/email/archive").put(auth.requiresAdmin, fetch_email.archiveEmails)
 
