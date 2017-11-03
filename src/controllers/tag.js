@@ -12,11 +12,15 @@ export class TagController extends BaseAPIController {
         var assign = req.body.assign;
         TagProvider.save(this._db, req.params.type, req.checkBody, req.body, req.getValidationResult())
             .then((response) => {
+                response.parent_id = (response.parent_id) ? parseInt(response.parent_id) : 0;
                 this._db.Tag.create(response)
                     .then((data) => {
                         if (data) {
                             if ((data.type == tag().tagType.automatic) && (assign === true)) {
                                 email_process.assignToOldTag(data, req.email)
+                                    .then((result) => { this.handleSuccessResponse(req, res, next, result) })
+                            } else if ((data.type == tag().tagType.default)) {
+                                email_process.assignToNewTag(data, req.email)
                                     .then((result) => { this.handleSuccessResponse(req, res, next, result) })
                             } else {
                                 this.handleSuccessResponse(req, res, next, data)
@@ -130,8 +134,8 @@ export class TagController extends BaseAPIController {
     }
 
     /*updatePriority*/
-    updatePriority = (req, res, next) =>{
-        this._db.Tag.updatePriority(req.body).then((response)=>{
+    updatePriority = (req, res, next) => {
+        this._db.Tag.updatePriority(req.body).then((response) => {
             this.handleSuccessResponse(req, res, next, response)
         })
     }

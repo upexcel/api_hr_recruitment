@@ -44,6 +44,11 @@ export default function(sequelize, DataTypes) {
             type: DataTypes.STRING,
             defaultValue: 0,
             allowNull: true
+        },
+        parent_id: {
+            type: DataTypes.INTEGER,
+            defaultValue: 0,
+            allowNull: true
         }
     }, {
         hooks: {
@@ -107,6 +112,30 @@ export default function(sequelize, DataTypes) {
                         })
                 })
             },
+            assignNewTag(tag, email) {
+                return new Promise((resolve, reject) => {
+                    email.find({ tag_id: (tag.parent_id).toString() })
+                        .then((data) => {
+                            var id = []
+                            _.map(data, (val, key) => {
+                                if ((val.subject.match(new RegExp(tag.subject, 'gi'))) || ((tag.to && tag.from) && (new Date(val.date).getTime() < new Date(tag.to).getTime() && new Date(val.date).getTime() > new Date(tag.from).getTime())) || ((tag.email) && (val.sender_mail.match(new RegExp(tag.email, 'gi'))))) {
+                                    id.push(val._id);
+                                    if (key == (_.size(data) - 1)) {
+                                        resolve(id)
+                                    }
+                                } else {
+                                    if (key == (_.size(data) - 1)) {
+                                        resolve(id)
+                                    }
+                                }
+
+                            })
+                            resolve(id)
+                        }, (err) => {
+                            reject(err)
+                        })
+                })
+            },
             findTagInfo(tagId) {
                 return new Promise((resolve, reject) => {
                     this.findById(tagId)
@@ -132,7 +161,7 @@ export default function(sequelize, DataTypes) {
                                 }
 
                             })
-                        }else{
+                        } else {
                             resolve();
                         }
 
