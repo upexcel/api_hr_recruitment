@@ -16,7 +16,10 @@ export default (app) => {
     app.route("/get/slackInfo").get(auth.requiresAdmin, slack.getSlackData);
 
     /*Route for getting slack info by id*/
-    app.route("/get/slackInfoById/:slack_id").get(auth.requiresAdmin, slack.getSlackDataByid);    
+    app.route("/get/slackInfoById/:slack_id").get(auth.requiresAdmin, slack.getSlackDataByid); 
+    
+    /*Route for delete slack account*/
+    app.route("/delete/slackInfo/:slack_id").delete(auth.requiresAdmin, slack.deleteSlackInfo);   
 
     return app;
 };

@@ -40,6 +40,13 @@ export class SlackController extends BaseAPIController {
                 this.handleSuccessResponse(req, res, next, { data: null })
         }).catch(this.handleErrorResponse.bind(null, res))
     }
+
+    /*deleteSlackInfo*/
+    deleteSlackInfo = (req, res, next) => {
+        this._db.Slack.destroy({ where: { id: req.params.slack_id } }).then((response) => {
+            this.handleSuccessResponse(req, res, next, { message: "success" })
+        })
+    }
 }
 
 const controller = new SlackController();
