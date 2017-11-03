@@ -239,7 +239,8 @@ const findcount = (mongodb) => {
                     color: default_tag_id.color,
                     title: default_tag_id.title,
                     count: 0,
-                    unread: 0
+                    unread: 0,
+                    parent_id: default_tag_id.parent_id
                 }
                 if (default_tag_mail.length) {
                     child.count = default_tag_mail.length
@@ -251,10 +252,11 @@ const findcount = (mongodb) => {
                     })
                     child.unread = unread
                 }
-                // if (child.title != constant().tagType.genuine) {
-                //     sub_child_list.push(child)
-                // }
-                sub_child_list.push(child)
+                if (child.parent_id != tagId.id && child.parent_id != null) {
+                    // sub_child_list.push(child)
+                } else {
+                    sub_child_list.push(child)
+                }
                 if (default_tag_list.length) {
                     find_child_count(tagId, default_tag_list, callback)
                 } else {
@@ -721,6 +723,28 @@ let assignToOldTag = (data, email) => {
     })
 }
 
+let assignToNewTag = (data, email) => {
+    return new Promise((resolve, reject) => {
+        db.Tag.assignNewTag(data, email)
+            .then((response) => {
+                function assignTag(id) {
+                    let mongoId = id.splice(0, 100)
+                    email.update({ _id: { $in: mongoId } }, { "default_tag": data.id.toString(), "email_timestamp": new Date().getTime() }, { multi: true })
+                        .then((data1) => {
+                            if (!id.length) {
+                                resolve({ message: "tag assigned sucessfully" })
+                            } else {
+                                assignTag(id)
+                            }
+                        })
+                }
+                assignTag(response)
+            }, (err) => {
+                reject(err)
+            });
+    })
+}
+
 let getFetchedMailCount = (imap_emails, email) => {
     return new Promise((resolve, reject) => {
         let result = []
@@ -979,6 +1003,7 @@ export default {
     deleteTag,
     getShedule,
     assignToOldTag,
+    assignToNewTag,
     getFetchedMailCount,
     app_get_candidate,
     checkEmailStatus,

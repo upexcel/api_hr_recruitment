@@ -50,42 +50,51 @@ module.exports = {
                                             is_email_send = val.is_email_send;
                                     }
                                 })
+                                let default_tag_id = "";
                                 db.Template.findOne({
                                     where: {
                                         id: template_id[0]
                                     }
                                 }).then((data) => {
-                                    if (data != null) {
-                                        replace.filter(data.body, name, tagId[0])
-                                            .then((html) => {
-                                                db.Smtp.findOne({ where: { status: 1 } })
-                                                    .then((smtp) => {
-                                                        if (config.send_automatic_tags_email === true && send_to && is_email_send) {
-                                                            mail.sendMail(to, data.subject, constant().smtp.text, smtp, html, true)
-                                                                .then((response) => {
-                                                                    response['tag_id'] = tagId;
-                                                                    email_log.emailLog(logs, response)
-                                                                        .then((data) => {
-                                                                            if (response.status) {
-                                                                                resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1, count: 1, template_id: template_id[0], reply_to_id: response.reply_to })
-                                                                            } else {
-                                                                                resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0 })
-                                                                            }
+                                    db.Tag.findAll({ where: { type: constant().tagType.default, parent_id: { "$in": tagId.map(function(x) { return parseInt(x, 10); }) } } })
+                                        .then((result) => {
+                                            _.forEach(result,(val, key)=>{
+                                              if ((subject.match(new RegExp(val.subject, 'gi'))) || ((val.to && val.from) && (new Date(email_date).getTime() < new Date(val.to).getTime() && new Date(email_date).getTime() > new Date(val.from).getTime())) || ((val.email) && (to.match(new RegExp(val.email, 'gi'))))) {
+                                                default_tag_id = val.id.toString();
+                                            }  
+                                            })
+                                            if (data != null) {
+                                                replace.filter(data.body, name, tagId[0])
+                                                    .then((html) => {
+                                                        db.Smtp.findOne({ where: { status: 1 } })
+                                                            .then((smtp) => {
+                                                                if (config.send_automatic_tags_email === true && send_to && is_email_send) {
+                                                                    mail.sendMail(to, data.subject, constant().smtp.text, smtp, html, true)
+                                                                        .then((response) => {
+                                                                            response['tag_id'] = tagId;
+                                                                            email_log.emailLog(logs, response)
+                                                                                .then((data) => {
+                                                                                    if (response.status) {
+                                                                                        resolve({ message: "Tempate Send Successfully", tagId: tagId, is_automatic_email_send: 1, count: 1, template_id: template_id[0], reply_to_id: response.reply_to, default_tag_id: default_tag_id })
+                                                                                    } else {
+                                                                                        resolve({ message: "Tempate Not Send Successfully", tagId: tagId, is_automatic_email_send: 0, default_tag_id: default_tag_id })
+                                                                                    }
+                                                                                })
                                                                         })
-                                                                })
 
-                                                        } else {
-                                                            resolve({ message: "Email Not Send ", tagId: tagId })
-                                                        }
-                                                    })
-                                            });
-                                    } else {
-                                        if (tagId.length != 0) {
-                                            resolve({ message: "Email Not send", tagId: tagId })
-                                        } else {
-                                            resolve({ message: "Email Not send", tagId: [] })
-                                        }
-                                    }
+                                                                } else {
+                                                                    resolve({ message: "Email Not Send ", tagId: tagId, default_tag_id: default_tag_id })
+                                                                }
+                                                            })
+                                                    });
+                                            } else {
+                                                if (tagId.length != 0) {
+                                                    resolve({ message: "Email Not send", tagId: tagId, default_tag_id: default_tag_id })
+                                                } else {
+                                                    resolve({ message: "Email Not send", tagId: [] })
+                                                }
+                                            }
+                                        })
                                 })
                             } else {
                                 resolve({ tagid: [] })
