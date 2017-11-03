@@ -48,7 +48,7 @@ export default function() {
         app_name:"ExcellenceHrRecruit",
         campaign_name:"seenReply",
         campaign_source:"ExcellenceTechnosoftPvtLtd",
-        slack_message: "Interview is Scheduled for !!"
+        slack_message: "Interview is Scheduled for !!",
         admin_mail:"sumit@excellencetechnologies.in"
     };
     return constant;
