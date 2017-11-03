@@ -62,19 +62,25 @@ export class TagController extends BaseAPIController {
     /* Imap data delete */
 
     deleteTag = (req, res, next) => {
-        if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual) {
-            this._db.Tag.destroy({ where: { id: req.params.tagId, type: req.params.type } })
-                .then((docs) => {
-                    if (docs) {
-                        req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
-                            .then((data) => {
-                                this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
-                            })
-                            .catch(this.handleErrorResponse.bind(null, res));
-                    } else {
-                        next(res.status(400).send({ message: "Invalid tagId" }));
-                    }
+        if (req.params.type == tag().tagType.automatic || req.params.type == tag().tagType.manual || req.params.type == tag().tagType.default) {
+            if (req.params.type == tag().tagType.default) {
+                this._db.Tag.destroyDefault( req.email,this._db,req.params.tagId, req.params.type).then((status) => {
+                    this.handleSuccessResponse(req, res, next, { status: status });
                 }).catch(this.handleErrorResponse.bind(null, res));
+            } else {
+                this._db.Tag.destroy({ where: { id: req.params.tagId, type: req.params.type } })
+                    .then((docs) => {
+                        if (docs) {
+                            req.email.update({ tag_id: { $all: [req.params.tagId] } }, { $pull: { tag_id: req.params.tagId } }, { multi: true })
+                                .then((data) => {
+                                    this.handleSuccessResponse(req, res, next, { status: "SUCCESS" });
+                                })
+                                .catch(this.handleErrorResponse.bind(null, res));
+                        } else {
+                            next(res.status(400).send({ message: "Invalid tagId" }));
+                        }
+                    }).catch(this.handleErrorResponse.bind(null, res));
+            }
         } else {
             next(res.status(400).send({ message: "Invalid tag type " }));
         }

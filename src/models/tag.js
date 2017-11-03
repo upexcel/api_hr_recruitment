@@ -136,6 +136,16 @@ export default function(sequelize, DataTypes) {
                         })
                 })
             },
+            destroyDefault(email, db, tagId, type) {
+                return new Promise((resolve, reject) => {
+                    db.Tag.destroy({ where: { id: tagId, type: type, parent_id: { $ne: null } } })
+                        .then((docs) => {
+                                email.updateMany({ default_tag: tagId }, { $set: { "default_tag": "" } }).then((data) => {
+                                    resolve("SUCCESS")
+                                }).catch(err => reject(err))
+                        }).catch(err => reject(err))
+                })
+            },
             findTagInfo(tagId) {
                 return new Promise((resolve, reject) => {
                     this.findById(tagId)
