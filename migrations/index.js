@@ -14,7 +14,8 @@ module.exports = {
                 { table: "TAG", field: "is_email_send", type: Sequelize.BOOLEAN, value: 0, allowNull: false },
                 { table: "TAG", field: "priority", type: Sequelize.INTEGER, value: 0, allowNull: true },
                 { table: "IMAP", field: "days_left_to_fetched", type: Sequelize.INTEGER, value: 0, allowNull: true },
-                { table: "IMAP", field: "fetched_date_till", type: Sequelize.DATE, value: 0, allowNull: true }
+                { table: "IMAP", field: "fetched_date_till", type: Sequelize.DATE, value: 0, allowNull: true },
+                { table: "TAG", field: "parent_id", type: Sequelize.INTEGER, value: 0, allowNull: true },
             ]
             _.forEach(add_field, (val, key) => {
                 queryInterface.describeTable(val.table).then(attributes => {
