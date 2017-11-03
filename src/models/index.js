@@ -6,6 +6,7 @@ import Template from "./template";
 import Variable from "./emailVariable";
 import SystemVariable from "./systemVariable";
 import Candidate_device from './candidate_device';
+import Slack from './slack';
 
 export default {
     User,
@@ -15,5 +16,6 @@ export default {
     Template,
     Variable,
     SystemVariable,
-    Candidate_device
+    Candidate_device,
+    Slack
 };

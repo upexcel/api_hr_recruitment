@@ -29,7 +29,7 @@ export default function() {
         push_notification_message: 'Interview Scheduled',
         old_emails_fetch_days_count: 5,
         registration_message: " <br> your registration_id is:-",
-        ignored_api_log_list: ["/email/inbox/", "/dashboard", "/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate", "/user/log", "/get/email/logs", "/search/email/logs", "/get/shedule"],
+        ignored_api_log_list: ["/get/slackInfo","/email/inbox/", "/dashboard", "/email/fetch/", "/email/countEmail", "/email/mailAttachment/", "/variable/get/", "/imap/get", "/smtp/get/", "/template/get/", "/tag/get/", "/systemVariable/get/", "/app_get_candidate", "/user/log", "/get/email/logs", "/search/email/logs", "/get/shedule"],
         office_location: { long: 28.5960769, lat: 77.3277893 },
         app_hr_contact_email: "saurabhk_etech@excellencetechnologies.in",
         app_hr_contact_number: "+91-9811065469",
@@ -48,7 +48,9 @@ export default function() {
         app_name:"ExcellenceHrRecruit",
         campaign_name:"seenReply",
         campaign_source:"ExcellenceTechnosoftPvtLtd",
-        admin_mail:"sumit@excellencetechnologies.in"
+        slack_message: "Interview is Scheduled for !!",
+        admin_mail:"sumit@excellencetechnologies.in",
+        user_icon: "http://picasaweb.google.com/data/entry/api/user/"
     };
     return constant;
 }
