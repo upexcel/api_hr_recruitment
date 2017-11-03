@@ -12,5 +12,11 @@ export default (app) => {
     /*Route for updating slack info*/
     app.route("/update/slackInfo/:account_id").put(auth.requiresAdmin, slack.update);
 
+    /*Route for getting slack info*/
+    app.route("/get/slackInfo").get(auth.requiresAdmin, slack.getSlackData);
+
+    /*Route for getting slack info by id*/
+    app.route("/get/slackInfoById/:slack_id").get(auth.requiresAdmin, slack.getSlackDataByid);    
+
     return app;
 };

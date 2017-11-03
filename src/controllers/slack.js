@@ -23,6 +23,23 @@ export class SlackController extends BaseAPIController {
             this.handleSuccessResponse(req, res, next, { status: 1, message: "Slack Info is Updated" })
         })
     }
+
+    /*get slack data*/
+    getSlackData = (req, res, next) => {
+        this._db.Slack.findAll().then((response) => {
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
+
+    /*get slack data by id*/
+    getSlackDataByid = (req, res, next) => {
+        this._db.Slack.findOne({ where: { id: req.params.slack_id } }).then((response) => {
+            if (response)
+                this.handleSuccessResponse(req, res, next, { data: response })
+            else
+                this.handleSuccessResponse(req, res, next, { data: null })
+        }).catch(this.handleErrorResponse.bind(null, res))
+    }
 }
 
 const controller = new SlackController();

@@ -320,7 +320,7 @@ let assignMultiple = (tag_id, body, email) => {
                                                                     db.Tag.findById(parseInt(response.tag_id[0])).then((tag_info) => {
                                                                         let link = response.attachment[0] ? response.attachment[0].link : "No Attachment";
                                                                         let slack_message = constant().slack_message + "\n" + "Job Profile: " + tag_info.title + "\n" + "Candidate Name: " + response.from + "\n" + " On Dated " + body.shedule_date + " At " + body.shedule_time + "\n" + "Cv: " + link;
-                                                                        slack.slackNotification(slack_message).then((response) => {
+                                                                        slack.slackNotification(slack_message, response.sender_mail).then((response) => {
                                                                             db.Candidate_device.findOne({ where: { email_id: response.sender_mail } })
                                                                                 .then((device_list) => {
                                                                                     if (device_list) {
