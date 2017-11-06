@@ -4,7 +4,9 @@
   "description": "Hr_System project on ES6 RESTful Express API",
   "main": "dist",
   "scripts": {
-    "start": "node ./models/index.js && nodemon --max_old_space_size=8192 -w src --exec \"babel-node src --presets es2015,stage-0\""
+    "start": "node ./models/index.js && nodemon --max_old_space_size=8192 -w src --exec \"babel-node src --presets es2015,stage-0\"",
+    "build": "babel src -s -D -d dist --presets es2015,stage-0",
+    "dev": "node ./model/index.js && node dist"
   },
   "repository": "developit/express-es6-rest-api",
   "author": "Jason Miller <jason@developit.ca>",

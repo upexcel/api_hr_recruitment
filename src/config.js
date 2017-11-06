@@ -1,3 +1,3 @@
-var config = require("../../config.json");
+var config = require("../config.json");
 
 export default config;

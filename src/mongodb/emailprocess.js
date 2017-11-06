@@ -301,7 +301,7 @@ let assignMultiple = (tag_id, body, email) => {
                                 email.findOne({ "_id": { "$in": body.mongo_id } }, { "attachment": 1, "sender_mail": 1, "default_tag": 1, "from": 1, "tag_id": 1, "registration_id": 1, "from": 1 }).exec(function(err, response) {
                                     db.Template.findById(body.tamplate_id)
                                         .then((template) => {
-                                            replaceData.schedule_filter(template.body, response.from, response.tag_id[response.tag_id.length - 1], body.shedule_date, body.shedule_time)
+                                            replaceData.schedule_filter(template.body, response.from, response.tag_id[response.tag_id.length - 1], body.scheduled_date, body.scheduled_time)
                                                 .then((replaced_data) => {
                                                     if (body.shedule_for == constant().shedule_for[0].value)
                                                         replaced_data = replaced_data + constant().registration_message + registration_id

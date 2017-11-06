@@ -3,7 +3,7 @@ import config from "../config.js";
 import constant from '../models/constant'
 let pushMessage = (device_info, information) => {
     return new Promise((resolve, reject) => {
-        let server_key = config.push_message_server_key;
+        let server_key = process.env.push_message_server_key || config.push_message_server_key;
         let fcm = new FCM(server_key);
         let message = {
             to: device_info.token, // required fill with device token or topics
@@ -11,14 +11,14 @@ let pushMessage = (device_info, information) => {
                 title: constant().push_notification_message,
                 body: information,
                 icon: 'ic_stat_drawing',
-                sound:'default'
+                sound: 'default'
             },
             data: {
                 body: {
                     status: 1
                 }
             },
-            priority:'high'
+            priority: 'high'
         };
         fcm.send(message, function(err, response) {
             if (err) {
