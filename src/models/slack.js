@@ -60,12 +60,12 @@ export default function(sequelize, DataTypes) {
                     if (data.status == true) {
                         this.update({ status: false }, { where: { status: true } }).then((response) => {
                             this.update(data, { where: { id: slack_id } }).then((final_response) => {
-                                resolve(response)
+                                resolve(final_response)
                             })
                         })
                     } else {
                         this.update(data, { where: { id: slack_id } }).then((final_response) => {
-                            resolve(response)
+                            resolve(final_response)
                         })
                     }
                 });
