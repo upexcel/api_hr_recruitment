@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/config.js"],"names":["config","require"],"mappings":";;;;;AAAA,IAAIA,SAASC,QAAQ,gBAAR,CAAb;;kBAEeD,M","file":"config.js","sourcesContent":["var config = require(\"../config.json\");\n\nexport default config;\n"]}
