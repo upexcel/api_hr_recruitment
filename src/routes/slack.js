@@ -7,7 +7,7 @@ export default (app) => {
     app.route("/add/slackInfo").post(auth.requiresAdmin, slack.addInfo);
 
     /*Route for getting channel list*/
-    app.route("/get/channelList/:account_id").get(auth.requiresAdmin, slack.getChannelList);
+    // app.route("/get/channelList/:account_id").get(auth.requiresAdmin, slack.getChannelList);
 
     /*Route for updating slack info*/
     app.route("/update/slackInfo/:account_id").put(auth.requiresAdmin, slack.update);

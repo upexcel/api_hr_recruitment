@@ -11,17 +11,16 @@ export default function(sequelize, DataTypes) {
         freezeTableName: true,
         allowNull: true,
         classMethods: {
-            getChannelList(id) {
+            getChannelList(slackInfo) {
                 return new Promise((resolve, reject) => {
-                    this.findById(id).then((slackInfo) => {
-                        let web = new WebClient(slackInfo.get('token'))
-                        web.channels.list(function(err, res) {
-                            if (!err) {
-                                resolve(res.channels)
-                            } else {
-                                reject("Something happend Wrong")
-                            }
-                        })
+                    console.log(slackInfo)
+                    let web = new WebClient(slackInfo.token)
+                    web.channels.list(function(err, res) {
+                        if (!err) {
+                            resolve(res.channels)
+                        } else {
+                            reject("Something happend Wrong")
+                        }
                     })
                 });
             },
@@ -52,6 +51,21 @@ export default function(sequelize, DataTypes) {
                             } else {
                                 callback(slackData)
                             }
+                        })
+                    }
+                });
+            },
+            updateData(data, slack_id) {
+                return new Promise((resolve, reject) => {
+                    if (data.status == true) {
+                        this.update({ status: false }, { where: { status: true } }).then((response) => {
+                            this.update(data, { where: { id: slack_id } }).then((final_response) => {
+                                resolve(response)
+                            })
+                        })
+                    } else {
+                        this.update(data, { where: { id: slack_id } }).then((final_response) => {
+                            resolve(response)
                         })
                     }
                 });
