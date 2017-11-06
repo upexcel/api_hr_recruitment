@@ -5,7 +5,9 @@ if (!db) {
     console.log("Mongodb information is not fount update config details");
     process.exit(0)
 }
-let conn = mongoose.createConnection("mongodb://localhost/" + db);
+let conn = 'mongodb://recruit-dev:java123@ds147265.mlab.com:47265/hr_recruit_dev';
+conn = mongoose.connect(conn)
+
 import cronService from "../service/cron.js";
 // the middleware function
 module.exports = function() {

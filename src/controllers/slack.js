@@ -22,7 +22,7 @@ export class SlackController extends BaseAPIController {
     /*Update SlackInfo*/
 
     update = (req, res, next) => {
-        this._db.Slack.updateData(req.body, req.params.account_id).then((response) => {
+        this._db.Slack.update(req.body, { where: { id: req.params.account_id } }).then((response) => {
             this.handleSuccessResponse(req, res, next, { status: 1, message: "Slack Info is Updated" })
         })
     }

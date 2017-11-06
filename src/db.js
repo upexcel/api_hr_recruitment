@@ -6,7 +6,7 @@ import migration from "../migrations/index.js"
 const db = {};
 
 // create your instance of sequelize
-const sequelize = new Sequelize(config.db.name, config.db.username, config.db.password);
+const sequelize = new Sequelize(config.db.name, config.db.username, config.db.password, { port: 3306, host: config.db.host });
 
 // load models
 Object.keys(models).forEach((modelName) => {
@@ -104,7 +104,7 @@ sequelize.sync().then(() => {
             if (!id) {
                 db.SystemVariable.create({ variableCode: "#scheduled_time" });
             }
-        });         
+        });
     db.SystemVariable.findOne({ where: { variableCode: "#tag_name" } })
         .then((id) => {
             if (!id) {
@@ -112,6 +112,7 @@ sequelize.sync().then(() => {
             }
         });
 }, (err) => {
+    console.log(err)
     console.log("Incorrect Sequelize Db Details Update config details");
     process.exit(0)
 });
