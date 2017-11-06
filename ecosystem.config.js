@@ -1,0 +1,66 @@
+module.exports = {
+    apps: [{
+        name: "myapp",
+        script: "./dist/index.js",
+        watch: true,
+        exec_mode  : "cluster",
+        env: {
+            "PORT": 3000,
+            "NODE_ENV": "development"
+        },
+        env_dev: {
+            "port": 8091,
+            "bodyLimit": "100kb",
+            "corsHeaders": ["Link"],
+            "db": {
+                "host": "localhost",
+                "name": "hr_recruit_dev",
+                "password": "java@123",
+                "username": "root"
+            },
+            "mongodb": "hr_recruit_dev",
+            "CLIENT_ID": "1004109699057-s209vg38fk1csgsrnpirdqenrhh34fra.apps.googleusercontent.com",
+            "CLIENT_SECRET": "HCCSy75i8HSMjUN8Qwqkf2Qd",
+            "REDIRECT_URL": "https://developers.google.com/oauthplayground",
+            "access_token": "ya29.GluHBHjCnGcM0OPajjmYZiAPnYOISGdPOJBHq4M6vrtszY_Yr9UBXDMWwOf1xWWrzWuawfN-HS3gc8GMpVtEOtlLIkbQHka5GUOCUf1-iE6owiIl9HHl",
+            "token_type": "Bearer",
+            "expiry_date": true,
+            "refresh_token": "1/5unoMmB10aGgYPC4aWBWwWaeW1b5V3czvSgMaUHOys8",
+            "send_automatic_tags_email": true,
+            "is_silent": true,
+            "folderid": "0BxFKSCIpXxrUdTFtOHJEbko5Vkk",
+            "push_message_server_key": "AIzaSyBM7_X3e8RXSWTh6UiPb0nyGQil4YYSAIs",
+            "ACCOUNT_SID": "ACb488832ce0e47cddd1345fee52bd018f",
+            "AUTH_TOKEN": "2b14422d26e8ea6edb87d420b00370eb",
+            "TRACKING_ID": "UA-107835425-1",
+            "NODE_ENV": "dev"
+        },
+        env_live: {
+            "port": 8091,
+            "bodyLimit": "100kb",
+            "corsHeaders": ["Link"],
+            "db": {
+                "host": "localhost",
+                "name": "hr_recruit_dev",
+                "password": "java@123",
+                "username": "root"
+            },
+            "mongodb": "hr_recruit_dev",
+            "CLIENT_ID": "1004109699057-s209vg38fk1csgsrnpirdqenrhh34fra.apps.googleusercontent.com",
+            "CLIENT_SECRET": "HCCSy75i8HSMjUN8Qwqkf2Qd",
+            "REDIRECT_URL": "https://developers.google.com/oauthplayground",
+            "access_token": "ya29.GluHBHjCnGcM0OPajjmYZiAPnYOISGdPOJBHq4M6vrtszY_Yr9UBXDMWwOf1xWWrzWuawfN-HS3gc8GMpVtEOtlLIkbQHka5GUOCUf1-iE6owiIl9HHl",
+            "token_type": "Bearer",
+            "expiry_date": true,
+            "refresh_token": "1/5unoMmB10aGgYPC4aWBWwWaeW1b5V3czvSgMaUHOys8",
+            "send_automatic_tags_email": true,
+            "is_silent": true,
+            "folderid": "0BxFKSCIpXxrUdTFtOHJEbko5Vkk",
+            "push_message_server_key": "AIzaSyBM7_X3e8RXSWTh6UiPb0nyGQil4YYSAIs",
+            "ACCOUNT_SID": "ACb488832ce0e47cddd1345fee52bd018f",
+            "AUTH_TOKEN": "2b14422d26e8ea6edb87d420b00370eb",
+            "TRACKING_ID": "UA-107835425-1",
+            "NODE_ENV": "live"
+        }
+    }]
+}
