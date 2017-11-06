@@ -4,7 +4,7 @@
   "description": "Hr_System project on ES6 RESTful Express API",
   "main": "dist",
   "scripts": {
-    "start": "node ./model/index.js && node dist",
+    "start": "node ./models/index.js && node dist",
     "build": "babel src -s -D -d dist --presets es2015,stage-0",
     "dev": "node ./models/index.js && nodemon --max_old_space_size=8192 -w src --exec \"babel-node src --presets es2015,stage-0\""
   },
