@@ -22,8 +22,11 @@ const slackNotification = (data, user_email) => {
 
             function userIcon(email, callback) {
                 request(`http://picasaweb.google.com/data/entry/api/user/${email}?alt=json`, function(error, response, body) {
-                    if(!error){
-                        callback(JSON.parse(body).entry.gphoto$thumbnail.$t)
+                    if (!error) {
+                        if (JSON.parse(body).entry.gphoto$thumbnail.$t)
+                            callback(JSON.parse(body).entry.gphoto$thumbnail.$t)
+                        else
+                            callback("No Thumbnail")
                     }
                 });
             }

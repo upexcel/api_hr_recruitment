@@ -7,7 +7,7 @@ export default (app) => {
     app.route("/add/slackInfo").post(auth.requiresAdmin, slack.addInfo);
 
     /*Route for getting channel list*/
-    app.route("/get/channelList/:account_id").get(auth.requiresAdmin, slack.getChannelList);
+    // app.route("/get/channelList/:account_id").get(auth.requiresAdmin, slack.getChannelList);
 
     /*Route for updating slack info*/
     app.route("/update/slackInfo/:account_id").put(auth.requiresAdmin, slack.update);
@@ -16,7 +16,10 @@ export default (app) => {
     app.route("/get/slackInfo").get(auth.requiresAdmin, slack.getSlackData);
 
     /*Route for getting slack info by id*/
-    app.route("/get/slackInfoById/:slack_id").get(auth.requiresAdmin, slack.getSlackDataByid);    
+    app.route("/get/slackInfoById/:slack_id").get(auth.requiresAdmin, slack.getSlackDataByid); 
+    
+    /*Route for delete slack account*/
+    app.route("/delete/slackInfo/:slack_id").delete(auth.requiresAdmin, slack.deleteSlackInfo);   
 
     return app;
 };
