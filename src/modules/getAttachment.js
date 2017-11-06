@@ -10,13 +10,13 @@ var mime = require('mime-types');
 var replaceExt = require('replace-ext');
 
 var OAuth2 = google.auth.OAuth2;
-var oauth2Client = new OAuth2(config.CLIENT_ID, config.CLIENT_SECRET, config.REDIRECT_URL);
+var oauth2Client = new OAuth2(process.env.CLIENT_ID || config.CLIENT_ID, process.env.CLIENT_SECRET || config.CLIENT_SECRET, process.env.REDIRECT_URL || config.REDIRECT_URL);
 
 oauth2Client.setCredentials({
-    access_token: config.access_token,
-    token_type: config.token_type,
-    expiry_date: config.expiry_date,
-    refresh_token: config.refresh_token
+    access_token: process.env.access_token || config.access_token,
+    token_type: process.env.token_type || config.token_type,
+    expiry_date: process.env.expiry_date || config.expiry_date,
+    refresh_token: process.env.refresh_token || config.refresh_token
 }, (err) => { console.log(err) });
 var drive = google.drive({
     version: "v2",
@@ -151,7 +151,7 @@ var self = module.exports = {
     },
     driveUpload: function(filepath, filename) {
         return new Promise((resolve, reject) => {
-            var folderId = config.folderid;
+            var folderId =process.env.folderid|| config.folderid;
             var drive = google.drive({ version: 'v3', auth: oauth2Client });
             fs.readFile(filepath, (err, result) => {
                 var req = drive.files.create({

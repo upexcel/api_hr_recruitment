@@ -1,0 +1,16 @@
+{
+    "port": 8091,
+    "bodyLimit": "100kb",
+    "corsHeaders": ["Link"],
+    "db":
+    {
+        "host": "5.9.144.226",
+        "name": "hr_recruit_dev",
+        "password": "recruitdev@123",
+        "username": "hr_recruit_dev"
+    },
+    "mongodb":"hr_recruit_dev",
+    "expiry_date": true,
+    "send_automatic_tags_email": true,
+    "is_silent": true
+}

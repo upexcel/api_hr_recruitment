@@ -44,6 +44,7 @@ export default function(sequelize, DataTypes) {
                             if (!err) {
                                 slackData.push({ id: account.id, teamName: account.teamName, token: account.token, selected_channel: account.selected_channel, status: account.status, channel_list: res.channels })
                             } else {
+                                console.log(err)
                                 callback("Something happend Wrong")
                             }
                             if (slackAccounts.length) {
@@ -51,21 +52,6 @@ export default function(sequelize, DataTypes) {
                             } else {
                                 callback(slackData)
                             }
-                        })
-                    }
-                });
-            },
-            updateData(data, slack_id) {
-                return new Promise((resolve, reject) => {
-                    if (data.status == true) {
-                        this.update({ status: false }, { where: { status: true } }).then((response) => {
-                            this.update(data, { where: { id: slack_id } }).then((final_response) => {
-                                resolve(final_response)
-                            })
-                        })
-                    } else {
-                        this.update(data, { where: { id: slack_id } }).then((final_response) => {
-                            resolve(final_response)
                         })
                     }
                 });
