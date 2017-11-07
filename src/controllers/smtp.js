@@ -17,7 +17,7 @@ export class SmtpController extends BaseAPIController {
                             .then((data) => {
                                 this._db.Smtp.changeStatus(data.email)
                                     .then((response_status) => {
-                                        this.handleSuccessResponse(req, res, next, { response_status })
+                                        this.handleSuccessResponse(req, res, next, { response_status, data: data.dataValues })
                                     })
                             }, (err) => {
                                 throw new Error(res.json(400, {

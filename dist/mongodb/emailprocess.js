@@ -274,14 +274,15 @@ var findcount = function findcount(mongodb) {
         function find_child_count(tagId, default_tag_list, callback) {
             var default_tag_id = default_tag_list.splice(0, 1)[0];
             mongodb.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: default_tag_id.id }).exec(function (err, default_tag_mail) {
-                var child = {
+                var child = _defineProperty({
                     id: default_tag_id.id,
+                    type: default_tag_id.type,
                     color: default_tag_id.color,
                     title: default_tag_id.title,
                     count: 0,
                     unread: 0,
                     parent_id: default_tag_id.parent_id
-                };
+                }, "type", default_tag_id.type);
                 if (default_tag_mail.length) {
                     child.count = default_tag_mail.length;
                     var unread = 0;
