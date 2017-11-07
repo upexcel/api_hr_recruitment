@@ -276,6 +276,7 @@ var findcount = function findcount(mongodb) {
             mongodb.find({ tag_id: { "$in": [tagId.id.toString()] }, default_tag: default_tag_id.id }).exec(function (err, default_tag_mail) {
                 var child = {
                     id: default_tag_id.id,
+                    type: default_tag_id.type,
                     color: default_tag_id.color,
                     title: default_tag_id.title,
                     count: 0,
