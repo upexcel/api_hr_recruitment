@@ -87,7 +87,7 @@ var initRoutes = function initRoutes(app) {
 };
 
 initRoutes(app);
-app.server.listen(process.env.port || _config2.default.port);
-console.log("Started on port " + process.env.port || _config2.default.port);
+app.listen(process.env.port || _config2.default.port);
+console.log("Started on port " + _config2.default.port);
 exports.default = app;
 //# sourceMappingURL=index.js.map
