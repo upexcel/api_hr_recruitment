@@ -280,7 +280,8 @@ var findcount = function findcount(mongodb) {
                     title: default_tag_id.title,
                     count: 0,
                     unread: 0,
-                    parent_id: default_tag_id.parent_id
+                    parent_id: default_tag_id.parent_id,
+                    type: default_tag_id.type
                 };
                 if (default_tag_mail.length) {
                     child.count = default_tag_mail.length;
