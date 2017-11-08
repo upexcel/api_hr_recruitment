@@ -1,8 +1,8 @@
 {
 	"variables": [],
 	"info": {
-		"name": "hr_recruitment",
-		"_postman_id": "8f5affd5-32e5-55f9-d4db-1ceb335c0e6e",
+		"name": "hr_recruitment copy",
+		"_postman_id": "1b283cae-a23f-29a5-03ee-a33e9107ca64",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
 	},
@@ -51,7 +51,7 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "dev@gmail.com",
+									"value": "123@gmail.com",
 									"type": "text"
 								},
 								{
@@ -81,25 +81,25 @@
 								"exec": [
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.data) {",
+									"if (jsonData) {",
 									"    tests[\"data exist\"] = true;",
-									"    if (jsonData.data.id) {",
+									"    if (jsonData.id) {",
 									"        tests[\"id exist\"] = true;",
+									"        postman.setEnvironmentVariable(\"userId\", jsonData.id);",
 									"    } else {",
 									"        tests[\"id exist\"] = false;",
 									"    }",
-									"    if (jsonData.data.email) {",
+									"    if (jsonData.email) {",
 									"        tests[\"email exist\"] = true;",
 									"    } else {",
 									"        tests[\"email exist\"] = false;",
 									"    }",
-									"    if (jsonData.data.password) {",
+									"    if (jsonData.password) {",
 									"        tests[\"password exist\"] = true;",
 									"    } else {",
 									"        tests[\"password exist\"] = false;",
 									"    }",
-									"    if (jsonData.data.user_type) {",
-									"        postman.setEnvironmentVariable(\"type\", jsonData.data.user_type);",
+									"    if (jsonData.user_type) {",
 									"        tests[\"type\"] = true;",
 									"    } else {",
 									"        tests[\"type\"] = false;",
@@ -107,6 +107,8 @@
 									"} else {",
 									"    tests[\"data exist\"] = false;",
 									"}",
+									"",
+									"",
 									""
 								]
 							}
@@ -202,6 +204,7 @@
 									"if (jsonData.token) {",
 									"    postman.clearEnvironmentVariable(\"token\");",
 									"    postman.setEnvironmentVariable(\"token\", jsonData.token);",
+									"    postman.setEnvironmentVariable(\"type\", jsonData.role);",
 									"    tests[\"token exist\"] = true;",
 									"} else {",
 									"    tests[\"token exist\"] = false;",
@@ -425,11 +428,1111 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "User Dashboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.day_wise.length){",
+									"    if(jsonData.day_wise){",
+									"    tests['day_wise data exist'] = true",
+									"    if(jsonData.day_wise[0].label){",
+									"        tests['data label exists'] = true",
+									"    }else{",
+									"      tests[' data label exists'] = false ",
+									"    }",
+									"      if(jsonData.day_wise[1].label){",
+									"        tests['data label exists'] = true",
+									"    }else{",
+									"      tests[' data label exists'] = false ",
+									"    }",
+									"    ",
+									"    if(jsonData.day_wise[0].dates){",
+									"        tests['dates data exists'] = true",
+									"    }else{",
+									"      tests['dates data exists'] = false ",
+									"    }",
+									"      if(jsonData.day_wise[1].dates){",
+									"        tests['dates data exists'] = true",
+									"    }else{",
+									"      tests['dates data exists'] = false ",
+									"    }",
+									"}else{",
+									"    tests['day_wise data exist'] = false",
+									"}",
+									"",
+									"",
+									"if(jsonData.month_wise.length){",
+									"    tests['month_wise data exists'] = true",
+									"    if(jsonData.month_wise[0].label){",
+									"    tests['month_wise label exists'] = true",
+									"    }else{",
+									"    tests['month_wise label exists'] = false",
+									"    }",
+									"    ",
+									"    if(jsonData.month_wise[1].months){",
+									"    tests['month_wise months exists'] = true",
+									"    }else{",
+									"    tests['month_wise months exists'] = false",
+									"    }",
+									"  }else{",
+									"    tests['month_wise dtaa exists'] = false",
+									"}",
+									"",
+									"if(jsonData.rounds.length){",
+									"    tests['rounds data exists'] = true",
+									"    if(jsonData.rounds[0].label){",
+									"    tests['rounds label exists'] = true",
+									"    }else{",
+									"    tests['rounds label exists'] = false",
+									"    }",
+									"    ",
+									"    if(jsonData.rounds[1].rounds){",
+									"    tests['rounds rounds exists'] = true",
+									"    }else{",
+									"    tests['rounds rounds exists'] = false",
+									"    }",
+									"  }else{",
+									"    tests['rounds data exists'] = false",
+									"}",
+									"",
+									"if(jsonData.email_stat.length){",
+									"    tests['email_stat data exists'] = true",
+									"    if(jsonData.email_stat[0].label){",
+									"    tests['email_stat label exists'] = true",
+									"    }else{",
+									"    tests['email_stat label exists'] = false",
+									"    }",
+									"  }else{",
+									"    tests['email_stat data exists'] = false",
+									"}",
+									"",
+									"if(jsonData.read_email_data.length){",
+									"    tests['read_email_data data exists'] = true",
+									"    if(jsonData.read_email_data[0].label){",
+									"    tests['read_email_data label exists'] = true",
+									"    }else{",
+									"    tests['read_email_data label exists'] = false",
+									"    }",
+									"    ",
+									"    if(jsonData.read_email_data[1].dates){",
+									"    tests['read_email_data dates exists'] = true",
+									"    }else{",
+									"    tests['read_email_data dates exists'] = false",
+									"    }",
+									"  }else{",
+									"    tests['read_email_data data exists'] = false",
+									"}",
+									"",
+									"if(jsonData.read_mail_by_user.length){",
+									"    tests['read_mail_by_user data exists'] = true",
+									"    if(jsonData.read_mail_by_user[0].label){",
+									"    tests['read_mail_by_user label exists'] = true",
+									"    }else{",
+									"    tests['read_mail_by_user label exists'] = false",
+									"    }",
+									"    ",
+									"    if(jsonData.read_mail_by_user[1].dates){",
+									"    tests['read_mail_by_user dates exists'] = true",
+									"    }else{",
+									"    tests['read_mail_by_user dates exists'] = false",
+									"    }",
+									"  }else{",
+									"    tests['read_mail_by_user data exists'] = false",
+									"}",
+									"",
+									"if(jsonData.email_stat_by_job_profile.length){",
+									"    tests['email_stat_by_job_profile data exists'] = true",
+									"    if(jsonData.email_stat_by_job_profile[0].label){",
+									"    tests['email_stat_by_job_profile label exists'] = true",
+									"    }else{",
+									"    tests['email_stat_by_job_profile label exists'] = false",
+									"    }",
+									"    ",
+									"    if(jsonData.email_stat_by_job_profile[1].dates){",
+									"    tests['email_stat_by_job_profile dates exists'] = true",
+									"    }else{",
+									"    tests['email_stat_by_job_profile dates exists'] = false",
+									"    }",
+									"  }else{",
+									"    tests['email_stat_by_job_profile data exists'] = false",
+									"}",
+									"}else{",
+									"    tests['no data'] = true",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/dashboard",
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "data_type",
+									"value": "date",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "User Logs",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if (jsonData.data.length) {",
+									"    tests['Logs data exists'] = true",
+									"} else {",
+									"    tests['Logs data exists'] = false",
+									"}",
+									"for (var i = 0; i < jsonData.data[0].action.length; i++) {",
+									"    if (jsonData.data[0].action[i]) {",
+									"        tests['action data exists'+ i ] = true",
+									"    } else {",
+									"        tests['action data exists' + i ] = false",
+									"    }",
+									"",
+									"    if (jsonData.data[0].time[i]) {",
+									"        tests['time data exists' + i ] = true",
+									"    } else {",
+									"        tests['time data exists' + i ] = false",
+									"    }",
+									"    ",
+									"    if (jsonData.data[0].json[i]  || jsonData.data[0].json[i] === null) {",
+									"        tests['json data exists' + i ] = true",
+									"    } else {",
+									"        tests['json data exists' + i ] = false",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/user/log/{{email}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"user",
+								"log",
+								"{{email}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email_id",
+									"value": "saurabhcse.iimtgn@gmail.com",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "registration_id",
+									"value": "186080",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "mobile_no",
+									"value": "8585917430",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "2.Email Fetch",
+			"name": "2.IMAP",
+			"description": "",
+			"item": [
+				{
+					"name": "IMAP Save By Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
+									"    if (jsonData) {",
+									"    tests[\"data saved by admin\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"        postman.setEnvironmentVariable(\"imapId\", jsonData.id);",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        postman.setEnvironmentVariable(\"imapEmail\", jsonData.email);",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"} else {",
+									"     if(jsonData.message == \"Invalid credentials (Failure)\" || \"Email Already In Use\"){",
+									"        tests['invalid imap details'] = true",
+									"    }else{",
+									"        tests['invalid imap details'] = false",
+									"    }",
+									"}",
+									"    tests['Admin'] = true;",
+									"}else{",
+									"    tests['Login user is not Admin'] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/save?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"save"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "java@123",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Save By Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"    tests['Hr'] = true;",
+									"    if (!jsonData.data) {",
+									"    tests[\"data is not saved by hr\"] = true;",
+									"} else {",
+									"    tests[\"data is not saved by hr\"] = false;",
+									"}",
+									"}else{",
+									"    tests['Login user is not Hr'] = true;",
+									"}",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/save?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"save"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "password",
+									"value": "java@123",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Save By Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"    tests['Guest'] = true;",
+									"    if (!jsonData.data) {",
+									"    tests[\"data is not saved by Guest\"] = true;",
+									"} else {",
+									"    tests[\"data is not saved by Guest\"] = false;",
+									"}",
+									"}else{",
+									"    tests['Login user is not Guest'] = true;",
+									"}",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/save?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"save"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "password",
+									"value": "java@123",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Get By Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    for (i = 0; i < jsonData.length; i++) {",
+									"        if (jsonData[i].id) {",
+									"            if(jsonData[i].id == postman.getEnvironmentVariable(\"imapId\")){",
+									"                tests['saved data exist'] = true",
+									"            }",
+									"            tests[\"id exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"id exist \" + i] = false;",
+									"        }",
+									"        if (jsonData[i].email) {",
+									"            tests[\"email exist \" + i] = true;",
+									"        } else {",
+									"            tests[\"email exist \" + i] = false;",
+									"        }",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}    ",
+									"}else{",
+									"    tests['Login user is not Admin'] = true;",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/get?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"get"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Get By Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data is not get by Hr\"] = true;",
+									"} else {",
+									"    tests[\"data is not get by Hr\"] = false;",
+									"}    ",
+									"}else{",
+									"    tests['Login user is not Hr'] = true;",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/get?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"get"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Get By Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData) {",
+									"    tests[\"data is not get by Guest\"] = true;",
+									"} else {",
+									"    tests[\"data is not get by Guest\"] = false;",
+									"}    ",
+									"}else{",
+									"    tests['Login user is not Guest'] = true;",
+									"}",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/get?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"get"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Update by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"    if(jsonData.message == \"Invalid Id\"){",
+									"    tests[\"id don't exists\"] = true",
+									"}else{",
+									" if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}   ",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Admin\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"update",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "java@123",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Update by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"IMAP is not updated by Hr \"]= true;",
+									"}else{",
+									"      tests[\"IMAP is not updated by Hr \"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Hr\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"update",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "password",
+									"value": "java@123",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Update by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"IMAP is not updated by Guest \"]= true;",
+									"}else{",
+									"      tests[\"IMAP is not updated by Guest \"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"update",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "testhr69@gmail.com",
+									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "password",
+									"value": "java@123",
+									"type": "text",
+									"description": ""
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Change Status to Active by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if (jsonData.message) {",
+									"    tests[\"successfully changed status\"] = true;",
+									"} else {",
+									"    tests[\"successfully changed status\"] = false;",
+									"}",
+									"}else{",
+									"      tests[\"Login user is not Admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/statusActive/{{imapEmail}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"statusActive",
+								"{{imapEmail}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{imapEmail}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Change Status to Active by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if (jsonData.message) {",
+									"    tests[\"Status is not changed successfully\"] = true;",
+									"} else {",
+									"    tests[\"Status is not changed successfully \"] = true;",
+									"}",
+									"}else{",
+									"      tests[\"Login user is not Hr\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/statusActive/{{imapEmail}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"statusActive",
+								"{{imapEmail}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "vaibhav_pathak@excellencetechnologies.in",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Change Status to Active by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if (jsonData.message) {",
+									"    tests[\"Status is not changed successfully\"] = true;",
+									"} else {",
+									"   tests[\"Status is not changed successfully \"] = true;",
+									"}",
+									"}else{",
+									"      tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/statusActive/{{imapEmail}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"statusActive",
+								"{{imapEmail}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "vaibhav_pathak@excellencetechnologies.in",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3.Email Fetch",
 			"description": "",
 			"item": [
 				{
@@ -491,11 +1594,6 @@
 									"",
 									"",
 									"var jsonData = JSON.parse(responseBody);",
-									"if (jsonData.message && (jsonData.message == \"success\"||jsonData.message == \"No Result Found\")) {",
-									"    tests[\"message success\"] = true;",
-									"} else {",
-									"    tests[\"message success\"] = false;",
-									"}",
 									"if (jsonData.status == 1) {",
 									"    tests[\"status success\"] = true;",
 									"} else {",
@@ -575,11 +1673,6 @@
 									"        } else {",
 									"            tests[\"title Found \" + i] = false;",
 									"        }",
-									"    }",
-									"    if(jsonData.data[jsonData.data.length-1].subject_for_genuine == \"Revert Information\"){",
-									"        tests[\"subject for genuine\"] = true",
-									"    }else{",
-									"        tests[\"subject for genuine\"] = false",
 									"    }",
 									"} else {",
 									"    tests[\"data exist\"] = false;",
@@ -739,6 +1832,222 @@
 					"response": []
 				},
 				{
+					"name": "Template Add by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
+									"if (jsonData.id) {",
+									"    postman.setEnvironmentVariable(\"templateId\", jsonData.id);",
+									"    tests[\"id exists\"] = true;",
+									"} else {",
+									"    tests[\"id exists\"] = false;",
+									"}",
+									"if (jsonData.body) {",
+									"    tests[\"body exists\"] = true;",
+									"} else {",
+									"    tests[\"body exists\"] = false;",
+									"}",
+									"}else{",
+									"   tests[\"Login user is not admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/add?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"add"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "templateName",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "subject",
+								"value": "abc",
+								"description": ""
+							},
+							{
+								"key": "body",
+								"value": "cdegfcvgrejfgvjehrfgre",
+								"description": ""
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "templateName",
+									"value": "abc",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "cde",
+									"type": "text"
+								},
+								{
+									"key": "body",
+									"value": "efcjkjvdf",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Save Tag by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"      tests[\"Login user is Admin\"] = true;",
+									"if(jsonData.id){",
+									"    tests[\"success message\"]= true;",
+									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}",
+									"}else{",
+									"      tests[\"Login user is not Admin\"] = true;",
+									"}",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"title\", \"test\" + Math.floor((Math.random() * 10000) + 1));",
+									"postman.setEnvironmentVariable(\"subject\", \"test\" + Math.floor((Math.random() * 10000) + 1));"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/add/Automatic?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"add",
+								"Automatic"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "sdbdsf",
+									"type": "text"
+								},
+								{
+									"key": "subject",
+									"value": "{{subject}}",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "2017-05-13",
+									"type": "text"
+								},
+								{
+									"key": "from",
+									"value": "2017-08-13",
+									"type": "text"
+								},
+								{
+									"key": "template_id",
+									"value": "{{templateId}}",
+									"type": "text"
+								},
+								{
+									"key": "is_job_profile_tag",
+									"value": "1",
+									"description": "",
+									"type": "text"
+								},
+								{
+									"key": "job_description",
+									"value": "qwertyuiop",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Assign Tag",
 					"event": [
 						{
@@ -766,14 +2075,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignTag/12/{{mongo_id}}?accessToken={{token}}",
+							"raw": "{{url}}/email/assignTag/{{tagId}}/{{mongo_id}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignTag",
-								"12",
+								"{{tagId}}",
 								"{{mongo_id}}"
 							],
 							"query": [
@@ -822,14 +2131,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/assignMultiple/12/?accessToken={{token}}",
+							"raw": "{{url}}/email/assignMultiple/{{tagId}}/?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"email",
 								"assignMultiple",
-								"12",
+								"{{tagId}}",
 								""
 							],
 							"query": [
@@ -977,11 +2286,168 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "IMAP Delete by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if(jsonData.message == \"Invalid Id\"){",
+									"    tests[\"id don't exists\"] = true",
+									"}else{",
+									" if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"success message\"]= true;",
+									"}else{",
+									"    tests[\"success message\"]= false;",
+									"}   ",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Admin\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"delete",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Delete by Hr",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Hr\"){",
+									"    tests[\"Login user is Hr\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"IMAP is not delete by Hr\"]= true;",
+									"}else{",
+									"    tests[\"IMAP is not delete by Hr\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"delete",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "IMAP Delete by Guest",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Guest\"){",
+									"    tests[\"Login user is Guest\"] = true;",
+									"if(jsonData.status == \"SUCCESS\"){",
+									"    tests[\"IMAP is not delete by Guest\"]= true;",
+									"}else{",
+									"    tests[\"IMAP is not delete by Guest\"]= true;",
+									"}",
+									"}else{",
+									"  tests[\"Login user is not Guest\"] = true;   ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"delete",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "3.Email Variable",
+			"name": "4.Email Variable",
 			"description": "",
 			"item": [
 				{
@@ -1796,1054 +3262,6 @@
 			]
 		},
 		{
-			"name": "4.IMAP",
-			"description": "",
-			"item": [
-				{
-					"name": "IMAP Save By Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is admin\"] = true;",
-									"    if (jsonData.data) {",
-									"    tests[\"data saved by admin\"] = true;",
-									"    if (jsonData.data.id) {",
-									"        tests[\"id exist\"] = true;",
-									"        postman.setEnvironmentVariable(\"imapId\", jsonData.data.id);",
-									"    } else {",
-									"        tests[\"id exist\"] = false;",
-									"    }",
-									"    if (jsonData.data.email) {",
-									"        postman.setEnvironmentVariable(\"imapEmail\", jsonData.data.email);",
-									"        tests[\"email exist\"] = true;",
-									"    } else {",
-									"        tests[\"email exist\"] = false;",
-									"    }",
-									"} else {",
-									"     if(jsonData.message == \"Invalid credentials (Failure)\" || \"Email Already In Use\"){",
-									"        tests['invalid imap details'] = true",
-									"    }else{",
-									"        tests['invalid imap details'] = false",
-									"    }",
-									"}",
-									"    tests['Admin'] = true;",
-									"}else{",
-									"    tests['Login user is not Admin'] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/save?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"save"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "testhr69@gmail.com",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "java@123",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Save By Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"    tests['Hr'] = true;",
-									"    if (!jsonData.data) {",
-									"    tests[\"data is not saved by hr\"] = true;",
-									"} else {",
-									"    tests[\"data is not saved by hr\"] = false;",
-									"}",
-									"}else{",
-									"    tests['Login user is not Hr'] = true;",
-									"}",
-									"",
-									"",
-									"",
-									"",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/save?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"save"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{imapEmail}}",
-									"type": "text"
-								},
-								{
-									"key": "imap_server",
-									"value": "sasssss",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "123",
-									"type": "text"
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Save By Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"    tests['Guest'] = true;",
-									"    if (!jsonData.data) {",
-									"    tests[\"data is not saved by Guest\"] = true;",
-									"} else {",
-									"    tests[\"data is not saved by Guest\"] = false;",
-									"}",
-									"}else{",
-									"    tests['Login user is not Guest'] = true;",
-									"}",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/save?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"save"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{imapEmail}}",
-									"type": "text"
-								},
-								{
-									"key": "imap_server",
-									"value": "sasssss",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "123",
-									"type": "text"
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Get By Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
-									"if (jsonData) {",
-									"    tests[\"data exist\"] = true;",
-									"    for (i = 0; i < jsonData.length; i++) {",
-									"        if (jsonData[i].id) {",
-									"            if(jsonData[i].id == postman.getEnvironmentVariable(\"imapId\")){",
-									"                tests['saved data exist'] = true",
-									"            }",
-									"            tests[\"id exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"id exist \" + i] = false;",
-									"        }",
-									"        if (jsonData[i].email) {",
-									"            tests[\"email exist \" + i] = true;",
-									"        } else {",
-									"            tests[\"email exist \" + i] = false;",
-									"        }",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}    ",
-									"}else{",
-									"    tests['Login user is not Admin'] = true;",
-									"}",
-									"",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/get?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"get"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Get By Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"if (jsonData) {",
-									"    tests[\"data is not get by Hr\"] = true;",
-									"} else {",
-									"    tests[\"data is not get by Hr\"] = false;",
-									"}    ",
-									"}else{",
-									"    tests['Login user is not Hr'] = true;",
-									"}",
-									"",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/get?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"get"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Get By Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if (jsonData) {",
-									"    tests[\"data is not get by Guest\"] = true;",
-									"} else {",
-									"    tests[\"data is not get by Guest\"] = false;",
-									"}    ",
-									"}else{",
-									"    tests['Login user is not Guest'] = true;",
-									"}",
-									"",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/get?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"get"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Update by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
-									"    if(jsonData.message == \"Invalid Id\"){",
-									"    tests[\"id don't exists\"] = true",
-									"}else{",
-									" if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}   ",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Admin\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"update",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "testhr69@gmail.com",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "java@123",
-									"description": "",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Update by Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"IMAP is not updated by Hr \"]= true;",
-									"}else{",
-									"      tests[\"IMAP is not updated by Hr \"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Hr\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"update",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								},
-								{
-									"key": "imap_server",
-									"value": "sasssss",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "12333333333",
-									"type": "text"
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Update by Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"IMAP is not updated by Guest \"]= true;",
-									"}else{",
-									"      tests[\"IMAP is not updated by Guest \"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Guest\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/update/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"update",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								},
-								{
-									"key": "imap_server",
-									"value": "sasssss",
-									"type": "text"
-								},
-								{
-									"key": "type",
-									"value": "TLS",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "12333333333",
-									"type": "text"
-								},
-								{
-									"key": "server_port",
-									"value": "8091",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Change Status to Active by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
-									"if (jsonData.message) {",
-									"    tests[\"successfully changed status\"] = true;",
-									"} else {",
-									"    tests[\"successfully changed status\"] = false;",
-									"}",
-									"}else{",
-									"      tests[\"Login user is not Admin\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/statusActive/testhr69@gmail.com?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"statusActive",
-								"testhr69@gmail.com"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "vaibhav_pathak@excellencetechnologies.in",
-									"type": "text",
-									"disabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Change Status to Active by Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"if (jsonData.message) {",
-									"    tests[\"Status is not changed successfully\"] = true;",
-									"} else {",
-									"    tests[\"Status is not changed successfully \"] = true;",
-									"}",
-									"}else{",
-									"      tests[\"Login user is not Hr\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/statusActive/vaibhav_pathak@excellencetechnologies.in?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"statusActive",
-								"vaibhav_pathak@excellencetechnologies.in"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "vaibhav_pathak@excellencetechnologies.in",
-									"type": "text",
-									"disabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Change Status to Active by Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if (jsonData.message) {",
-									"    tests[\"Status is not changed successfully\"] = true;",
-									"} else {",
-									"   tests[\"Status is not changed successfully \"] = true;",
-									"}",
-									"}else{",
-									"      tests[\"Login user is not Guest\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/statusActive/vaibhav_pathak@excellencetechnologies.in?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"statusActive",
-								"vaibhav_pathak@excellencetechnologies.in"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "vaibhav_pathak@excellencetechnologies.in",
-									"type": "text",
-									"disabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Delete by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is Admin\"] = true;",
-									"if(jsonData.message == \"Invalid Id\"){",
-									"    tests[\"id don't exists\"] = true",
-									"}else{",
-									" if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}   ",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Admin\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"delete",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Delete by Hr",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Hr\"){",
-									"    tests[\"Login user is Hr\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"IMAP is not delete by Hr\"]= true;",
-									"}else{",
-									"    tests[\"IMAP is not delete by Hr\"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Guest\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"delete",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
-					"name": "IMAP Delete by Guest",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Guest\"){",
-									"    tests[\"Login user is Guest\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"IMAP is not delete by Guest\"]= true;",
-									"}else{",
-									"    tests[\"IMAP is not delete by Guest\"]= true;",
-									"}",
-									"}else{",
-									"  tests[\"Login user is not Guest\"] = true;   ",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/imap/delete/{{imapId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"imap",
-								"delete",
-								"{{imapId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "DELETE",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "5.SMTP",
 			"description": "",
 			"item": [
@@ -2858,28 +3276,16 @@
 									"var jsonData = JSON.parse(responseBody);",
 									"if(environment.type == \"Admin\"){",
 									"    tests[\"Login user is admin\"] = true;",
-									"    if (jsonData.data) {",
-									"    tests[\"data saved by admin\"] = true;",
-									"    if (jsonData.data.id) {",
-									"        tests[\"id exist\"] = true;",
-									"       postman.setEnvironmentVariable(\"smtpId\", jsonData.data.id);",
-									"    } else {",
-									"        tests[\"id exist\"] = false;",
-									"    }",
-									"    if (jsonData.data.email) {",
-									"        postman.setEnvironmentVariable(\"smtpEmail\", jsonData.data.email);",
-									"        tests[\"email exist\"] = true;",
-									"    } else {",
-									"        tests[\"email exist\"] = false;",
-									"    }",
-									"} else {",
-									"    tests[\"data exist\"] = false;",
-									"}",
 									"}else{",
 									"    tests['Login user is not Admin'] = true;",
 									"}",
-									"",
-									"",
+									"if(jsonData.response_status.message == \"Status Changed Successfully\"){",
+									"    postman.setEnvironmentVariable(\"smtpId\", jsonData.data.id);",
+									"    postman.setEnvironmentVariable(\"smtpEmail\", jsonData.data.username);",
+									"    tests[\"SMTP saved\"] = true;",
+									"}else{",
+									"    tests['SMTP saved'] = false;",
+									"}",
 									"",
 									""
 								]
@@ -2919,13 +3325,13 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "saurabh.cs123@gmail.com",
+									"key": "username",
+									"value": "testexcel69@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "monu6668",
+									"value": "java@123",
 									"type": "text"
 								},
 								{
@@ -2940,12 +3346,19 @@
 								},
 								{
 									"key": "type",
-									"value": "SSL",
+									"value": "ssl",
 									"type": "text"
 								},
 								{
 									"key": "status",
 									"value": "true",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "testexcel69@gmail.com",
+									"description": "",
 									"type": "text"
 								}
 							]
@@ -3011,34 +3424,47 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
+									"key": "username",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "password",
-									"value": "0001",
-									"type": "text"
+									"value": "java@123",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "smtp_server",
 									"value": "smtp.gmail.com",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "server_port",
-									"value": "993",
-									"type": "text"
+									"value": "465",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "type",
-									"value": "SSL",
-									"type": "text"
+									"value": "ssl",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "status",
 									"value": "true",
-									"type": "text"
+									"type": "text",
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								}
 							]
 						},
@@ -3103,34 +3529,47 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
+									"key": "username",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "password",
-									"value": "0001",
-									"type": "text"
+									"value": "java@123",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "smtp_server",
 									"value": "smtp.gmail.com",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "server_port",
-									"value": "993",
-									"type": "text"
+									"value": "465",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "type",
-									"value": "SSL",
-									"type": "text"
+									"value": "ssl",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "status",
 									"value": "true",
-									"type": "text"
+									"type": "text",
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								}
 							]
 						},
@@ -3525,34 +3964,47 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
+									"key": "username",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "password",
-									"value": "12312",
-									"type": "text"
+									"value": "java@123",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "smtp_server",
 									"value": "smtp.gmail.com",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "server_port",
-									"value": "993",
-									"type": "text"
+									"value": "465",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "type",
-									"value": "SSL",
-									"type": "text"
+									"value": "ssl",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "status",
 									"value": "true",
-									"type": "text"
+									"type": "text",
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								}
 							]
 						},
@@ -3616,34 +4068,47 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
+									"key": "username",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "password",
-									"value": "12312",
-									"type": "text"
+									"value": "java@123",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "smtp_server",
 									"value": "smtp.gmail.com",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "server_port",
-									"value": "993",
-									"type": "text"
+									"value": "465",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "type",
-									"value": "SSL",
-									"type": "text"
+									"value": "ssl",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "status",
 									"value": "true",
-									"type": "text"
+									"type": "text",
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								}
 							]
 						},
@@ -3707,34 +4172,47 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
+									"key": "username",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "password",
-									"value": "12312",
-									"type": "text"
+									"value": "java@123",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "smtp_server",
 									"value": "smtp.gmail.com",
-									"type": "text"
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "server_port",
-									"value": "993",
-									"type": "text"
+									"value": "465",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "type",
-									"value": "SSL",
-									"type": "text"
+									"value": "ssl",
+									"type": "text",
+									"description": ""
 								},
 								{
 									"key": "status",
 									"value": "true",
-									"type": "text"
+									"type": "text",
+									"description": "",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "testexcel69@gmail.com",
+									"type": "text",
+									"description": ""
 								}
 							]
 						},
@@ -3801,7 +4279,7 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "{{email}}",
+									"value": "{{smtpEmail}}",
 									"type": "text"
 								}
 							]
@@ -3867,7 +4345,7 @@
 							"urlencoded": [
 								{
 									"key": "email",
-									"value": "{{email}}",
+									"value": "{{smtpEmail}}",
 									"type": "text"
 								}
 							]
@@ -3967,14 +4445,80 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"raw": "{{url}}/smtp/changeStatus/{{smtpEmail}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"smtp",
 								"changeStatus",
-								"{{email}}"
+								"{{smtpEmail}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "SMTP change status by Admin copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true;",
+									"if (jsonData.message == \"Status Changed Successfully\") {",
+									"    tests[\"Status Changed Successfully\"] = true;",
+									"} else {",
+									"    tests[\"Status Changed Successfully\"] = true;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/changeStatus/{{smtpEmail}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"changeStatus",
+								"{{smtpEmail}}"
 							],
 							"query": [
 								{
@@ -4033,14 +4577,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"raw": "{{url}}/smtp/changeStatus/{{smtpEmail}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"smtp",
 								"changeStatus",
-								"{{email}}"
+								"{{smtpEmail}}"
 							],
 							"query": [
 								{
@@ -4099,14 +4643,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/smtp/changeStatus/{{email}}?accessToken={{token}}",
+							"raw": "{{url}}/smtp/changeStatus/{{smtpEmail}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"smtp",
 								"changeStatus",
-								"{{email}}"
+								"{{smtpEmail}}"
 							],
 							"query": [
 								{
@@ -4146,102 +4690,6 @@
 			"name": "6.Template Page",
 			"description": "",
 			"item": [
-				{
-					"name": "Template Add by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is admin\"] = true;",
-									"if (jsonData.id) {",
-									"    postman.setEnvironmentVariable(\"templateId\", jsonData.id);",
-									"    tests[\"id exists\"] = true;",
-									"} else {",
-									"    tests[\"id exists\"] = false;",
-									"}",
-									"if (jsonData.body) {",
-									"    tests[\"body exists\"] = true;",
-									"} else {",
-									"    tests[\"body exists\"] = false;",
-									"}",
-									"}else{",
-									"   tests[\"Login user is not admin\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/template/add?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"template",
-								"add"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "templateName",
-								"value": "abc",
-								"description": ""
-							},
-							{
-								"key": "subject",
-								"value": "abc",
-								"description": ""
-							},
-							{
-								"key": "body",
-								"value": "cdegfcvgrejfgvjehrfgre",
-								"description": ""
-							},
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "templateName",
-									"value": "abc",
-									"type": "text"
-								},
-								{
-									"key": "subject",
-									"value": "cde",
-									"type": "text"
-								},
-								{
-									"key": "body",
-									"value": "efcjkjvdf",
-									"type": "text"
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
 				{
 					"name": "Template Add by Hr",
 					"event": [
@@ -5155,115 +5603,6 @@
 			"description": "",
 			"item": [
 				{
-					"name": "Save Tag by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"      tests[\"Login user is Admin\"] = true;",
-									"if(jsonData.id){",
-									"    tests[\"success message\"]= true;",
-									"    postman.setEnvironmentVariable(\"tagId\", jsonData.id);",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}",
-									"}else{",
-									"      tests[\"Login user is not Admin\"] = true;",
-									"}",
-									""
-								]
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"postman.setEnvironmentVariable(\"title\", \"test\" + Math.floor((Math.random() * 10000) + 1));",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/tag/add/Manual?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"tag",
-								"add",
-								"Manual"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "{{email}}",
-									"type": "text"
-								},
-								{
-									"key": "title",
-									"value": "{{title}}",
-									"type": "text"
-								},
-								{
-									"key": "color",
-									"value": "sdbdsf",
-									"type": "text"
-								},
-								{
-									"key": "subject",
-									"value": "nddsdj",
-									"type": "text"
-								},
-								{
-									"key": "to",
-									"value": "2017-05-13",
-									"type": "text"
-								},
-								{
-									"key": "from",
-									"value": "2017-08-13",
-									"type": "text"
-								},
-								{
-									"key": "template_id",
-									"value": "{{templateId}}",
-									"type": "text",
-									"disabled": true
-								}
-							]
-						},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Save Tag by Hr",
 					"event": [
 						{
@@ -5853,14 +6192,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"raw": "{{url}}/tag/getbyid/Automatic/{{tagId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"tag",
 								"getbyid",
-								"Manual",
+								"Automatic",
 								"{{tagId}}"
 							],
 							"query": [
@@ -5915,14 +6254,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"raw": "{{url}}/tag/getbyid/Automatic/{{tagId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"tag",
 								"getbyid",
-								"Manual",
+								"Automatic",
 								"{{tagId}}"
 							],
 							"query": [
@@ -5967,14 +6306,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/tag/getbyid/Manual/{{tagId}}?accessToken={{token}}",
+							"raw": "{{url}}/tag/getbyid/Automatic/{{tagId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"tag",
 								"getbyid",
-								"Manual",
+								"Automatic",
 								"{{tagId}}"
 							],
 							"query": [
@@ -6029,14 +6368,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/tag/update/Manual/{{tagId}}?accessToken={{token}}",
+							"raw": "{{url}}/tag/update/Automatic/{{tagId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"tag",
 								"update",
-								"Manual",
+								"Automatic",
 								"{{tagId}}"
 							],
 							"query": [
@@ -6080,7 +6419,7 @@
 								},
 								{
 									"key": "subject",
-									"value": "nddsdj",
+									"value": "qwertyu",
 									"type": "text",
 									"description": ""
 								},
@@ -6100,8 +6439,13 @@
 									"key": "template_id",
 									"value": "{{templateId}}",
 									"type": "text",
+									"description": ""
+								},
+								{
+									"key": "is_job_profile",
+									"value": "1",
 									"description": "",
-									"disabled": true
+									"type": "text"
 								}
 							]
 						},
@@ -6337,6 +6681,7 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
 									"if(environment.type==\"Admin\"){",
 									"    tests[\"Login user is Admin\"] = true;",
@@ -6354,14 +6699,14 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/tag/delete/Manual/{{tagId}}?accessToken={{token}}",
+							"raw": "{{url}}/tag/delete/Default/{{tagId}}?accessToken={{token}}",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"tag",
 								"delete",
-								"Manual",
+								"Default",
 								"{{tagId}}"
 							],
 							"query": [
@@ -6496,11 +6841,6 @@
 									"var jsonData = JSON.parse(responseBody);",
 									"if(environment.type == \"Admin\"){",
 									"    tests[\"Login user is Admin\"] = true;",
-									"if(jsonData.status == \"SUCCESS\"){",
-									"    tests[\"success message\"]= true;",
-									"}else{",
-									"    tests[\"success message\"]= false;",
-									"}",
 									"}else{",
 									"    tests[\"Login user is not Admin\"] = true;",
 									"}"
@@ -6717,26 +7057,6 @@
 									"}",
 									"if (jsonData.data) {",
 									"    tests['data exist'] = true",
-									"    if (jsonData.data.id) {",
-									"        tests['id exist'] = true",
-									"    } else {",
-									"        tests['id exist'] = false",
-									"    }",
-									"    if (jsonData.data.email_id) {",
-									"        tests['email_id exist'] = true",
-									"    } else {",
-									"        tests['email_id exist'] = false",
-									"    }",
-									"    if (jsonData.data.device_id) {",
-									"        tests['device_id exist'] = true",
-									"    } else {",
-									"        tests['device_id exist'] = false",
-									"    }",
-									"    if (jsonData.data.token) {",
-									"        tests['token exist'] = true",
-									"    } else {",
-									"        tests['token exist'] = false",
-									"    }",
 									"} else {",
 									"    tests['data exist'] = false",
 									"}"
@@ -6847,13 +7167,14 @@
 							"urlencoded": [
 								{
 									"key": "email_id",
-									"value": "saurabhcse.iimtgn@gmail.com",
+									"value": "",
 									"description": "",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "registration_id",
-									"value": "476443",
+									"value": "800913",
 									"description": "",
 									"type": "text"
 								}
@@ -6912,11 +7233,7 @@
 									"}else{",
 									"    tests['error not exist'] = true",
 									"}",
-									"if(jsonData.data){",
-									"    tests['data deleted'] =  true",
-									"}else{",
-									"    tests['data deleted'] = false",
-									"}"
+									""
 								]
 							}
 						}
