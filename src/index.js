@@ -47,6 +47,6 @@ const initRoutes = (app) => {
 };
 
 initRoutes(app);
-app.server.listen(process.env.PORT || config.port);
-console.log("Started on port " + app.server.address().port);
+app.listen(process.env.PORT || config.port);
+console.log("Started on port " + app.get('port'));
 export default app;

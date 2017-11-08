@@ -56,7 +56,7 @@ var SmtpController = exports.SmtpController = function (_BaseAPIController) {
                 _mail2.default.sendMail(data.email, (0, _constant2.default)().smtp.subject, (0, _constant2.default)().smtp.text, data, (0, _constant2.default)().smtp.html).then(function (response) {
                     _this._db.Smtp.create(data).then(function (data) {
                         _this._db.Smtp.changeStatus(data.email).then(function (response_status) {
-                            _this.handleSuccessResponse(req, res, next, { response_status: response_status });
+                            _this.handleSuccessResponse(req, res, next, { response_status: response_status, data: data.dataValues });
                         });
                     }, function (err) {
                         throw new Error(res.json(400, {

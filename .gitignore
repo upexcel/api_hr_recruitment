@@ -1,7 +1,7 @@
 
-/README.md
 /node_modules
 /.eslintrc.js
 /nbproject/private/
 /nbproject
 /nano.save
+/ecosystem.config.js

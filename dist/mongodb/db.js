@@ -14,7 +14,7 @@ var _cron2 = _interopRequireDefault(_cron);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var db = _config2.default.mongodb;
+var db = _config2.default.mongodb || process.env.mongodb;
 if (!db) {
     console.log("Mongodb information is not fount update config details");
     process.exit(0);
