@@ -123,6 +123,10 @@ var TemplateController = exports.TemplateController = function (_BaseAPIControll
             }).catch(_this.handleErrorResponse.bind(null, res));
         }, _this.idResult = function (req, res, next, templateId) {
             _this.getById(req, res, _this._db.Template, templateId, next);
+        }, _this.getTemplateById = function (req, res, next) {
+            _this._db.Template.findById(parseInt(req.params.templateId)).then(function (response) {
+                _this.handleSuccessResponse(req, res, next, response);
+            });
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 

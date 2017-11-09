@@ -84,6 +84,9 @@ exports.default = function (app) {
     /*Mark as unread*/
     app.route("/email/markAsUnread").put(_auth2.default.requiresAdminOrHr, _fetchEmail2.default.markAsUnread);
 
+    /*get candidate by id*/
+    app.route("/email/getById/:mongo_id").get(_auth2.default.requiresLogin, _fetchEmail2.default.getByMongoId);
+
     /*Route for find emails by tagId*/
     app.param("tag_id", _fetchEmail2.default.findByTagId);
 

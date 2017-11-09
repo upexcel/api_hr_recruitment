@@ -69,6 +69,10 @@ var VariableController = exports.VariableController = function (_BaseAPIControll
             }).catch(_this.handleErrorResponse.bind(null, res));
         }, _this.idResult = function (req, res, next, variableId) {
             _this.getById(req, res, _this._db.Variable, variableId, next);
+        }, _this.getVariableById = function (req, res, next) {
+            _this._db.Variable.findById(parseInt(req.params.variableId)).then(function (response) {
+                _this.handleSuccessResponse(req, res, next, response);
+            });
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 

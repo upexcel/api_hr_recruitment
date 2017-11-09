@@ -27,6 +27,9 @@ exports.default = function (app) {
     /* Route for List of Variable Template */
     app.route("/variable/get/:page/:limit").get(_auth2.default.requiresAdminOrHr, _emailVariable2.default.variableList);
 
+    /*variable get by id*/
+    app.route("/variable/getById/:variableId").get(_auth2.default.requiresAdminOrHr, _emailVariable2.default.getVariableById);
+
     app.param("variableId", _emailVariable2.default.idResult);
 
     return app;
