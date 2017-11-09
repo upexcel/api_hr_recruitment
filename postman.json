@@ -1,7 +1,7 @@
 {
 	"variables": [],
 	"info": {
-		"name": "hr_recruitment copy",
+		"name": "hr_recruitment",
 		"_postman_id": "1b283cae-a23f-29a5-03ee-a33e9107ca64",
 		"description": "",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
@@ -364,6 +364,68 @@
 					"response": []
 				},
 				{
+					"name": "Login test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.status == 1) {",
+									"    tests[\"status exist\"] = true;",
+									"} else {",
+									"    tests[\"status exist\"] = false;",
+									"}",
+									"if (jsonData.token) {",
+									"    postman.clearEnvironmentVariable(\"token\");",
+									"    postman.setEnvironmentVariable(\"token\", jsonData.token);",
+									"    postman.setEnvironmentVariable(\"type\", jsonData.role);",
+									"    tests[\"token exist\"] = true;",
+									"} else {",
+									"    tests[\"token exist\"] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": "{{url}}/user/login",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "{{email}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123",
+									"type": "text"
+								},
+								{
+									"key": "remember_me",
+									"value": "true",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "User List",
 					"event": [
 						{
@@ -706,6 +768,7 @@
 							"script": {
 								"type": "text/javascript",
 								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
 									"tests[responseBody] = true;",
 									"if(environment.type == \"Admin\"){",
@@ -934,6 +997,56 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get imap by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id){",
+									"    tests['data saved'] = true;",
+									"    postman.setEnvironmentVariable(\"imapActive\",jsonData.active);",
+									"    ",
+									"}else{",
+									"    tests['data saved'] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/get/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"get",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -1332,6 +1445,54 @@
 					"response": []
 				},
 				{
+					"name": "get imap by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.email == postman.getEnvironmentVariable(\"imapEmail\")){",
+									"    tests['data updated'] = true;",
+									"}else{",
+									"    tests['data updated'] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/get/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"get",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "IMAP Change Status to Active by Admin",
 					"event": [
 						{
@@ -1527,6 +1688,54 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get imap by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.active){",
+									"    tests['status changed'] = true;",
+									"}else{",
+									"    tests['status changed'] = false;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/imap/get/{{imapId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"imap",
+								"get",
+								"{{imapId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -2105,6 +2314,53 @@
 					"response": []
 				},
 				{
+					"name": "get candidate by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.tag_id.indexOf(postman.getEnvironmentVariable(\"tagId\").toString()) >= 0 ){",
+									"    tests['tag assigned'] = true",
+									"}else{",
+									"    tests['tag assigned'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/getById/{{mongo_id}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"getById",
+								"{{mongo_id}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Assign Multiple Tags",
 					"event": [
 						{
@@ -2177,6 +2433,53 @@
 					"response": []
 				},
 				{
+					"name": "get candidate by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.tag_id.indexOf(postman.getEnvironmentVariable(\"tagId\").toString()) >= 0 ){",
+									"    tests['tag assigned'] = true",
+									"}else{",
+									"    tests['tag assigned'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/getById/{{mongo_id}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"getById",
+								"{{mongo_id}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Change Unread Status",
 					"event": [
 						{
@@ -2224,6 +2527,53 @@
 							"variable": []
 						},
 						"method": "PUT",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get candidate by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"tests[\"Status code is 200\"] = responseCode.code === 200;",
+									"var jsonData = JSON.parse(responseBody);",
+									"if(jsonData.unread){",
+									"    tests['email unread'] = false",
+									"}else{",
+									"    tests['email unread'] = true",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/email/getById/{{mongo_id}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"email",
+								"getById",
+								"{{mongo_id}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
 						"header": [],
 						"body": {},
 						"description": ""
@@ -2916,6 +3266,15 @@
 									"}"
 								]
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"variableCode\", \"test\"+ Math.floor((Math.random() * 10000) + 1));"
+								]
+							}
 						}
 					],
 					"request": {
@@ -2952,7 +3311,7 @@
 							"urlencoded": [
 								{
 									"key": "variableCode",
-									"value": "vedf ef",
+									"value": "{{variableCode}}",
 									"type": "text"
 								},
 								{
@@ -2962,6 +3321,58 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get variable by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id == postman.getEnvironmentVariable(\"variableId\")){",
+									"    tests['data exist'] = true",
+									"    if(jsonData.variableCode == postman.getEnvironmentVariable('variableCode')){",
+									"        tests['data updated by admin'] = true",
+									"    }else{",
+									"        tests['data updated by admin'] = true",
+									"    }",
+									"}else{",
+									"    tests['data exist'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/getById/{{variableId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"getById",
+								"{{variableId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -3023,7 +3434,7 @@
 							"urlencoded": [
 								{
 									"key": "variableCode",
-									"value": "vedf ef",
+									"value": "{{variableCode}}",
 									"type": "text"
 								},
 								{
@@ -3033,6 +3444,58 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get variable by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id == postman.getEnvironmentVariable(\"variableId_hr\")){",
+									"    tests['data exist'] = true",
+									"    if(jsonData.variableCode == postman.getEnvironmentVariable('variableCode')){",
+									"        tests['data updated by hr'] = true",
+									"    }else{",
+									"        tests['data updated by hr'] = true",
+									"    }",
+									"}else{",
+									"    tests['data exist'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/getById/{{variableId_hr}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"getById",
+								"{{variableId_hr}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -3094,7 +3557,7 @@
 							"urlencoded": [
 								{
 									"key": "variableCode",
-									"value": "vedf ef",
+									"value": "{{variableCode}}",
 									"type": "text"
 								},
 								{
@@ -3104,6 +3567,58 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get variable by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id == postman.getEnvironmentVariable(\"variableId_guest\")){",
+									"    tests['data exist'] = true",
+									"    if(jsonData.variableCode == postman.getEnvironmentVariable('variableId_guest')){",
+									"        tests['data updated by guest'] = true",
+									"    }else{",
+									"        tests['data updated by guest'] = true",
+									"    }",
+									"}else{",
+									"    tests['data exist'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/variable/getById/{{variableId_guest}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"variable",
+								"getById",
+								"{{variableId_guest}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -3748,67 +4263,6 @@
 					"response": []
 				},
 				{
-					"name": "Smtp GetById by Admin",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = JSON.parse(responseBody);",
-									"if(environment.type == \"Admin\"){",
-									"    tests[\"Login user is admin\"] = true;",
-									"if (jsonData.id) {",
-									"    tests[\"id found\"] = true;",
-									"} else {",
-									"    tests[\"id found\"] = false;",
-									"}",
-									"if (jsonData.email) {",
-									"    tests[\"email found\"] = true;",
-									"} else {",
-									"    tests[\"email found\"] = false;",
-									"}",
-									"if (jsonData.password) {",
-									"    tests[\"password found\"] = true;",
-									"} else {",
-									"    tests[\"password found\"] = false;",
-									"}",
-									"}else{",
-									"    tests[\"Login user is not admin\"] = true;",
-									"}"
-								]
-							}
-						}
-					],
-					"request": {
-						"url": {
-							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
-							"host": [
-								"{{url}}"
-							],
-							"path": [
-								"smtp",
-								"getbyid",
-								"{{smtpId}}"
-							],
-							"query": [
-								{
-									"key": "accessToken",
-									"value": "{{token}}",
-									"equals": true,
-									"description": ""
-								}
-							],
-							"variable": []
-						},
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"description": ""
-					},
-					"response": []
-				},
-				{
 					"name": "Smtp GetById by Hr",
 					"event": [
 						{
@@ -3877,6 +4331,68 @@
 									"}",
 									"}else{",
 									"    tests[\"Login user is not Guest\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"getbyid",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "Smtp GetById by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
+									"if (jsonData.id) {",
+									"    tests['added data found'] = true;",
+									"    tests[\"id found\"] = true;",
+									"} else {",
+									"    tests[\"id found\"] = false;",
+									"}",
+									"if (jsonData.email) {",
+									"    tests[\"email found\"] = true;",
+									"} else {",
+									"    tests[\"email found\"] = false;",
+									"}",
+									"if (jsonData.password) {",
+									"    tests[\"password found\"] = true;",
+									"} else {",
+									"    tests[\"password found\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not admin\"] = true;",
 									"}"
 								]
 							}
@@ -4685,6 +5201,73 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "Smtp GetById by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is admin\"] = true;",
+									"if (jsonData.id) {",
+									"    tests['added data found'] = true;",
+									"    tests[\"id found\"] = true;",
+									"} else {",
+									"    tests[\"id found\"] = false;",
+									"}",
+									"if (jsonData.email) {",
+									"    tests[\"email found\"] = true;",
+									"} else {",
+									"    tests[\"email found\"] = false;",
+									"}",
+									"if (jsonData.password) {",
+									"    tests[\"password found\"] = true;",
+									"} else {",
+									"    tests[\"password found\"] = false;",
+									"}",
+									"if(jsonData.status){",
+									"    tests['status update'] = true",
+									"}else{",
+									"    tests['status update'] = false",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not admin\"] = true;",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/smtp/getbyid/{{smtpId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"smtp",
+								"getbyid",
+								"{{smtpId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -5079,6 +5662,15 @@
 									"}"
 								]
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"postman.setEnvironmentVariable(\"templateName\", \"test\" + Math.floor((Math.random() * 10000) + 1));"
+								]
+							}
 						}
 					],
 					"request": {
@@ -5115,7 +5707,7 @@
 							"urlencoded": [
 								{
 									"key": "templateName",
-									"value": "pqr",
+									"value": "{{templateName}}",
 									"type": "text"
 								},
 								{
@@ -5130,6 +5722,58 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get template by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id){",
+									"    tests['id exist'] = true",
+									"    if(jsonData.templateName == postman.getEnvironmentVariable('templateName')){",
+									"        tests['template updated'] = true",
+									"    }else{",
+									"        tests['template updated'] = false",
+									"    }",
+									"}else{",
+									"    tests['id exist'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/getById/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"getById",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -5191,7 +5835,7 @@
 							"urlencoded": [
 								{
 									"key": "templateName",
-									"value": "pqr",
+									"value": "{{templateName}}",
 									"type": "text"
 								},
 								{
@@ -5206,6 +5850,58 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get template by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id){",
+									"    tests['id exist'] = true",
+									"    if(jsonData.templateName == postman.getEnvironmentVariable('templateName')){",
+									"        tests['template updated'] = true",
+									"    }else{",
+									"        tests['template updated'] = false",
+									"    }",
+									"}else{",
+									"    tests['id exist'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/getById/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"getById",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -5267,7 +5963,7 @@
 							"urlencoded": [
 								{
 									"key": "templateName",
-									"value": "pqr",
+									"value": "{{templateName}}",
 									"type": "text"
 								},
 								{
@@ -5282,6 +5978,58 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "get template by id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"",
+									"if(jsonData.id){",
+									"    tests['id exist'] = true",
+									"    if(jsonData.templateName == postman.getEnvironmentVariable('templateName')){",
+									"        tests['template updated'] = true",
+									"    }else{",
+									"        tests['template updated'] = false",
+									"    }",
+									"}else{",
+									"    tests['id exist'] = false",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/template/getById/{{templateId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"template",
+								"getById",
+								"{{templateId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []
@@ -6456,6 +7204,73 @@
 					"response": []
 				},
 				{
+					"name": "getbyid tag by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"    if(jsonData.email == postman.getEnvironmentVariable('email')){",
+									"        tests['data updated'] = true",
+									"    }else{",
+									"        tests['data updated'] = false",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Automatic/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Automatic",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Tag Update by Hr",
 					"event": [
 						{
@@ -6571,6 +7386,73 @@
 					"response": []
 				},
 				{
+					"name": "getbyid tag by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"    if(jsonData.email == postman.getEnvironmentVariable('email')){",
+									"        tests['data updated'] = true",
+									"    }else{",
+									"        tests['data updated'] = false",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Automatic/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Automatic",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": ""
+					},
+					"response": []
+				},
+				{
 					"name": "Tag Update by Guest",
 					"event": [
 						{
@@ -6671,6 +7553,73 @@
 								}
 							]
 						},
+						"description": ""
+					},
+					"response": []
+				},
+				{
+					"name": "getbyid tag by Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if(environment.type == \"Admin\"){",
+									"    tests[\"Login user is Admin\"] = true; ",
+									"if (jsonData) {",
+									"    tests[\"data exist\"] = true;",
+									"    if (jsonData.id) {",
+									"        tests[\"id exist\"] = true;",
+									"    } else {",
+									"        tests[\"id exist\"] = false;",
+									"    }",
+									"    if (jsonData.email) {",
+									"        tests[\"email exist\"] = true;",
+									"    } else {",
+									"        tests[\"email exist\"] = false;",
+									"    }",
+									"    if(jsonData.email == postman.getEnvironmentVariable('email')){",
+									"        tests['data updated'] = true",
+									"    }else{",
+									"        tests['data updated'] = false",
+									"    }",
+									"} else {",
+									"    tests[\"data exist\"] = false;",
+									"}",
+									"}else{",
+									"    tests[\"Login user is not Admin\"] = true; ",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"url": {
+							"raw": "{{url}}/tag/getbyid/Automatic/{{tagId}}?accessToken={{token}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"tag",
+								"getbyid",
+								"Automatic",
+								"{{tagId}}"
+							],
+							"query": [
+								{
+									"key": "accessToken",
+									"value": "{{token}}",
+									"equals": true,
+									"description": ""
+								}
+							],
+							"variable": []
+						},
+						"method": "GET",
+						"header": [],
+						"body": {},
 						"description": ""
 					},
 					"response": []

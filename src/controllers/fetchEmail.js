@@ -243,6 +243,12 @@ export class FetchController extends BaseAPIController {
             this.handleSuccessResponse(req, res, next, { message: "marked as unread" })
         })
     }
+
+    getByMongoId = (req, res, next) => {
+        req.email.findOne({_id:req.params.mongo_id}).then((response)=>{
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
 }
 
 const controller = new FetchController();

@@ -26,6 +26,7 @@ export class AccountController extends BaseAPIController {
             .then((body) => {
                 this._db.User.update({ password: body.new_password }, { where: { id: req.user.id, password: body.old_password } })
                     .then((user) => {
+                        console.log(user)
                         if (user && user[0]) {
                             this.handleSuccessResponse(req, res, next, { message: 'password updated successfully' });
                         } else {
