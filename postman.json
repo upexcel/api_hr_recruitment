@@ -303,6 +303,7 @@
 								"exec": [
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"tests[responseBody] = true;",
 									"if (jsonData.message) {",
 									"    tests[\"Password Updated\"] = true;",
 									"} else {",
@@ -706,7 +707,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
-									"test[responseBody] = true",
+									"test[responseBody] = true;",
 									"if(environment.type == \"Admin\"){",
 									"    tests[\"Login user is admin\"] = true;",
 									"    if (jsonData) {",
