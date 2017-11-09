@@ -303,6 +303,7 @@
 								"exec": [
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
+									"tests[responseBody] = true",
 									"if (jsonData.message) {",
 									"    tests[\"Password Updated\"] = true;",
 									"} else {",
