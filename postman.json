@@ -170,13 +170,13 @@
 								},
 								{
 									"key": "password",
-									"value": "123",
+									"value": "1234",
 									"type": "text",
 									"description": ""
 								},
 								{
 									"key": "confirm_password",
-									"value": "123",
+									"value": "1234",
 									"type": "text",
 									"description": ""
 								}
@@ -233,7 +233,7 @@
 								},
 								{
 									"key": "password",
-									"value": "123",
+									"value": "1234",
 									"type": "text"
 								},
 								{
@@ -347,7 +347,7 @@
 							"urlencoded": [
 								{
 									"key": "old_password",
-									"value": "123",
+									"value": "1234",
 									"description": "",
 									"type": "text"
 								},
