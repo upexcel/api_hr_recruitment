@@ -706,6 +706,7 @@
 								"type": "text/javascript",
 								"exec": [
 									"var jsonData = JSON.parse(responseBody);",
+									"test[responseBody] = true",
 									"if(environment.type == \"Admin\"){",
 									"    tests[\"Login user is admin\"] = true;",
 									"    if (jsonData) {",
