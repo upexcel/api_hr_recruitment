@@ -3137,7 +3137,7 @@
 					],
 					"request": {
 						"url": {
-							"raw": "{{url}}/email/fetch/null/1/10?accessToken={{Admintoken}}",
+							"raw": "{{url}}/email/fetch/null/{{page}}/{{limit}}?accessToken={{Admintoken}}",
 							"host": [
 								"{{url}}"
 							],
@@ -3145,8 +3145,8 @@
 								"email",
 								"fetch",
 								"null",
-								"1",
-								"10"
+								"{{page}}",
+								"{{limit}}"
 							],
 							"query": [
 								{
@@ -3159,8 +3159,24 @@
 							"variable": []
 						},
 						"method": "PUT",
-						"header": [],
-						"body": {},
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "is_attach",
+									"value": "false",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
@@ -3230,8 +3246,24 @@
 							"variable": []
 						},
 						"method": "PUT",
-						"header": [],
-						"body": {},
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "is_attach",
+									"value": "false",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
@@ -3301,8 +3333,24 @@
 							"variable": []
 						},
 						"method": "PUT",
-						"header": [],
-						"body": {},
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "is_attach",
+									"value": "false",
+									"description": "",
+									"type": "text"
+								}
+							]
+						},
 						"description": ""
 					},
 					"response": []
@@ -4657,7 +4705,7 @@
 								"exec": [
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.tag_id.indexOf(postman.getEnvironmentVariable(\"tagId\").toString()) >= 0 ){",
+									"if(jsonData.response.tag_id.indexOf(postman.getEnvironmentVariable(\"tagId\").toString()) >= 0 ){",
 									"    tests['tag assigned'] = true",
 									"}else{",
 									"    tests['tag assigned'] = false",
@@ -4912,7 +4960,7 @@
 								"exec": [
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.tag_id.indexOf(postman.getEnvironmentVariable(\"tagId\").toString()) >= 0 ){",
+									"if(jsonData.response.tag_id.indexOf(postman.getEnvironmentVariable(\"tagId\").toString()) >= 0 ){",
 									"    tests['tag assigned'] = true",
 									"}else{",
 									"    tests['tag assigned'] = false",
@@ -5121,7 +5169,8 @@
 								"exec": [
 									"tests[\"Status code is 200\"] = responseCode.code === 200;",
 									"var jsonData = JSON.parse(responseBody);",
-									"if(jsonData.unread){",
+									"",
+									"if(jsonData.response.unread){",
 									"    tests['email unread'] = false",
 									"}else{",
 									"    tests['email unread'] = true",
