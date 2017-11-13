@@ -271,7 +271,7 @@ var FetchController = exports.FetchController = function (_BaseAPIController) {
             });
         }, _this.getByMongoId = function (req, res, next) {
             req.email.findOne({ _id: req.params.mongo_id }).then(function (response) {
-                _this.handleSuccessResponse(req, res, next, response);
+                _this.handleSuccessResponse(req, res, next, { response: response });
             });
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }

@@ -246,7 +246,7 @@ export class FetchController extends BaseAPIController {
 
     getByMongoId = (req, res, next) => {
         req.email.findOne({_id:req.params.mongo_id}).then((response)=>{
-            this.handleSuccessResponse(req, res, next, response)
+            this.handleSuccessResponse(req, res, next, {response})
         })
     }
 }
