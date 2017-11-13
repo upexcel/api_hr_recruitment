@@ -41,7 +41,7 @@ CLIENT_SECRET
 	4. https://drive.google.com/open?id
 	5. this id is put into folderid
 ``` 
-#### for attachments to save in google drive keys to update in config.json file  
+#### for attachments to save in google drive keys to create in ecosystem.config.js file  
 ```
 "CLIENT_ID":"",
 "CLIENT_SECRET": "",
@@ -50,7 +50,11 @@ CLIENT_SECRET
 "token_type": "",
 "expires_in": ,
 "refresh_token": "",
-"folderid": ""
+"folderid": "",
+"push_message_server_key": "",
+"ACCOUNT_SID": "",
+"AUTH_TOKEN": "",
+"TRACKING_ID": "",
 ```
 
 #### For automatic mail send need to update sendgrid information in config file
@@ -69,4 +73,5 @@ CLIENT_SECRET
 
 ## to run on server use
 
-``` $ pm2 start npm --name hr_recruitment_live -- start```
+``` npm run build```
+``` pm2 start ecosystem.config.js --env live```
