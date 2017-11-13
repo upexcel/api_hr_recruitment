@@ -19,6 +19,6 @@ jobs:
       - run: npm run db
       - run: npm run build
       - run: npm install pm2 -g 
-      - run: pm2 start npm --name recruit  -- dev
+      - run: pm2 start npm --name recruit -- run dev
       - run: npm install -g newman
       - run: npm run test
