@@ -50,7 +50,6 @@ var AccountController = exports.AccountController = function (_BaseAPIController
         }, _this.update_password = function (req, res, next) {
             _AccountProvider2.default.updatePassword(req.checkBody, req.body, req.getValidationResult()).then(function (body) {
                 _this._db.User.update({ password: body.new_password }, { where: { id: req.user.id, password: body.old_password } }).then(function (user) {
-                    console.log(user);
                     if (user && user[0]) {
                         _this.handleSuccessResponse(req, res, next, { message: 'password updated successfully' });
                     } else {

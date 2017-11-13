@@ -4,10 +4,11 @@
   "description": "Hr_System project on ES6 RESTful Express API",
   "main": "dist",
   "scripts": {
-    "start": "node ./models/index.js && node dist",
+    "start": "node dist",
     "build": "babel src -s -D -d dist --presets es2015,stage-0",
     "dev": "node ./models/index.js && nodemon --max_old_space_size=8192 -w src --exec \"babel-node src --presets es2015,stage-0\"",
-    "test": "newman run postman.json -e env.json"
+    "test": "newman run postman.json -e env.json",
+    "db": "node ./models/index.js"
   },
   "repository": "developit/express-es6-rest-api",
   "author": "Jason Miller <jason@developit.ca>",
