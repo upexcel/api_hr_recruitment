@@ -109,6 +109,11 @@ export class TemplateController extends BaseAPIController {
         this.getById(req, res, this._db.Template, templateId, next);
     }
 
+    getTemplateById = (req, res, next) => {
+        this._db.Template.findById(parseInt(req.params.templateId)).then((response) => {
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
 }
 
 

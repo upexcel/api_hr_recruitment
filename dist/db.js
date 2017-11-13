@@ -45,6 +45,12 @@ Object.keys(db).forEach(function (modelName) {
 });
 
 sequelize.sync().then(function () {
+    db.User.findAll().then(function (response) {
+        if (!response.length) {
+            db.User.create({ email: "123@gmail.com", password: "pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=", user_type: "Admin" });
+        }
+    });
+
     db.Tag.findOne({ where: { type: (0, _constant2.default)().tagType.default, title: "Shortlist" } }).then(function (id) {
         if (!id) {
             db.Tag.create({ title: "Shortlist", type: (0, _constant2.default)().tagType.default, color: "#cb891b", default_id: 2 });

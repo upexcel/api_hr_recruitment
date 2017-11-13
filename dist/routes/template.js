@@ -33,6 +33,9 @@ exports.default = function (app) {
     /* Route for Send Email Template */
     app.route("/template/email/:email").post(_auth2.default.requiresAdminOrHr, _template2.default.templateEmail);
 
+    /*Route for get template by id*/
+    app.route("/template/getById/:templateId").get(_auth2.default.requiresAdminOrHr, _template2.default.getTemplateById);
+
     app.param("templateId", _template2.default.idResult);
 
     return app;

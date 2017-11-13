@@ -30,23 +30,33 @@ var dashboard = function dashboard(db, req) {
         var user_read_email = [];
         var email_stat_by_job_profile = [];
         db.Tag.findAll({ where: { "is_job_profile_tag": 1 } }).then(function (job_profile) {
-            findJobProfileStat(job_profile, function (job_profile_response) {
-                findEmailStats(function (email_per_day_stat) {
-                    job_profile_response["email_stat"] = email_per_day_stat;
-                    candidateSelectionPerMonth(function (selected_candidate_stats_month) {
-                        candidateSelectionPerDay(function (selected_candidate_stats_date) {
-                            job_profile_response['read_email_data'] = read_email;
-                            jobReadByUser(function (job_read_by_user) {
-                                job_profile_response['read_mail_by_user'] = job_read_by_user;
-                                emailStatByJobProfile(function (stat_by_profile) {
-                                    job_profile_response['email_stat_by_job_profile'] = stat_by_profile;
-                                    resolve(job_profile_response);
+            if (job_profile.length) {
+                findJobProfileStat(job_profile, function (job_profile_response) {
+                    findEmailStats(function (email_per_day_stat) {
+                        job_profile_response["email_stat"] = email_per_day_stat;
+                        candidateSelectionPerMonth(function (selected_candidate_stats_month) {
+                            candidateSelectionPerDay(function (selected_candidate_stats_date) {
+                                job_profile_response['read_email_data'] = read_email;
+                                jobReadByUser(function (job_read_by_user) {
+                                    job_profile_response['read_mail_by_user'] = job_read_by_user;
+                                    emailStatByJobProfile(function (stat_by_profile) {
+                                        job_profile_response['email_stat_by_job_profile'] = stat_by_profile;
+                                        resolve(job_profile_response);
+                                    });
                                 });
                             });
                         });
                     });
                 });
-            });
+            } else {
+                var job_profile_response = {};
+                job_profile_response["day_wise"] = [];
+                job_profile_response['read_email_data'] = [];
+                job_profile_response['read_mail_by_user'] = [];
+                job_profile_response['read_mail_by_user'] = [];
+                job_profile_response['email_stat_by_job_profile'] = [];
+                resolve(job_profile_response);
+            }
         });
 
         function findJobProfileStat(job_profile, callback) {

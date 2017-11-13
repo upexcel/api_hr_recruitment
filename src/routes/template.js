@@ -20,6 +20,9 @@ export default (app) => {
     /* Route for Send Email Template */
     app.route("/template/email/:email").post(auth.requiresAdminOrHr, template.templateEmail);
 
+    /*Route for get template by id*/
+    app.route("/template/getById/:templateId").get(auth.requiresAdminOrHr, template.getTemplateById)
+
     app.param("templateId", template.idResult);
 
     return app;

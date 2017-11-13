@@ -86,6 +86,10 @@ export class ImapController extends BaseAPIController {
     idResult = (req, res, next, imapId) => {
         this.getById(req, res, this._db.Imap, imapId, next);
     }
+
+    getImapById = (req, res, next) => {
+        this.handleSuccessResponse(req, res, next, req.result)
+    }
 }
 
 

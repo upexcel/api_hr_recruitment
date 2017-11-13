@@ -58,6 +58,12 @@ export class VariableController extends BaseAPIController {
         this.getById(req, res, this._db.Variable, variableId, next);
     }
 
+    getVariableById = (req, res, next) => {
+        this._db.Variable.findById(parseInt(req.params.variableId)).then((response)=>{
+            this.handleSuccessResponse(req, res, next, response)
+        })
+    }
+
 }
 
 const controller = new VariableController();

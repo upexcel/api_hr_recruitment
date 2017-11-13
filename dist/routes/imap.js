@@ -27,6 +27,9 @@ exports.default = function (app) {
     /* Route for fetch Imap Data */
     app.route("/imap/get").get(_auth2.default.requiresAdmin, _imap2.default.getImap);
 
+    /* Route for imap get by id*/
+    app.route("/imap/get/:imapId").get(_auth2.default.requiresAdmin, _imap2.default.getImapById);
+
     /* Route for fetch Imap Data */
     app.route("/imap/statusActive/:email").put(_auth2.default.requiresAdmin, _imap2.default.statusActive);
 

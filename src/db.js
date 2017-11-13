@@ -22,6 +22,12 @@ Object.keys(db).forEach((modelName) => {
 });
 
 sequelize.sync().then(() => {
+    db.User.findAll().then((response)=>{
+        if(!response.length){
+            db.User.create({ email: "123@gmail.com", password: "pmWkWSBCL51Bfkhn79xPuKBKHz//H6B+mY6G9/eieuM=", user_type: "Admin" })
+        }
+    })
+
     db.Tag.findOne({ where: { type: constant().tagType.default, title: "Shortlist" } })
         .then((id) => {
             if (!id) {

@@ -71,6 +71,9 @@ export default (app) => {
     /*Mark as unread*/
     app.route("/email/markAsUnread").put(auth.requiresAdminOrHr, fetch_email.markAsUnread)
 
+    /*get candidate by id*/
+    app.route("/email/getById/:mongo_id").get(auth.requiresLogin, fetch_email.getByMongoId)
+
     /*Route for find emails by tagId*/
     app.param("tag_id", fetch_email.findByTagId)
 

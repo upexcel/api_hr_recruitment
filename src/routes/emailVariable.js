@@ -14,6 +14,9 @@ export default (app) => {
     /* Route for List of Variable Template */
     app.route("/variable/get/:page/:limit").get(auth.requiresAdminOrHr, variable.variableList);
 
+    /*variable get by id*/
+    app.route("/variable/getById/:variableId").get(auth.requiresAdminOrHr, variable.getVariableById);
+
     app.param("variableId", variable.idResult);
 
     return app;

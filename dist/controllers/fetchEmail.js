@@ -269,6 +269,10 @@ var FetchController = exports.FetchController = function (_BaseAPIController) {
             req.email.update({ _id: req.body.mongo_id }, { unread: true }).then(function (response) {
                 _this.handleSuccessResponse(req, res, next, { message: "marked as unread" });
             });
+        }, _this.getByMongoId = function (req, res, next) {
+            req.email.findOne({ _id: req.params.mongo_id }).then(function (response) {
+                _this.handleSuccessResponse(req, res, next, { response: response });
+            });
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
     /* Get INBOX data */

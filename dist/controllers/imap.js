@@ -105,6 +105,8 @@ var ImapController = exports.ImapController = function (_BaseAPIController) {
             }).catch(_this.handleErrorResponse.bind(null, res));
         }, _this.idResult = function (req, res, next, imapId) {
             _this.getById(req, res, _this._db.Imap, imapId, next);
+        }, _this.getImapById = function (req, res, next) {
+            _this.handleSuccessResponse(req, res, next, req.result);
         }, _temp), _possibleConstructorReturn(_this, _ret);
     }
 
