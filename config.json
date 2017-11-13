@@ -6,7 +6,7 @@
     {
         "host": "5.9.144.226",
         "name": "hr_recruit_dev",
-        "password": "devrecruit@123",
+        "password": "recruitdev@123",
         "username": "hr_recruit_dev"
     },
     "mongodb": "hr_recruit_dev"
