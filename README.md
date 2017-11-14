@@ -67,6 +67,37 @@ CLIENT_SECRET
 "is_silent":true
 ```
 
+## Setup for circleci 
+
+### Write TestCases on postman
+```
+create test cases on postman for every api request
+export the postman collection in your root directory with named postman.json
+export the postman env data in root directory with named env.json
+```
+
+### Create a folder for circleci with named .cicleci within folder a config.yml file
+
+#### Required Docker Images
+```
+node (with required version)
+mongo (with required version)
+mysql (with require version and send proper enivironment like(MYSQL_ROOT_PASSWORD,MYSQL_ALLOW_EMPTY_PASSWORD,MYSQL_HOST))
+```
+
+#### Required Steps for testing test cases
+```
+- checkout
+- run mkdir -p /home/ubuntu/hr-recruit
+- run: npm install
+- run: npm run db
+- run: npm run build
+- run: npm install pm2 -g 
+- run: pm2 start npm --name recruit -- run dev
+- run: npm install -g newman
+- run: npm run test
+```
+
 ## To run on local use 
 
 ```$ npm start```
