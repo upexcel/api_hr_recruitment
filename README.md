@@ -1,5 +1,10 @@
 # hr_system
 
+[![Latest Version](https://img.shields.io/gem/v/circleci.svg)](http://rubygems.org/gems/circleci)
+[![Circle CI](https://circleci.com/gh/mtchavez/circleci.svg?style=svg)](https://circleci.com/gh/mtchavez/circleci)
+[![Code Climate](https://codeclimate.com/github/mtchavez/circleci.png)](https://codeclimate.com/github/mtchavez/circleci)
+[![Coverage Status](https://coveralls.io/repos/mtchavez/circleci/badge.png)](https://coveralls.io/r/mtchavez/circleci)
+[![Dependency Status](https://gemnasium.com/mtchavez/circleci.svg)](https://gemnasium.com/mtchavez/circleci)
 
 ## Install Dependencies
 ``` $ npm install ```
@@ -76,6 +81,21 @@ export the postman collection in your root directory with named postman.json
 export the postman env data in root directory with named env.json
 ```
 
+#### How to write postman test cases
+```
+for every api response should be validated by the next api request
+Example:-
+suppose we fire an api for creating user, then we need to ensure that the user is successfully created 
+for this again we need to fire an api for ensuring that the user is successfully created
+```
+
+#### How to create env file
+```
+env file contains all data that we used during fire api request through postman
+we create an env file so that we didn't use any hardcoded data for api request
+env file contains all the varaibles that is used in verifing api response
+```
+
 ### Create a folder for circleci with named .cicleci within folder a config.yml file
 
 #### Required Docker Images
@@ -96,6 +116,29 @@ mysql (with require version and send proper enivironment like(MYSQL_ROOT_PASSWOR
 - run: pm2 start npm --name recruit -- run dev
 - run: npm install -g newman
 - run: npm run test
+```
+
+#### Response for running test cases on circleci like
+```
+┌─────────────────────────┬──────────┬──────────┐
+│                         │ executed │   failed │
+├─────────────────────────┼──────────┼──────────┤
+│              iterations │        1 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│                requests │      177 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│            test-scripts │      176 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│      prerequest-scripts │       15 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│              assertions │     1047 │        0 │
+├─────────────────────────┴──────────┴──────────┤
+│ total run duration: 22.6s                     │
+├───────────────────────────────────────────────┤
+│ total data received: 318.45KB (approx)        │
+├───────────────────────────────────────────────┤
+│ average response time: 89ms                   │
+└───────────────────────────────────────────────┘
 ```
 
 ## To run on local use 
